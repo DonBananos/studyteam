@@ -1,14 +1,16 @@
 <?php
 require './includes/configuration.php';
-require './includes/function.php';
+require './student/student_controller.php';
 
 $display_message = FALSE;
+
+$sc = new Student_controller();
 
 if (isset($_POST['login']))
 {
 	$user = sanitize_text($_POST['user']);
 	$pass = sanitize_text($_POST['pass']);
-	$answer = log_member_in($user, $pass);
+	$answer = $sc->log_member_in($user, $pass);
 	if ($answer !== FALSE && $answer !== TRUE)
 	{
 		$display_message = TRUE;
@@ -35,7 +37,7 @@ if (isset($_SESSION['logged_in']))
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Login (Week 1 Exercise 1)</title>
+        <title>Login</title>
 		<?php require './includes/header.php'; ?>
     </head>
     <body>

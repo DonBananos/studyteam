@@ -1,6 +1,8 @@
 <?php
 require './includes/configuration.php';
-require './includes/function.php';
+require './student/student_controller.php';
+
+$sc = new Student_controller();
 
 if (isset($_POST['join']))
 {
@@ -15,7 +17,7 @@ if (isset($_POST['join']))
 		echo 'FREAKING BOT!';
 		die();
 	}
-	$answer = create_member($username, $firstname, $lastname, $email, $pass1, $pass2);
+	$answer = $sc->create_student($username, $firstname, $lastname, $email, $pass1, $pass2);
 	if ($answer !== TRUE)
 	{
 		echo $answer;
@@ -30,15 +32,11 @@ if (isset($_POST['join']))
 		<?php
 	}
 }
-else
-{
-	
-}
 ?>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Create Member (Week 1 Exercise 1)</title>
+        <title>Create Student)</title>
 		<?php require './includes/header.php'; ?>
     </head>
     <body>

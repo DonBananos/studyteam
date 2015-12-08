@@ -14,7 +14,7 @@ define("SECURE", FALSE);
 define("HOST", "localhost");
 define("USER", "sec_user");
 define("PASS", "koA9fJro%s8Jc0hvJ9ss62");
-define("DATABASE", "security_class");
+define("DATABASE", "studyteam");
 
 //Hardcoded Salt
 define("SALT", "d89F6O3CAdaok593Hvo6aG51sR");
@@ -58,4 +58,14 @@ function get_ip_address()
 	else
 		$ipaddress = 'UNKNOWN';
 	return $ipaddress;
+}
+
+function sanitize_text($text)
+{
+	return filter_var($text, FILTER_SANITIZE_SPECIAL_CHARS);
+}
+
+function sanitize_email($email)
+{
+	return filter_var($email, FILTER_SANITIZE_EMAIL);
 }
