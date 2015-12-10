@@ -7,6 +7,7 @@ class Student
 	private $username;
 	private $firstname;
 	private $lastname;
+	private $fullname;
 	private $email;
 	private $password;
 	private $salt;
@@ -22,7 +23,7 @@ class Student
 	{
 		global $dbCon;
 
-		$sql = "SELECT id, username, firstname, lastname, email, password, salt, joined, permission FROM student WHERE id = ?;";
+		$sql = "SELECT id, username, firstname, lastname, email, password, salt, joined, permission, concat(firstname, ' ', lastname) AS fullname FROM student WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -30,11 +31,11 @@ class Student
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission);
+		$stmt->bind_result($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname);
 		$stmt->fetch();
 		if ($id > 0)
 		{
-			$this->set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission);
+			$this->set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname);
 			$stmt->close();
 			return TRUE;
 		}
@@ -43,7 +44,7 @@ class Student
 		return $error;
 	}
 
-	private function set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission)
+	private function set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname)
 	{
 		$this->set_id($id);
 		$this->set_username($username);
@@ -54,6 +55,7 @@ class Student
 		$this->set_salt($salt);
 		$this->set_joined($joined);
 		$this->set_permission($permission);
+		$this->set_fullname($fullname);
 	}
 	
 	public function get_id()
@@ -100,6 +102,11 @@ class Student
 	{
 		return $this->permission;
 	}
+	
+	public function get_fullname()
+	{
+		return $this->fullname;
+	}
 
 	private function set_id($id)
 	{
@@ -144,5 +151,10 @@ class Student
 	private function set_permission($permission)
 	{
 		$this->permission = $permission;
+	}
+	
+	private function set_fullname($fullname)
+	{
+		$this->fullname = $fullname;
 	}
 }

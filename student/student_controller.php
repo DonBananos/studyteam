@@ -405,4 +405,131 @@ class Student_controller
 		return FALSE;
 	}
 
+	public function search_for_student($search_string)
+	{
+		$results = array();
+		if($this->check_if_email($search_string))
+		{
+			$results = $this->search_for_email(sanitize_email($search_string));
+		}
+		else
+		{
+			$username_results = $this->search_for_username(sanitize_text($search_string));
+			$name_results = $this->search_for_name(sanitize_text($search_string));
+			$email_results = $this->search_for_first_part_of_email($search_string);
+			foreach($username_results as $username_result)
+			{
+				$results[] = $username_result;
+			}
+			foreach($name_results as $name_result)
+			{
+				if(!in_array($name_result, $results))
+				{
+					$results[] = $name_result;
+				}
+			}
+			foreach($email_results as $email_result)
+			{
+				if(!in_array($email_result, $results))
+				{
+					$results[] = $email_result;
+				}
+			}
+		}
+		return $results;
+	}
+	
+	private function search_for_username($string)
+	{
+		$search_string = '%'.$string.'%';
+		$results = array();
+		global $dbCon;
+		
+		$sql = "SELECT id FROM student WHERE username LIKE ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $search_string);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id); //Get ResultSet
+		while($stmt->fetch())
+		{
+			$results[] = $student_id;
+		}
+		$stmt->close();
+
+		return $results;
+	}
+	
+	private function search_for_name($string)
+	{
+		$search_string = '%'.$string.'%';
+		$results = array();
+		global $dbCon;
+		
+		$sql = "SELECT id FROM student WHERE concat(firstname, ' ', lastname) LIKE ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $search_string);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id); //Get ResultSet
+		while($stmt->fetch())
+		{
+			$results[] = $student_id;
+		}
+		$stmt->close();
+
+		return $results;
+	}
+	
+	private function search_for_email($string)
+	{
+		$search_string = '%'.$string.'%';
+		$results = array();
+		global $dbCon;
+		$sql = "SELECT id FROM student WHERE email LIKE ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $search_string);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id); //Get ResultSet
+		while($stmt->fetch())
+		{
+			$results[] = $student_id;
+		}
+		$stmt->close();
+
+		return $results;
+	}
+	
+	private function search_for_first_part_of_email($string)
+	{
+		$search_string = '%'.$string.'%';
+		$results = array();
+		global $dbCon;
+		$sql = "SELECT id FROM student WHERE SUBSTRING_INDEX(email, '@', 1) LIKE ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('s', $search_string);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id); //Get ResultSet
+		while($stmt->fetch())
+		{
+			$results[] = $student_id;
+		}
+		$stmt->close();
+
+		return $results;
+	}
 }

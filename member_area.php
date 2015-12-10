@@ -5,7 +5,7 @@ require './student/student.php';
 if (!isset($_SESSION['logged_in']))
 {
 	?>
-	<script>window.location = "<?php echo W1BASE ?>";</script>
+	<script>window.location = "<?php echo BASE ?>";</script>
 	<?php
 	die();
 }
@@ -27,7 +27,12 @@ $student = new Student($_SESSION['user_id']);
 						</div>
 					</div>
 					<div class="row">
-						<a href="<?php echo W1BASE ?>logout.php">Logout</a>
+						<form action="<?php echo BASE ?>student/search.php" method="GET">
+							<label>Search for a Student</label>
+							<input type="text" name="s" placeholder="Username, Email or Name" class="form-control">
+							<input type="submit" class="btn btn-primary" value="Search!">
+						</form>
+						<a href="<?php echo BASE ?>logout.php">Logout</a>
 					</div>
 				</div>
 			</div>
