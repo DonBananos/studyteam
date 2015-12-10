@@ -1,6 +1,6 @@
 <?php
-require './includes/configuration.php';
-require './student/student_controller.php';
+require_once './includes/configuration.php';
+require_once './student/student_controller.php';
 
 $display_message = FALSE;
 
@@ -37,7 +37,7 @@ if (isset($_SESSION['logged_in']))
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Login</title>
+        <title>Login to StudyTeam</title>
 		<?php require './includes/header.php'; ?>
     </head>
     <body>
@@ -56,7 +56,7 @@ if (isset($_SESSION['logged_in']))
 						</div>
 						<div class="row">
 							<p>
-								Please <a href="login.php">try again</a>.
+								Please <a href="<?php echo BASE ?>">try again</a>.
 							</p>
 						</div>
 						<?php
@@ -65,12 +65,14 @@ if (isset($_SESSION['logged_in']))
 					{
 						?>
 						<div class="row">
-							<div class="page-header">
-								<h1>Welcome!</h1>
-								<p class="lead">Don't be shy! Come in!</p>
-							</div>
+							<h1>Welcome!</h1>
+							<p class="lead">Don't be shy! Come in!</p>
 						</div>
 						<form name="login-form" action="" method="POST">
+							<!-- These are for browsers not to place remembered text -->
+							<input style="display:none" type="text" name="fakeusernameremembered"/>
+							<input style="display:none" type="password" name="fakepasswordremembered"/>
+							<!-- Now for the real form -->
 							<div class="row">
 								<input type="text" name="user" class="form-control" placeholder="Username or Email">
 							</div>
@@ -84,7 +86,7 @@ if (isset($_SESSION['logged_in']))
 						<div class="row">
 							<hr>
 							<small>
-								Don't have a user yet? - Why don't you <a href="create.php">sign up</a> then!
+								Don't have a user yet? - Why don't you <a href="<?php echo BASE ?>#sign-up">sign up</a> then!
 							</small>
 						</div>
 						<?php

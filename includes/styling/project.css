@@ -1,6 +1,21 @@
+/*
+Colour Scheme:
+
+#2D2D2A //Dark Gray
+#4C4C47 //Light Gray
+#F5FBEF //Whiteish
+#C7CB85 //Yellow Ish
+#92AD94 //Faded armygreen
+*/
+
+/*
+##### General #####
+*/
+
 body
 {
-	background-color: #d3d6eb;
+	background-color: #92AD94;
+	color: #2D2D2A;
 }
 
 form input,
@@ -11,8 +26,155 @@ form textarea
 	margin-bottom: 5px;
 }
 
+.form-control:focus
+{
+	border-color: #C7CB85 !important;
+}
+
 .form-control,
 .btn
 {
 	border-radius: 0;
+}
+
+.form-control
+{
+	border-color: #4C4C47;
+	background-color: #F5FBEF;
+	color: #2D2D2A;
+}
+
+.page > .container
+{
+	padding-top: 100px;
+    padding-bottom: 50px;
+}
+
+body a
+{
+	color: #92AD94;
+	text-decoration: none;
+	transition: all 0.5s;
+}
+
+body a:hover,
+body a:active,
+body a:visited
+{
+	color: #C7CB85;
+	text-decoration: none;
+}
+
+body .social > a
+{
+	color: #4C4C47;
+	margin:10px;
+}
+
+/*
+##### Custom Navbar #####
+*/
+
+.navbar-default
+{
+	background-color: #2D2D2A; //Dark Gray From Colour Scheme
+	border: 0;
+	border-color: transparent;
+}
+
+.index-navbar
+{
+    min-height: 60px;
+    margin-bottom: 21px;
+    font-weight: 700;
+}
+
+.navbar a
+{
+	color: #F5FBEF !important;
+}
+
+.index-navbar.navbar-right a
+{
+	text-transform: uppercase;
+}
+
+#navbar-brand
+{
+	color: #C7CB85 !important;
+	transition: all 0.5s;
+}
+
+.navbar a:hover
+{
+	color: #92AD94 !important;
+}
+
+#navbar-brand:hover
+{
+	color: #92AD94 !important;
+}
+
+@media(min-width:768px) 
+{
+	.index-navbar
+	{
+        padding: 25px 0;
+        -webkit-transition: padding .3s;
+        -moz-transition: padding .3s;
+        transition: padding .3s;
+    }
+
+    .index-navbar .navbar-brand 
+	{
+        font-size: 2em;
+        -webkit-transition: all .3s;
+        -moz-transition: all .3s;
+        transition: all .3s;
+    }
+}
+
+/*
+##### Landing page #####
+*/
+
+#login,
+#sign-up
+{
+	padding-top: 200px;
+	padding-bottom: 150px;
+	background: rgba(51,67,70, 0.7) !important;
+	color: #F5FBEF;
+	min-height: 70vh;
+}
+
+#info
+{
+	background-color: #92AD94;
+}
+
+#contact
+{
+	background-color: #C7CB85;
+}
+
+#index-body
+{
+	background-image: url("http://weknowyourdreams.com/images/beautiful/beautiful-04.jpg");
+	background-repeat: repeat;
+    background-position: top left;
+    background-attachment: scroll;
+	background-position: top center !important;
+    background-attachment: fixed !important;
+}
+
+.index-section
+{
+	padding-top: 100px;
+	padding-bottom: 70px;
+}
+
+#map
+{
+	height: 500px;
 }

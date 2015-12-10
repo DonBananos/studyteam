@@ -9,4 +9,4 @@
 <link href="<?php echo BASE ?>includes/styling/project.css" rel="stylesheet">
 
 <!-- Font Awesome Plugin -->
-<!-- <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"> -->
+<link rel="stylesheet" href="<?php echo BASE ?>includes/plugins/font-awesome-4.5.0/css/font-awesome.min.css">

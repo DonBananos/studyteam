@@ -1,6 +1,6 @@
 <?php
-require './includes/configuration.php';
-require './student/student_controller.php';
+require_once './includes/configuration.php';
+require_once './student/student_controller.php';
 
 $sc = new Student_controller();
 
@@ -76,7 +76,7 @@ if (isset($_POST['join']))
 					<div class="row">
 						<hr>
 						<small>
-							Already have a user? - Then simply <a href="login.php">login</a> to have some fun!
+							Already have a user? - Then simply <a href="<?php echo BASE ?>#login">login</a> to have some fun!
 						</small>
 					</div>
 				</div>
