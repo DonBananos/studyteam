@@ -6,6 +6,14 @@ Colour Scheme:
 #F5FBEF //Whiteish
 #C7CB85 //Yellow Ish
 #92AD94 //Faded armygreen
+
+Custom Google Fonts:
+
+font-family: 'Lobster', cursive;
+font-family: 'Shadows Into Light', cursive;
+font-family: 'Gloria Hallelujah', cursive;
+
+
 */
 
 /*
@@ -71,6 +79,30 @@ body .social > a
 	margin:10px;
 }
 
+#footer a,
+#footer a:visited
+{
+	color: #4C4C47;
+	border-bottom: 2px solid #C7CB85;
+	transition: all 0.7s;
+}
+
+#footer a:hover
+{
+	background-color: #C7CB85;
+	color: #2D2D2A;
+}
+
+h1, h2, h3
+{
+	font-family: 'Gloria Hallelujah', cursive;
+}
+
+p.lead
+{
+	font-family: 'Shadows Into Light', cursive;	
+}
+
 /*
 ##### Custom Navbar #####
 */
@@ -92,6 +124,8 @@ body .social > a
 .navbar a
 {
 	color: #F5FBEF !important;
+	font-family: 'Shadows Into Light', cursive;
+	font-size: 120%;
 }
 
 .index-navbar.navbar-right a
@@ -103,6 +137,7 @@ body .social > a
 {
 	color: #C7CB85 !important;
 	transition: all 0.5s;
+	font-family: 'Gloria Hallelujah', cursive;
 }
 
 .navbar a:hover
@@ -132,6 +167,12 @@ body .social > a
         -moz-transition: all .3s;
         transition: all .3s;
     }
+}
+
+
+#studyteam-member-navbar #navbar-brand
+{
+	font-size: 180% !important;
 }
 
 /*
