@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Author: Mike Jensen <mikejensen2@gmail.com>
  * Purpose: StudyTeam (Web Security Exam Project)
@@ -6,11 +7,13 @@
  * This class takes care of Students that is not on one specific, and known, 
  * student object.
  */
+
 class Student_controller
 {
 	/*
 	 * A Constructor is needed to use the object
 	 */
+
 	function __construct()
 	{
 		
@@ -19,6 +22,7 @@ class Student_controller
 	/*
 	 * Function to create a new student. Takes the neccesary variables.
 	 */
+
 	public function create_student($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
 		//We generate a random string between 40 and 50 characters of length, to
@@ -74,8 +78,7 @@ class Student_controller
 		//So, let's bind the parameters to the prepared statement.
 		//the first part means that all six parameters are strings, the rest
 		//are the parameters we pass to the statement.
-		$stmt->bind_param('ssssss', $username, $firstname, $lastname, $email, 
-				$password, $salt); //Bind parameters.
+		$stmt->bind_param('ssssss', $username, $firstname, $lastname, $email, $password, $salt); //Bind parameters.
 		//Execute the statement
 		$stmt->execute();
 		//Get the insertet ID (the new Student's ID in the DB)
@@ -98,6 +101,7 @@ class Student_controller
 	/*
 	 * Function used to hash a password
 	 */
+
 	private function hash_password($password, $salt)
 	{
 		//truncate the user's salt and the defined salt from the config file
@@ -111,7 +115,8 @@ class Student_controller
 	/*
 	 * Function that checks if two passwords match, returns error message if not
 	 */
-	private function compare_passwords($pass1, $pass2)
+
+	public function compare_passwords($pass1, $pass2)
 	{
 		//We use 3 equal signs, which means that both the value but also the 
 		//type is identical
@@ -125,6 +130,7 @@ class Student_controller
 	/*
 	 * Function that checks the database for a specific email address
 	 */
+
 	private function check_for_email($email)
 	{
 		//We make use of the global dbCon that we've created in the config file
@@ -154,6 +160,7 @@ class Student_controller
 	 * Function that checks the database for a specific username
 	 * See check_for_email and create_student for explanations on the code
 	 */
+
 	private function check_for_username($username)
 	{
 		global $dbCon;
@@ -180,6 +187,7 @@ class Student_controller
 	/*
 	 * Function that checks if a string is an email
 	 */
+
 	function check_if_email($string)
 	{
 		//We use the built in filter_var function to validate the email.
@@ -192,6 +200,7 @@ class Student_controller
 	 * Function used to log a student in. We can't use the Student object though
 	 * Since we do not have the ID of the student trying to log in - yet!
 	 */
+
 	function log_member_in($user, $password)
 	{
 		//Security 101 - Never tell the user which part is incorrect!
@@ -220,8 +229,7 @@ class Student_controller
 		//username OR email. We now hash the given password with the user's salt
 		$hashed_password = $this->hash_password($password, $user_array['salt']);
 		//We check if the saved password matches the given password
-		if ($this->compare_passwords($hashed_password, $user_array['password']) 
-				=== TRUE)
+		if ($this->compare_passwords($hashed_password, $user_array['password']) === TRUE)
 		{
 			//We check if the user is banned
 			if ($this->check_if_ban_is_in_order($user_array['id']) === TRUE)
@@ -233,20 +241,19 @@ class Student_controller
 				//We annoy the user a bit by redirecting them!
 				//Here we check if it's only three! 
 				//(remember we just saved one more, so it's +1)
-				if(!$this->check_if_ban_is_in_order($id, 5))
+				if (!$this->check_if_ban_is_in_order($id, 5))
 				{
 					return "This account has been locked due to too many failed "
-					. "logins. Please try again later!";
+							. "logins. Please try again later!";
 				}
 				return "This account has been locked due to too many failed "
-				. "logins. You are now being redirected because you've tried "
+						. "logins. You are now being redirected because you've tried "
 						. "to log in much more than allowed! "
 						. "<script>"
 						. "setTimeout(function()"
 						. "{window.location = 'http://www.heibosoft.com'}"
 						. ", 2000);"
 						. "</script>";
-				
 			}
 			//Now, let's sign the user in!
 			//We save a session cookie stating the user is signed in
@@ -262,13 +269,13 @@ class Student_controller
 			$this->save_login_attempt(0, $user_array['id']);
 			if ($this->check_if_ban_is_in_order($user_array['id']) === TRUE)
 			{
-				if(!$this->check_if_ban_is_in_order($id, 5))
+				if (!$this->check_if_ban_is_in_order($id, 5))
 				{
 					return "This account has been locked due to too many failed "
-					. "logins. Please try again later!";
+							. "logins. Please try again later!";
 				}
 				return "This account has been locked due to too many failed "
-				. "logins. You are now being redirected because you've tried "
+						. "logins. You are now being redirected because you've tried "
 						. "to log in much more than allowed! "
 						. "<script>"
 						. "setTimeout(function()"
@@ -284,11 +291,12 @@ class Student_controller
 	/*
 	 * Function to log a log in attempt
 	 */
+
 	function save_login_attempt($response, $id = 0)
 	{
 		//We get the user's ip address from the function in the config file
 		$ip = get_ip_address();
-		
+
 		//Rest is covered in prior functions
 		global $dbCon;
 
@@ -311,11 +319,11 @@ class Student_controller
 		return $error;
 	}
 
-	
 	/*
 	 * Function to get an array of user details with an email address
 	 * This function is pretty basic, and most is covered prior to this.
 	 */
+
 	function get_member_with_email($email)
 	{
 		global $dbCon;
@@ -335,7 +343,7 @@ class Student_controller
 		if ($id > 0)
 		{
 			//Create an array with the user data.
-			$user_array = array("id" => $id, "username" => $username, "firstname" => $firstname, "lastname" => $lastname, "password" => $password, "salt" => $salt, "permission" => $permission);
+			$user_array = array("id" => $id, "username" => $username, "firstname" => $firstname, "lastname" => $lastname, "email" => $email, "password" => $password, "salt" => $salt, "permission" => $permission);
 			return $user_array;
 		}
 		return TRUE;
@@ -345,6 +353,7 @@ class Student_controller
 	 * Function to get an array of user details with a username.
 	 * See above for explanations.
 	 */
+
 	function get_member_with_username($username)
 	{
 		global $dbCon;
@@ -363,7 +372,7 @@ class Student_controller
 
 		if ($id > 0)
 		{
-			$user_array = array("id" => $id, "username" => $username, "firstname" => $firstname, "lastname" => $lastname, "password" => $password, "salt" => $salt, "permission" => $permission);
+			$user_array = array("id" => $id, "username" => $username, "firstname" => $firstname, "lastname" => $lastname, "email" => $email, "password" => $password, "salt" => $salt, "permission" => $permission);
 			return $user_array;
 		}
 		return TRUE;
@@ -382,6 +391,7 @@ class Student_controller
 	 * This function only checks back for the last 5 minutes, and this should
 	 * probably be a variable as well.. But not now, to tired!
 	 */
+
 	function check_if_ban_is_in_order($id, $max = 3)
 	{
 		global $dbCon;
@@ -408,7 +418,7 @@ class Student_controller
 	public function search_for_student($search_string)
 	{
 		$results = array();
-		if($this->check_if_email($search_string))
+		if ($this->check_if_email($search_string))
 		{
 			$results = $this->search_for_email(sanitize_email($search_string));
 		}
@@ -417,20 +427,20 @@ class Student_controller
 			$username_results = $this->search_for_username(sanitize_text($search_string));
 			$name_results = $this->search_for_name(sanitize_text($search_string));
 			$email_results = $this->search_for_first_part_of_email($search_string);
-			foreach($username_results as $username_result)
+			foreach ($username_results as $username_result)
 			{
 				$results[] = $username_result;
 			}
-			foreach($name_results as $name_result)
+			foreach ($name_results as $name_result)
 			{
-				if(!in_array($name_result, $results))
+				if (!in_array($name_result, $results))
 				{
 					$results[] = $name_result;
 				}
 			}
-			foreach($email_results as $email_result)
+			foreach ($email_results as $email_result)
 			{
-				if(!in_array($email_result, $results))
+				if (!in_array($email_result, $results))
 				{
 					$results[] = $email_result;
 				}
@@ -438,13 +448,13 @@ class Student_controller
 		}
 		return $results;
 	}
-	
+
 	private function search_for_username($string)
 	{
-		$search_string = '%'.$string.'%';
+		$search_string = '%' . $string . '%';
 		$results = array();
 		global $dbCon;
-		
+
 		$sql = "SELECT id FROM student WHERE username LIKE ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -454,7 +464,7 @@ class Student_controller
 		$stmt->bind_param('s', $search_string);
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id); //Get ResultSet
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$results[] = $student_id;
 		}
@@ -462,13 +472,13 @@ class Student_controller
 
 		return $results;
 	}
-	
+
 	private function search_for_name($string)
 	{
-		$search_string = '%'.$string.'%';
+		$search_string = '%' . $string . '%';
 		$results = array();
 		global $dbCon;
-		
+
 		$sql = "SELECT id FROM student WHERE concat(firstname, ' ', lastname) LIKE ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -478,7 +488,7 @@ class Student_controller
 		$stmt->bind_param('s', $search_string);
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id); //Get ResultSet
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$results[] = $student_id;
 		}
@@ -486,10 +496,10 @@ class Student_controller
 
 		return $results;
 	}
-	
+
 	private function search_for_email($string)
 	{
-		$search_string = '%'.$string.'%';
+		$search_string = '%' . $string . '%';
 		$results = array();
 		global $dbCon;
 		$sql = "SELECT id FROM student WHERE email LIKE ?;";
@@ -501,7 +511,7 @@ class Student_controller
 		$stmt->bind_param('s', $search_string);
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id); //Get ResultSet
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$results[] = $student_id;
 		}
@@ -509,10 +519,10 @@ class Student_controller
 
 		return $results;
 	}
-	
+
 	private function search_for_first_part_of_email($string)
 	{
-		$search_string = '%'.$string.'%';
+		$search_string = '%' . $string . '%';
 		$results = array();
 		global $dbCon;
 		$sql = "SELECT id FROM student WHERE SUBSTRING_INDEX(email, '@', 1) LIKE ?;";
@@ -524,12 +534,170 @@ class Student_controller
 		$stmt->bind_param('s', $search_string);
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id); //Get ResultSet
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$results[] = $student_id;
 		}
 		$stmt->close();
 
 		return $results;
+	}
+
+	public function please_reset_my_password_because_im_stupid($user)
+	{
+		$failed_message = "Ooops... Get a grip boy!";
+		if ($this->check_if_email($user))
+		{
+			//And so it is! We get the member details with the email address.
+			$user_array = $this->get_member_with_email($user);
+		}
+		else
+		{
+			//Oh, it's not an email, maybe a username then?
+			$user_array = $this->get_member_with_username($user);
+		}
+		if (!isset($user_array['id']) || $user_array['id'] < 1)
+		{
+			//We save the login attempt, without passing a user id, and passing
+			//the 0 value as response (0 == false in SQL)
+			return $failed_message; //Return the string created in the beginning
+		}
+		else
+		{
+			$user_id = $user_array['id'];
+			$u = generate_random_string(80, 120);
+			$e = generate_random_string(80, 120);
+			$c = generate_random_string(80, 120);
+			if ($this->reset_password_request($user_id, $u, $e, $c))
+			{
+				return $this->send_reset_email($user_array['email'], $u, $e, $c);
+			}
+		}
+	}
+
+	private function reset_password_request($user_id, $u, $e, $c)
+	{
+		$time = date("Y-m-d H:i:s", time());
+		global $dbCon;
+
+		$sql = "INSERT INTO reset_password_request (user_id, time, u, e, c) VALUES (?, ?, ?, ?, ?);";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('issss', $user_id, $time, $u, $e, $c); //Bind parameters.
+		$stmt->execute(); //Execute
+		$id = $stmt->insert_id;
+		if ($id > 0)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	private function send_reset_email($email, $u, $e, $c)
+	{
+		// multiple recipients
+		$to = $email;
+
+		// subject
+		$subject = 'Reset your password';
+
+		// message
+		$message = '
+			<html>
+			<head>
+			  <title>Reset your password</title>
+			</head>
+			<body>
+			  <p>Hi buddy!<br/>You\'ve requested a password reset, please click the link below to reset your password.</p>
+			  <p>
+				<a href="'.SERVER.BASE.'student/reset.php?u='.$u.'&e='.$e.'&c='.$c.'">'.SERVER.BASE.'student/reset.php?u='.$u.'&e='.$e.'&c='.$c.'</a>
+			  </p>
+			  <small>
+				If you have not requested a password reset, please ignore this email.<br/>You\'ll be able to use your normal credentials as long as you don\'t reset your password.
+			  </small>
+			</body>
+			</html>
+			';
+
+		// To send HTML mail, the Content-type header must be set
+		$headers = 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+
+		// Additional headers
+		$headers .= 'To: <'.$email.'>' . "\r\n";
+		$headers .= 'From: StudyTeam Bot <studyteam@heibosoft.com>' . "\r\n";
+
+		// Mail it
+		if(mail($to, $subject, $message, $headers))
+		{
+			return "Please check your email client. Also check the spam folder!";
+		}
+		return "Ooooops. Something went wrong!<br/>Please try again!";
+	}
+	
+	public function get_student_from_u_e_and_c_codes($u, $e, $c)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT user_id, used, time FROM reset_password_request WHERE u = ? AND e = ? AND c = ? ORDER BY time DESC LIMIT 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('sss', $u, $e, $c);
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id, $used, $time); //Get ResultSet
+		$stmt->fetch();
+		$stmt->close();
+		
+		if($student_id > 0 AND $used == 0)
+		{
+			$now = time();
+			$requested = strtotime($time);
+			$difference = abs($requested-$now);
+			$difference_in_hours = round($difference/60/60);
+			if($difference_in_hours <= RESET_LIMIT)
+			{
+				return $student_id;
+			}
+			else
+			{
+				return "You only have ".RESET_LIMIT." hours, from you've requested the reset. Unfortunately it's been $difference_in_hours hours since you requested the reset.";
+			}
+		}
+		elseif($student_id > 0)
+		{
+			return "You have already reset your password from that email. Still can't remember? Pull yourself together man!";
+		}
+		return false;
+	}
+
+	public function set_reset_request_to_used($u, $e, $c)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE reset_password_request SET used = 1 WHERE u = ? AND e = ? AND c = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('sss', $u, $e, $c); //Bind parameters.
+		$stmt->execute(); //Execute
+		if($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		$stmt->close();
+		echo $stmt->error;
+		return $stmt->error;
 	}
 }

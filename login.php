@@ -86,6 +86,10 @@ if (isset($_SESSION['logged_in']))
 						<div class="row">
 							<hr>
 							<small>
+								Forgot your password? <a href="<?php echo BASE ?>student/reset.php">Click here to reset!</a>
+							</small>
+							<br/>
+							<small>
 								Don't have a user yet? - Why don't you <a href="<?php echo BASE ?>#sign-up">sign up</a> then!
 							</small>
 						</div>

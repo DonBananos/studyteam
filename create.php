@@ -36,7 +36,7 @@ if (isset($_POST['join']))
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Create Student)</title>
+        <title>Create Student</title>
 		<?php require './includes/header.php'; ?>
     </head>
     <body>

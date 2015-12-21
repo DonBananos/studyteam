@@ -11,6 +11,7 @@ if (!isset($_SESSION['logged_in']))
 	die();
 }
 $student = new Student($_SESSION['user_id']);
+$crooked = false;
 
 if (!isset($_GET['s']))
 {
@@ -21,7 +22,13 @@ if (!isset($_GET['s']))
 }
 else
 {
-	$search_string = $_GET['s'];
+	$search_string = sanitize_text($_GET['s']);
+	if($_GET['s'] !== $search_string)
+	{
+		//Something is not as it should be!
+		$crooked = true;
+		$message = "You bastard! We've logged your search with ip: ".  get_ip_address();
+	}
 	$sc = new Student_controller();
 	$search_student_ids = $sc->search_for_student($search_string);
 }
@@ -44,6 +51,12 @@ else
 							<div class="page-header">
 								<h1>Search for '<?php echo $search_string ?>'</h1>
 							</div>
+							<?php
+							if($crooked)
+							{
+								echo $message.'<hr>';
+							}
+							?>
 						</div>
 						<div class="row">
 							<form action="<?php echo BASE ?>student/search.php" method="GET">

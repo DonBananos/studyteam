@@ -33,7 +33,7 @@ else
 		<div class="page">
 			<div class="container">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 col-lg-offset-4 col-md-offset-4 col-sm-offset-3">
+					<div class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1">
 						<div class="row">
 							<div class="page-header">
 								<h1>Profile for <?php echo $student_visited->get_fullname() ?></h1>
@@ -44,9 +44,21 @@ else
 							Lastname: <label><?php echo $student_visited->get_lastname() ?></label><br/>
 							Username: <label><?php echo $student_visited->get_username() ?></label><br/>
 							Email: <label><?php echo $student_visited->get_email() ?></label><br/>
-							Permission: <label><?php echo $student_visited->get_permission() ?></label><br/>
+							Permission: <label><?php echo get_permission_name_from_id($student_visited->get_permission()) ?></label><br/>
 							Joined: <label><?php echo $student_visited->get_joined() ?></label><br/>
 						</div>
+						<?php
+						if ($student->get_id() === $student_visited->get_id())
+						{
+							?>
+							<div class="row">
+								<hr>
+								<h3>School and Education</h3>
+								
+							</div>
+							<?php
+						}
+						?>
 					</div>
 				</div>
 			</div>

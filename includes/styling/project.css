@@ -58,18 +58,20 @@ form textarea
     padding-bottom: 50px;
 }
 
-body a
+.page a
 {
-	color: #92AD94;
+	color: #4C4C47 !important;
+	border-bottom: 2px solid #C7CB85;
 	text-decoration: none;
 	transition: all 0.5s;
 }
 
-body a:hover,
-body a:active,
-body a:visited
+.page a:hover,
+.page a:active,
+.page a:visited
 {
-	color: #C7CB85;
+	color: #2D2D2A;
+	background-color: #C7CB85;
 	text-decoration: none;
 }
 
@@ -201,7 +203,7 @@ p.lead
 
 #index-body
 {
-	background-image: url("http://weknowyourdreams.com/images/beautiful/beautiful-04.jpg");
+	background-image: url("../_media/_images/college-students.png");
 	background-repeat: repeat;
     background-position: top left;
     background-attachment: scroll;
@@ -218,4 +220,110 @@ p.lead
 #map
 {
 	height: 500px;
+}
+
+.group
+{
+	margin: 0 auto;
+	margin-bottom: 10px;
+	margin-top: 10px;
+	border: #2D2D2A 1px solid;
+	max-width: 600px;
+}
+
+.group-header
+{
+	background-repeat: no-repeat;
+    background-position: bottom;
+    background-attachment: scroll;
+	height: 220px;
+	width: 100%;
+	max-width: 600px;
+}
+
+.group-header > h3
+{
+	position: absolute;
+	background: rgba(51,67,70, 0.8) !important;
+	color: white;
+	padding: 5px 15px 5px 15px;
+	bottom: 0;
+	left: 15px;
+}
+
+.group-header > .publicity
+{
+	position: absolute;
+	background: rgba(51,67,70, 0.8) !important;
+	color: #9b0000;
+	padding: 5px 5px 5px 5px;
+	top: 10px;
+	right: 15px;
+}
+
+.publicity > span
+{
+	width: 30px;
+	text-align: center;
+}
+
+.publicity > .fa-unlock
+{
+	color: #049b00;
+}
+
+.dropdown-inverted
+{
+	background-color: #2D2D2A;
+}
+
+.navbar-default .open > a
+{
+	background-color: #2D2D2A !important;
+	color: #92AD94 !important;
+}
+
+.dropdown-inverted > li > a:hover
+{
+	background-color: #2D2D2A;
+	color: #92AD94;
+}
+
+form .small-pad
+{
+	padding-top: 8px;
+}
+
+.textarea
+{
+	resize: none;
+}
+
+.scouch-right
+{
+	margin-left: 10px;
+}
+
+.modal-inverse .modal-header,
+.modal-inverse .modal-footer,
+.modal-inverse .modal-body
+{
+	background-color: #2D2D2A;
+	color: #F5FBEF;
+}
+
+.modal-inverse form
+{
+	margin-bottom: 0;
+}
+
+.content-box
+{
+	background-color: #ffffff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 110%;
+    margin-bottom: 20px;
 }

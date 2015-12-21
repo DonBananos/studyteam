@@ -9,15 +9,22 @@ session_regenerate_id();
 define("BASE", "/studyteam/");
 define("W1BASE", "/studyteam/");
 define("SECURE", FALSE);
+define("SERVER", "http://127.0.0.1:8080");
 
 //Database definitions
-define("HOST", "localhost");
-define("USER", "sec_user");
-define("PASS", "koA9fJro%s8Jc0hvJ9ss62");
+//This is now pointing to the vps..
+//The user only has access to a dev database, and only INSERT, SELECT, UPDATE
+//from that one schema
+define("HOST", "85.119.155.19");
+define("USER", "studyteam");
+define("PASS", "MangeLange3lastikker42");
 define("DATABASE", "studyteam");
 
 //Hardcoded Salt
 define("SALT", "d89F6O3CAdaok593Hvo6aG51sR");
+
+//Reset Password Time Limit From Email sent to Reset Done (in hours)
+define("RESET_LIMIT", "24");
 
 //Let's do some connecting yo!
 $dbCon = new mysqli(HOST, USER, PASS, DATABASE);
@@ -68,4 +75,42 @@ function sanitize_text($text)
 function sanitize_email($email)
 {
 	return filter_var($email, FILTER_SANITIZE_EMAIL);
+}
+
+function sanitize_int($int)
+{
+	return filter_var($int, FILTER_SANITIZE_NUMBER_INT);
+}
+
+function sanitize_float($float)
+{
+	return filter_var($float, FILTER_SANITIZE_NUMBER_FLOAT);
+}
+
+function sanitize_url($url)
+{
+	return filter_var($url, FILTER_SANITIZE_URL);
+}
+
+function get_permission_name_from_id($id)
+{
+	global $dbCon;
+
+	$sql = "SELECT title FROM permission WHERE id = ?;";
+	$stmt = $dbCon->prepare($sql); //Prepare Statement
+	if ($stmt === false)
+	{
+		trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+	}
+	$stmt->bind_param('i', $id); //Bind parameters.
+	$stmt->execute(); //Execute
+	$stmt->bind_result($title);
+	$stmt->fetch();
+	if (strlen($title) > 0)
+	{
+		return $title;
+	}
+	$error = $stmt->error;
+	$stmt->close();
+	return $error;
 }

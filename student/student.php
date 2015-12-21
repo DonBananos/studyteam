@@ -58,6 +58,95 @@ class Student
 		$this->set_fullname($fullname);
 	}
 	
+	public function change_password($password)
+	{
+		$salt_to_use = $this->get_salt() . SALT;
+		
+		$hashed_pass = hash_hmac('sha512', $password, $salt_to_use);
+		
+		return $this->save_new_password($hashed_pass);
+	}
+	
+	private function save_new_password($password)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE student SET password = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $password, $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		if($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		echo $stmt->error;
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function get_all_group_ids_that_student_created()
+	{
+		global $dbCon;
+		$group_ids = array();
+		
+		$sql = "SELECT id FROM `group` WHERE creator_student_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($group_id);
+		while($stmt->fetch())
+		{
+			$group_ids[] = $group_id;
+		}
+		if (count($group_ids) > 0)
+		{
+			$stmt->close();
+			return $group_ids;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function get_public_groups_where_student_has_not_created()
+	{
+		global $dbCon;
+		$group_ids = array();
+		
+		$sql = "SELECT id FROM `group` WHERE creator_student_id != ? AND public = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($group_id);
+		while($stmt->fetch())
+		{
+			$group_ids[] = $group_id;
+		}
+		if (count($group_ids) > 0)
+		{
+			$stmt->close();
+			return $group_ids;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
 	public function get_id()
 	{
 		return $this->id;
