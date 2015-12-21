@@ -114,9 +114,8 @@ class Student
 			$stmt->close();
 			return $group_ids;
 		}
-		$error = $stmt->error;
 		$stmt->close();
-		return $error;
+		return false;
 	}
 	
 	public function get_public_groups_where_student_has_not_created()
@@ -142,9 +141,8 @@ class Student
 			$stmt->close();
 			return $group_ids;
 		}
-		$error = $stmt->error;
 		$stmt->close();
-		return $error;
+		return false;
 	}
 	
 	public function get_id()

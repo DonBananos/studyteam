@@ -327,3 +327,33 @@ form .small-pad
     font-size: 110%;
     margin-bottom: 20px;
 }
+
+.group-cover
+{
+	background-repeat: no-repeat;
+    background-position: bottom;
+    background-attachment: scroll;
+	width: 100%;
+	max-width: 1200px;
+	height: 350px;
+	min-height: 220px;
+	margin-top: -100px;
+	margin-bottom: -10px;
+	padding-top: 0px;
+}
+
+.group-cover > h1.group-cover-header
+{
+	position: absolute;
+	background: rgba(51,67,70, 0.8) !important;
+	color: white;
+	padding: 5px 15px 5px 15px;
+	bottom: 10px;
+	left: 15px;
+	font-size: 280%;
+}
+
+.post-box
+{
+	min-height: 120px; 
+}
