@@ -152,6 +152,175 @@ class Student
 		return AVATAR_LOCATION.$this->get_avatar_number().'.png';
 	}
 	
+	public function apply_for_buddies($applier_student_id)
+	{
+		global $dbCon;
+		
+		$sql = "INSERT INTO buddy (buddy_1_student_id, buddy_2_student_id) VALUES (?, ?);";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $applier_student_id, $this->get_id()); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function check_if_buddies($other_student_id)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE ((buddy_1_student_id = ? AND buddy_2_student_id = ?) OR (buddy_2_student_id = ? AND buddy_1_student_id = ?)) AND buddy_status = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iiii', $other_student_id, $this->get_id(), $other_student_id, $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($buddies);
+		$stmt->fetch();
+		if ($buddies > 0)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$stmt->close();
+		return FALSE;
+	}
+	
+	public function check_if_buddies_pending($other_student_id)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE (buddy_1_student_id = ? AND buddy_2_student_id = ?) OR (buddy_2_student_id = ? AND buddy_1_student_id = ?) AND buddy_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iiii', $other_student_id, $this->get_id(), $other_student_id, $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($buddies);
+		$stmt->fetch();
+		if ($buddies > 0)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$stmt->close();
+		return FALSE;
+	}
+	
+	public function get_number_of_buddies_pending()
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS pending FROM buddy WHERE buddy_2_student_id = ? AND buddy_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($pending);
+		$stmt->fetch();
+		if ($pending > 0)
+		{
+			$stmt->close();
+			return $pending;
+		}
+		$stmt->close();
+		return 0;
+	}
+	
+	public function get_all_buddy_ids()
+	{
+		global $dbCon;
+		
+		$buddies = array();
+		
+		$sql = "SELECT buddy_1_student_id, buddy_2_student_id FROM buddy WHERE (buddy_1_student_id = ? OR buddy_2_student_id = ?) AND buddy_status = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($buddy_1_id, $buddy_2_id);
+		while($stmt->fetch())
+		{
+			if($buddy_1_id == $this->get_id())
+			{
+				$buddies[] = $buddy_2_id;
+			}
+			else
+			{
+				$buddies[] = $buddy_1_id;
+			}
+		}
+		$stmt->close();
+		return $buddies;
+	}
+	
+	public function get_all_pending_buddy_ids()
+	{
+		global $dbCon;
+		
+		$pending = array();
+		
+		$sql = "SELECT buddy_1_student_id FROM buddy WHERE buddy_2_student_id = ? AND buddy_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($buddy_1_id);
+		while($stmt->fetch())
+		{
+			$pending[] = $buddy_1_id;
+		}
+		$stmt->close();
+		return $pending;
+	}
+	
+	public function accept_buddy_pending($buddy_id)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE buddy SET buddy_status = 1 WHERE buddy_2_student_id = ? AND buddy_1_student_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		if($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		echo $stmt->error;
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
 	public function get_id()
 	{
 		return $this->id;

@@ -89,17 +89,19 @@ $group = new Group($_GET['id']);
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-												<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
-											</div>
-											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-												<h4 class="student-name">
-													<a href=""><?php echo $member->get_fullname() ?></a>
-												</h4>
-												<span class="student-info">
-													<?php echo get_member_level_name_from_level($member_data['level']) ?>
-												</span>
-											</div>
+											<a href="<?php echo BASE ?>student/details.php?id=<?php echo $member->get_id(); ?>">
+												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
+												</div>
+												<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+													<h4 class="student-name">
+														<?php echo $member->get_fullname() ?>
+													</h4>
+													<span class="student-info">
+														<?php echo get_member_level_name_from_level($member_data['level']) ?>
+													</span>
+												</div>
+											</a>
 										</div>
 										<hr class="minor-line">
 										<?php
@@ -121,7 +123,7 @@ $group = new Group($_GET['id']);
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="myModalLabel">Invite a Buddy</h4>
+						<h4 class="modal-title" id="inviteModalLabel">Invite a Buddy</h4>
 					</div>
 					<form>
 						<div class="modal-body">

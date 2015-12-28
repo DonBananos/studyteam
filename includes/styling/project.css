@@ -326,6 +326,9 @@ form .small-pad
     padding-right: 5px;
     font-size: 110%;
     margin-bottom: 20px;
+	border: 1px solid;
+    border-color: #e5e6e9 #dfe0e4 #d0d1d5;
+    border-radius: 3px;
 }
 
 .group-cover
@@ -372,7 +375,8 @@ form .small-pad
 	margin-bottom: 0;
 }
 
-h4.student-name
+h4.student-name,
+.buddy-list-entry .student-name
 {
 	margin: 0;
 	padding: 0;
@@ -418,4 +422,57 @@ h4.student-name>a:hover
 {
 	width: 90%;
 	margin-left: 5%;
+}
+
+.profile-header-avatar
+{
+	margin-top: -60px;
+}
+
+.page-info > .fa
+{
+	width: 20px;
+	text-align: center;
+}
+
+.student-options
+{
+	padding-bottom: 10px;
+}
+
+.student-options > form
+{
+	display: inline;
+}
+
+#pending-buddy-list
+{
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+#pending-buddy-list > form
+{
+	display: inline;
+}
+
+.buddy-pending-entry
+{
+	width: 30%;
+}
+
+.buddy-list-entry > a:hover
+{
+	background: none;
+}
+
+.buddy-list-entry > a
+{
+	border: none;
+}
+
+.buddy-list-entry
+{
+	margin-bottom: 15px;
+	margin-top: 10px;
 }

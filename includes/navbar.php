@@ -15,12 +15,32 @@
 				<li><a href="#">Education</a></li>
 				<li><a href="#">School</a></li>
 			</ul>
+			<?php
+			$num_buddies_pending = $student->get_number_of_buddies_pending();
+			?>
 			<ul class="nav navbar-nav navbar-right">
 				<li><form style="padding-bottom: 0; margin-bottom: 0; margin-top: 8px;" action="<?php echo BASE ?>student/search.php" method="GET"><input  type="text" name="s" placeholder="Username, Email or Name" class="form-control" placeholder="Search"></form></li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $student->get_firstname(); ?><span class="caret"></span></a>
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<?php echo $student->get_firstname(); ?>
+						<?php
+						if ($num_buddies_pending > 0)
+						{
+							echo "($num_buddies_pending)";
+						}
+						?>
+						<span class="caret"></span></a>
 					<ul class="dropdown-menu dropdown-inverted">
 						<li><a href="<?php echo BASE ?>student/details.php?id=<?php echo $student->get_id(); ?>">My Profile</a></li>
+						<li><a href="<?php echo BASE ?>student/buddies.php">My Buddies</a></li>
+						<?php
+						if ($num_buddies_pending > 0)
+						{
+							?>
+							<li><a href="<?php echo BASE ?>student/buddies.php">Buddy Invites (<?php echo $num_buddies_pending ?>)</a></li>
+							<?php
+						}
+						?>
 						<li><a href="">Settings</a></li>
 						<?php
 						if ($student->get_permission() !== 1)

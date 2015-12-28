@@ -19,6 +19,32 @@ else
 {
 	$student_visited = new Student($_GET['id']);
 }
+
+/*
+ * Setting buddy statuses
+ */
+$buddies_pending = FALSE;
+$buddies = FALSE;
+
+if (isset($_POST['becomeBuddy']))
+{
+	if ($student_visited->apply_for_buddies($student->get_id()))
+	{
+		$buddies_pending = TRUE;
+	}
+	else
+	{
+		$buddies_pending = FALSE;
+	}
+}
+if ($student_visited->check_if_buddies($student->get_id()))
+{
+	$buddies = TRUE;
+}
+if ($student_visited->check_if_buddies_pending($student->get_id()))
+{
+	$buddies_pending = TRUE;
+}
 ?>
 <html>
     <head>
@@ -32,46 +58,103 @@ else
 		?>
 		<div class="page">
 			<div class="container">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="page-header">
 					<div class="row">
-						<div class="page-header">
-							<h1>Profile for <?php echo $student_visited->get_fullname() ?></h1>
+						<div class="col-lg-2 col-md-2 col-sm-3 hidden-xs">
+							<img src="<?php echo $student_visited->get_avatar() ?>" class="student-avatar profile-header-avatar">
+						</div>
+						<div class="col-lg-10 col-md-10 col-sm-9 col-xs-12">
+							<h1><?php echo $student_visited->get_fullname() ?></h1>
 						</div>
 					</div>
+				</div>
+				<?php
+				if ($student_visited->get_id() != $student->get_id() AND $buddies === FALSE)
+				{
+					?>
 					<div class="row">
-						<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
-							<div class="row">
-								<img src="<?php echo $student_visited->get_avatar() ?>" class="student-avatar">
-							</div>
-						</div>
-						<div class="col-lg-10 col-md-10 col-sm-9 col-xs-6">
-							<div class="row">
-								Firstname: <label><?php echo $student_visited->get_firstname() ?></label><br/>
-								Lastname: <label><?php echo $student_visited->get_lastname() ?></label><br/>
-								Username: <label><?php echo $student_visited->get_username() ?></label><br/>
-								Email: <label><?php echo $student_visited->get_email() ?></label><br/>
-								Permission: <label><?php echo get_permission_name_from_id($student_visited->get_permission()) ?></label><br/>
-								Joined: <label><?php echo $student_visited->get_joined() ?></label><br/>
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="student-options">
+								<?php
+								if ($buddies_pending === FALSE)
+								{
+									?>
+									<form method="POST" action=""><button type="submit" class="btn btn-primary" name="becomeBuddy"><span class="fa fa-user-plus"></span> Become Buddies</button></form>
+									<?php
+								}
+								elseif ($buddies_pending === TRUE)
+								{
+									?>
+									<button class="btn btn-default disabled"><span class="fa fa-user-plus"></span> Awaiting Buddy Accept</button>
+									<?php
+								}
+								?>
+								<button class="btn btn-default disabled"><span class="fa fa-envelope"></span> Send Message</button>
 							</div>
 						</div>
 					</div>
 					<?php
-					if ($student->get_id() === $student_visited->get_id())
-					{
-						?>
-						<div class="row">
-							<hr>
-							<h3>School and Education</h3>
-
+				}
+				?>
+				<div class="row">
+					<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+						<div class="content-box" id="student-profile-general-info">
+							<div class="page-info">
+								<span class="fa fa-user"></span> <?php echo $student_visited->get_fullname() ?><br/>
+								<span class="fa fa-tag"></span> <?php echo $student_visited->get_username() ?><br/>
+								<span class="fa fa-at"></span> <?php echo $student_visited->get_email() ?><br/>
+								<span class="fa fa-lock"></span> <?php echo get_permission_name_from_id($student_visited->get_permission()) ?><br/>
+								<span class="fa fa-clock-o"></span> <?php echo date("d/m-Y", strtotime($student_visited->get_joined())) ?>
+							</div>
 						</div>
-						<?php
-					}
-					?>
+						<div class="content-box" id="student-profile-buddy-list">
+							<h3>Buddies</h3>
+							<hr class="minor-line">
+							<?php
+							$buddy_ids = $student_visited->get_all_buddy_ids();
+							if (is_array($buddy_ids) && count($buddy_ids) > 0)
+							{
+								foreach ($buddy_ids as $buddy_id)
+								{
+									$buddy = new Student($buddy_id);
+									?>
+									<div class="row">
+										<a href="<?php echo BASE ?>student/details.php?id=<?php echo $buddy->get_id(); ?>">
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+												<img src="<?php echo $buddy->get_avatar() ?>" class="student-avatar">
+											</div>
+											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+												<h4 class="student-name">
+													<?php echo $buddy->get_fullname() ?>
+												</h4>
+											</div>
+										</a>
+									</div>
+									<hr class="minor-line">
+									<?php
+								}
+							}
+							else
+							{
+								?>
+								<p class="text-center">No buddies yet</p>
+								<?php
+							}
+							?>
+						</div>
+					</div>
+					<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
+						<div class="content-box">
+							<h3><?php echo $student_visited->get_firstname() ?>'s Activity</h3>
+							<hr class="minor-line">
+							<p class="text-center">No Public Activity</p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 		<?php
 		require '../includes/footer.php';
 		?>
-    </body>
+	</body>
 </html>
