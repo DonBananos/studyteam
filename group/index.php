@@ -22,7 +22,13 @@ if (isset($_POST['addGroupSubmit']))
 	$max = $_POST['maxMembers'];
 	$desc = $_POST['desc'];
 
-	$gc->create_new_group($name, $public, $category, $max, $student->get_id(), $desc);
+	$new_group_result = $gc->create_new_group($name, $public, $category, $max, $student->get_id(), $desc);
+	if($new_group_result !== FALSE)
+	{
+		$new_group = new Group($new_group_result);
+		//Since group is created, we save the creator as a member with 'owner' level.
+		$new_group->add_student_to_group($student->get_id(), 3);
+	}
 }
 ?>
 <html>

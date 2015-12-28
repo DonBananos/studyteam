@@ -21,6 +21,18 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?php echo $student->get_firstname(); ?><span class="caret"></span></a>
 					<ul class="dropdown-menu dropdown-inverted">
 						<li><a href="<?php echo BASE ?>student/details.php?id=<?php echo $student->get_id(); ?>">My Profile</a></li>
+						<li><a href="">Settings</a></li>
+						<?php
+						if ($student->get_permission() !== 1)
+						{
+							?>
+							<li role="separator" class="divider"></li>
+							<li><a href="<?php echo BASE ?>student/">Students</a></li>
+							<li><a href="<?php echo BASE ?>group/">Group</a></li>
+							<?php
+						}
+						?>
+						<li role="separator" class="divider"></li>
 						<li><a href="<?php echo BASE ?>logout.php">Logout</a></li>
 					</ul>
 				</li>

@@ -15,7 +15,7 @@ define("SERVER", "http://127.0.0.1:8080");
 //This is now pointing to the vps..
 //The user only has access to a dev database, and only INSERT, SELECT, UPDATE
 //from that one schema
-define("HOST", "85.119.155.19");
+define("HOST", "85.119.155.19"); //85.119.155.19
 define("USER", "studyteam");
 define("PASS", "MangeLange3lastikker42");
 define("DATABASE", "studyteam");
@@ -25,6 +25,9 @@ define("SALT", "d89F6O3CAdaok593Hvo6aG51sR");
 
 //Reset Password Time Limit From Email sent to Reset Done (in hours)
 define("RESET_LIMIT", "24");
+
+//Set Avatar Location
+define("AVATAR_LOCATION", SERVER.BASE."includes/_media/_images/avatars/");
 
 //Let's do some connecting yo!
 $dbCon = new mysqli(HOST, USER, PASS, DATABASE);
@@ -113,4 +116,20 @@ function get_permission_name_from_id($id)
 	$error = $stmt->error;
 	$stmt->close();
 	return $error;
+}
+
+function get_member_level_name_from_level($level)
+{
+	if($level === 1)
+	{
+		return "Member";
+	}
+	elseif($level === 2)
+	{
+		return "Administrator";
+	}
+	elseif($level === 3)
+	{
+		return "Owner";
+	}
 }

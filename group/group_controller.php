@@ -45,10 +45,9 @@ class Group_controller
 		//We check if it is an integer higher than 0
 		if ($id > 0)
 		{
-			echo $id;
 			//It is, which means that the Group has been created and saved
 			$stmt->close();
-			return TRUE;
+			return $id;
 		}
 		//Well, since we reached this far, the if statement wasn't executed.
 		//Save the error
@@ -56,7 +55,7 @@ class Group_controller
 		echo $error;
 		//Close down the statement (good practice)
 		$stmt->close();
-		return $error;
+		return FALSE;
 	}
 	
 	public function get_category_names_and_ids()

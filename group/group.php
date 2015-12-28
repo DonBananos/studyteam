@@ -79,6 +79,189 @@ class Group
 		return 'Private';
 	}
 	
+	public function invite_student($student_id, $invited_by_student_id, $raw_message, $student_email, $student_name, $invited_by_student_email, $invited_by_student_name)
+	{
+		//Student name can be first, full or username - Haven't really decided yet
+		
+		$safe_message = sanitize_text($raw_message);
+		
+		$answer = $this->save_invite_in_db($student_id, $invited_by_student_id, $safe_message);
+		if($answer === TRUE)
+		{
+			return $this->send_invite_by_email($student_email, $safe_message, $student_name, $invited_by_student_email, $invited_by_student_name);
+		}
+		else
+		{
+			return $answer;
+		}
+	}
+	
+	private function send_invite_by_email($student_email, $message, $student_name, $invited_by_student_email, $invited_by_student_name)
+	{
+		// multiple recipients
+		$to = $student_email;
+
+		// subject
+		$subject = 'StudyTeam group invite';
+
+		// message
+		$message = '
+			<html>
+			<head>
+			  <title>StudyTeam group invite</title>
+			</head>
+			<body>
+			  <p>
+				Hi '.$student_name.'!<br/>You\'ve been invited to join the group \''.$this->get_name().'\' by '.$invited_by_student_name.'.<br/>
+				<a href="'.SERVER.BASE.'student/invites.php">Click here</a> to go to your invites!.<br/>
+				<br/>
+				Regards,<br/>
+				StudyTeam
+			  </p>
+			</body>
+			</html>
+			';
+
+		// To send HTML mail, the Content-type header must be set
+		$headers = 'MIME-Version: 1.0' . "\r\n";
+		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+
+		// Additional headers
+		$headers .= 'To: <'.$student_email.'>' . "\r\n";
+		$headers .= 'cc: <'.$invited_by_student_email.'>' . "\r\n";
+		$headers .= 'From: StudyTeam Bot <studyteam@heibosoft.com>' . "\r\n";
+
+		// Mail it
+		if(mail($to, $subject, $message, $headers))
+		{
+			return "Invite has been sent!";
+		}
+		return "Invite created, but there was an error sending the email!";
+	}
+	
+	private function save_invite_in_db($student_id, $invited_by_student_id, $message)
+	{
+		global $dbCon;
+		
+		$sql = "INSERT INTO group_invite (student_id, invitor_student_id, message) VALUES (?, ?, ?);";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iis', $student_id, $invited_by_student_id, $message); //Bind parameters.
+		$stmt->execute();
+		$id = $stmt->insert_id;
+		if ($id > 0)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function get_number_of_registered_members()
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) as members FROM student_group WHERE group_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		return $members;
+	}
+	
+	public function get_number_of_pending_invites()
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) as pending_invites FROM group_invites WHERE group_id = ? AND response_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		return $members;
+	}
+	
+	public function get_number_of_declined_invites()
+	{
+		
+	}
+	
+	public function get_array_with_invites()
+	{
+		
+	}
+	
+	public function add_student_to_group($student_id, $level = 1)
+	{
+		global $dbCon;
+		
+		$sql = "INSERT INTO student_group (student_id, group_id, level) VALUES (?, ?, ?);";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('iii', $student_id, $this->get_id(), $level); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function get_array_with_members_and_levels()
+	{
+		global $dbCon;
+	
+		$members_and_levels = array();
+		
+		$sql = "SELECT student_id, level, join_datetime FROM student_group WHERE group_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($student_id, $level, $join_datetime);
+		while($stmt->fetch())
+		{
+			$member = array();
+			$member['level'] = $level;
+			$member['joined'] = $join_datetime;
+			$members_and_levels[$student_id] = $member;
+		}
+		if(count($members_and_levels) > 0)
+		{
+			$stmt->close();
+			return $members_and_levels;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
 	public function get_id()
 	{
 		return $this->id;

@@ -33,33 +33,40 @@ else
 		<div class="page">
 			<div class="container">
 				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="col-lg-6 col-md-8 col-sm-10 col-xs-12 col-lg-offset-3 col-md-offset-2 col-sm-offset-1">
-						<div class="row">
-							<div class="page-header">
-								<h1>Profile for <?php echo $student_visited->get_fullname() ?></h1>
+					<div class="row">
+						<div class="page-header">
+							<h1>Profile for <?php echo $student_visited->get_fullname() ?></h1>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-2 col-md-2 col-sm-3 col-xs-6">
+							<div class="row">
+								<img src="<?php echo $student_visited->get_avatar() ?>" class="student-avatar">
 							</div>
 						</div>
+						<div class="col-lg-10 col-md-10 col-sm-9 col-xs-6">
+							<div class="row">
+								Firstname: <label><?php echo $student_visited->get_firstname() ?></label><br/>
+								Lastname: <label><?php echo $student_visited->get_lastname() ?></label><br/>
+								Username: <label><?php echo $student_visited->get_username() ?></label><br/>
+								Email: <label><?php echo $student_visited->get_email() ?></label><br/>
+								Permission: <label><?php echo get_permission_name_from_id($student_visited->get_permission()) ?></label><br/>
+								Joined: <label><?php echo $student_visited->get_joined() ?></label><br/>
+							</div>
+						</div>
+					</div>
+					<?php
+					if ($student->get_id() === $student_visited->get_id())
+					{
+						?>
 						<div class="row">
-							Firstname: <label><?php echo $student_visited->get_firstname() ?></label><br/>
-							Lastname: <label><?php echo $student_visited->get_lastname() ?></label><br/>
-							Username: <label><?php echo $student_visited->get_username() ?></label><br/>
-							Email: <label><?php echo $student_visited->get_email() ?></label><br/>
-							Permission: <label><?php echo get_permission_name_from_id($student_visited->get_permission()) ?></label><br/>
-							Joined: <label><?php echo $student_visited->get_joined() ?></label><br/>
+							<hr>
+							<h3>School and Education</h3>
+
 						</div>
 						<?php
-						if ($student->get_id() === $student_visited->get_id())
-						{
-							?>
-							<div class="row">
-								<hr>
-								<h3>School and Education</h3>
-								
-							</div>
-							<?php
-						}
-						?>
-					</div>
+					}
+					?>
 				</div>
 			</div>
 		</div>

@@ -13,6 +13,7 @@ class Student
 	private $salt;
 	private $joined;
 	private $permission;
+	private $avatar;
 
 	function __construct($id)
 	{
@@ -23,7 +24,7 @@ class Student
 	{
 		global $dbCon;
 
-		$sql = "SELECT id, username, firstname, lastname, email, password, salt, joined, permission, concat(firstname, ' ', lastname) AS fullname FROM student WHERE id = ?;";
+		$sql = "SELECT id, username, firstname, lastname, email, password, salt, joined, permission, concat(firstname, ' ', lastname) AS fullname, avatar FROM student WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -31,11 +32,11 @@ class Student
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname);
+		$stmt->bind_result($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname, $avatar);
 		$stmt->fetch();
 		if ($id > 0)
 		{
-			$this->set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname);
+			$this->set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname, $avatar);
 			$stmt->close();
 			return TRUE;
 		}
@@ -44,7 +45,7 @@ class Student
 		return $error;
 	}
 
-	private function set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname)
+	private function set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname, $avatar)
 	{
 		$this->set_id($id);
 		$this->set_username($username);
@@ -56,6 +57,7 @@ class Student
 		$this->set_joined($joined);
 		$this->set_permission($permission);
 		$this->set_fullname($fullname);
+		$this->set_avatar_number($avatar);
 	}
 	
 	public function change_password($password)
@@ -145,6 +147,11 @@ class Student
 		return false;
 	}
 	
+	public function get_avatar()
+	{
+		return AVATAR_LOCATION.$this->get_avatar_number().'.png';
+	}
+	
 	public function get_id()
 	{
 		return $this->id;
@@ -193,6 +200,11 @@ class Student
 	public function get_fullname()
 	{
 		return $this->fullname;
+	}
+	
+	private function get_avatar_number()
+	{
+		return $this->avatar;
 	}
 
 	private function set_id($id)
@@ -243,5 +255,10 @@ class Student
 	private function set_fullname($fullname)
 	{
 		$this->fullname = $fullname;
+	}
+	
+	private function set_avatar_number($avatar)
+	{
+		$this->avatar = $avatar;
 	}
 }
