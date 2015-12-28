@@ -244,6 +244,29 @@ class Student
 		return 0;
 	}
 	
+	public function get_number_of_buddies()
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE (buddy_2_student_id = ? OR buddy_1_student_id = ?) AND buddy_status = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($buddies);
+		$stmt->fetch();
+		if ($buddies > 0)
+		{
+			$stmt->close();
+			return $buddies;
+		}
+		$stmt->close();
+		return 0;
+	}
+	
 	public function get_all_buddy_ids()
 	{
 		global $dbCon;
@@ -302,6 +325,30 @@ class Student
 		global $dbCon;
 		
 		$sql = "UPDATE buddy SET buddy_status = 1 WHERE buddy_2_student_id = ? AND buddy_1_student_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		if($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		echo $stmt->error;
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function decline_buddy_pending($buddy_id)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE buddy SET buddy_status = 2 WHERE buddy_2_student_id = ? AND buddy_1_student_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{

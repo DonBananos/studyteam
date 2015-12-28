@@ -1,0 +1,23 @@
+RewriteEngine On
+
+#Redirect to buddy overview
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^student/buddies/?$ student/buddies.php [NC,L]
+
+#Redirect to correct student details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^student/([a-zA-Z0-9_-]+)/?$ student/details.php?usr=$1 [NC,L]
+
+#Redirect to correct group details
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^group/([0-9]+)/?$ group/details.php?id=$1 [NC,L]
+
+
+### SHOULD ALWAYS BE AT THE BOTTOM!!!!
+#Redirect all pages that does not end with .php
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^([^\.]+)$ $1.php [NC,L]

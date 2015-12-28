@@ -129,7 +129,7 @@ if (isset($_POST['addGroupSubmit']))
 							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<a href="<?php echo BASE ?>group/details.php?id=<?php echo $group->get_id() ?>">
+										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
 											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>);">
 												<div class="group-header">
 													<h3><?php echo $group->get_name() ?></h3>

@@ -13,7 +13,22 @@ if (!isset($_SESSION['logged_in']))
 $student = new Student($_SESSION['user_id']);
 if (!isset($_GET['id']))
 {
-	$student_visited = $student;
+	if (!isset($_GET['usr']))
+	{
+		$student_visited = $student;
+	}
+	else
+	{
+		if (sanitize_text(strtolower($_GET['usr'])) == "buddies")
+		{
+			?>
+			<script>window.location = "<?php echo SERVER . BASE ?>student/buddies.php";</script>
+			<?php
+		}
+		$sc = new Student_controller();
+		$user_array = $sc->get_member_with_username(sanitize_text($_GET['usr']));
+		$student_visited = new Student($user_array['id']);
+	}
 }
 else
 {
@@ -49,7 +64,7 @@ if ($student_visited->check_if_buddies_pending($student->get_id()))
 <html>
     <head>
         <meta charset="UTF-8">
-        <title><?php echo $student_visited->get_fullname() ?> Profile | StudyTeam</title>
+        <title><?php echo $student_visited->get_fullname() ?>'s Profile | StudyTeam</title>
 		<?php require '../includes/header.php'; ?>
     </head>
     <body>
@@ -108,7 +123,7 @@ if ($student_visited->check_if_buddies_pending($student->get_id()))
 							</div>
 						</div>
 						<div class="content-box" id="student-profile-buddy-list">
-							<h3>Buddies</h3>
+							<h3>Buddies (<?php echo $student_visited->get_number_of_buddies() ?>)</h3>
 							<hr class="minor-line">
 							<?php
 							$buddy_ids = $student_visited->get_all_buddy_ids();

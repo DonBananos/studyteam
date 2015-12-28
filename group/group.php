@@ -199,7 +199,19 @@ class Group
 	
 	public function get_number_of_declined_invites()
 	{
+		global $dbCon;
 		
+		$sql = "SELECT COUNT(*) as pending_invites FROM group_invites WHERE group_id = ? AND response_status = 2;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		return $members;
 	}
 	
 	public function get_array_with_invites()

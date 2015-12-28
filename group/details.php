@@ -68,16 +68,27 @@ $group = new Group($_GET['id']);
 								<div class="content-box">
 									<div class="group-admin-options">
 										<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
-										<button class="btn btn-default btn-sm"><span class="fa fa-sign-out"></span> Leave</button>
+										<button class="btn btn-danger btn-sm"><span class="fa fa-sign-out"></span> Leave</button>
+										<button class="btn btn-warning btn-sm"><span class="fa fa-pencil"></span> Edit</button>
 									</div>
 									<hr class="minor-line">
 									<div class="group-info">
 										<?php echo $group->get_public_or_private() ?> group<br/>
 										<?php echo $group->get_number_of_registered_members() ?> / <?php echo $group->get_max_members() ?> members<br/>
-										Category: <?php echo $group->get_category_name() ?>
+										Category: <?php echo $group->get_category_name() ?><br/>
 									</div>
 									<hr class="minor-line">
 									<?php echo $group->get_description() ?>
+									<hr class="minor-line">
+									<?php
+									$num_pending_invites = $group->get_number_of_pending_invites();
+									if ($num_pending_invites > 0)
+									{
+										?>
+										<button class="btn btn-default btn-sm"><span class="fa fa-plus-circle"></span> Invites</button>
+										<?php
+									}
+									?>
 								</div>
 								<div class="content-box">
 									<h3 class="info-headline">Members</h3>
@@ -89,7 +100,7 @@ $group = new Group($_GET['id']);
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/details.php?id=<?php echo $member->get_id(); ?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment ?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>

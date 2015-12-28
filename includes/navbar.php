@@ -17,6 +17,7 @@
 			</ul>
 			<?php
 			$num_buddies_pending = $student->get_number_of_buddies_pending();
+			$num_group_invites = 0;
 			?>
 			<ul class="nav navbar-nav navbar-right">
 				<li><form style="padding-bottom: 0; margin-bottom: 0; margin-top: 8px;" action="<?php echo BASE ?>student/search.php" method="GET"><input  type="text" name="s" placeholder="Username, Email or Name" class="form-control" placeholder="Search"></form></li>
@@ -31,13 +32,19 @@
 						?>
 						<span class="caret"></span></a>
 					<ul class="dropdown-menu dropdown-inverted">
-						<li><a href="<?php echo BASE ?>student/details.php?id=<?php echo $student->get_id(); ?>">My Profile</a></li>
-						<li><a href="<?php echo BASE ?>student/buddies.php">My Buddies</a></li>
+						<li><a href="<?php echo BASE ?>student/<?php echo strtolower($student->get_username()); ?>/">My Profile</a></li>
+						<li><a href="<?php echo BASE ?>student/buddies/">My Buddies</a></li>
 						<?php
 						if ($num_buddies_pending > 0)
 						{
 							?>
-							<li><a href="<?php echo BASE ?>student/buddies.php">Buddy Invites (<?php echo $num_buddies_pending ?>)</a></li>
+							<li><a href="<?php echo BASE ?>student/buddies/">Buddy Invites (<?php echo $num_buddies_pending ?>)</a></li>
+							<?php
+						}
+						if($num_group_invites > 0)
+						{
+							?>
+							<li><a href="<?php echo BASE ?>group/invites/">Group Invites (<?php echo $num_group_invites ?>)</a></li>
 							<?php
 						}
 						?>

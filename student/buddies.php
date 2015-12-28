@@ -18,6 +18,12 @@ if (isset($_POST['buddyAccept']))
 	$safe_buddy_id = sanitize_int($raw_buddy_id);
 	$student->accept_buddy_pending($safe_buddy_id);
 }
+elseif(isset($_POST['buddyDecline']))
+{
+	$raw_buddy_id = $_POST['buddyId'];
+	$safe_buddy_id = sanitize_int($raw_buddy_id);
+	$student->decline_buddy_pending($safe_buddy_id);
+}
 ?>
 <html>
     <head>
@@ -53,13 +59,14 @@ if (isset($_POST['buddyAccept']))
 										<img src="<?php echo $pending_buddy->get_avatar() ?>" class="student-avatar">
 									</div>
 									<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-										<a href="<?php echo BASE ?>student/details.php?id=<?php echo $pending_buddy->get_id(); ?>">
+										<a href="<?php echo BASE ?>student/<?php echo strtolower($pending_buddy->get_username()); ?>/">
 											<h4 class="student-name">
 												<?php echo $pending_buddy->get_fullname() ?>
 											</h4>
 										</a>
 									</div>
 									<button type="submit" class="btn btn-primary btn-sm" name="buddyAccept">Accept</button>
+									<button type="submit" class="btn btn-primary btn-sm" name="buddyDecline">Decline</button>
 								</form>
 							</div>
 							<?php
@@ -79,7 +86,7 @@ if (isset($_POST['buddyAccept']))
 						$buddy = new Student($buddy_id);
 						?>
 						<div class="buddy-list-entry col-lg-2 col-md-2 col-sm-3 col-xs-4">
-							<a href="<?php echo BASE ?>student/details.php?id=<?php echo $buddy->get_id(); ?>">
+							<a href="<?php echo BASE ?>student/<?php echo strtolower($buddy->get_username()) ?>/">
 								<img src="<?php echo $buddy->get_avatar() ?>" class="student-avatar">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 									<h3 class="student-name text-center">
