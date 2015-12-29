@@ -222,6 +222,10 @@ class Group
 	
 	public function add_student_to_group($student_id, $level = 1)
 	{
+		if($this->get_if_student_is_member($student_id))
+		{
+			return TRUE;
+		}
 		global $dbCon;
 		
 		$sql = "INSERT INTO student_group (student_id, group_id, level) VALUES (?, ?, ?);";
@@ -231,6 +235,33 @@ class Group
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
 		$stmt->bind_param('iii', $student_id, $this->get_id(), $level); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function remove_student_from_group($student_id)
+	{
+		if($this->get_if_student_is_member($student_id) === FALSE)
+		{
+			return TRUE;
+		}
+		global $dbCon;
+		
+		$sql = "UPDATE student_group SET active = 0 WHERE group_id = ? AND student_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $student_id); //Bind parameters.
 		$stmt->execute();
 		$rows = $stmt->affected_rows;
 		if ($rows == 1)
@@ -279,7 +310,7 @@ class Group
 	{
 		global $dbCon;
 		
-		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ?;";
+		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ? AND active = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -295,6 +326,15 @@ class Group
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	public function check_if_max_is_reached()
+	{
+		if($this->get_number_of_registered_members() < $this->max_members)
+		{
+			return FALSE;
+		}
+		return TRUE;
 	}
 	
 	public function get_id()

@@ -476,3 +476,23 @@ h4.student-name>a:hover
 	margin-bottom: 15px;
 	margin-top: 10px;
 }
+
+.small-group-header
+{
+	background-repeat: no-repeat;
+    background-position: bottom;
+    background-attachment: scroll;
+	height: 50px;
+	width: 100%;
+	max-width: 600px;
+}
+
+.small-group-data
+{
+	margin-top: -10px;
+	margin-bottom: 10px;
+	font-family: 'Shadows Into Light', cursive;
+	font-weight: bold;
+	color: #2D2D2A;
+	font-size: 110%;
+}

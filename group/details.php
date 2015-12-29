@@ -15,9 +15,31 @@ $student = new Student($_SESSION['user_id']);
 $group = new Group($_GET['id']);
 
 $membership = FALSE;
-if($group->get_if_student_is_member($student->get_id()))
+if ($group->get_if_student_is_member($student->get_id()))
 {
 	$membership = TRUE;
+	if(isset($_POST['leave']))
+	{
+		$group->remove_student_from_group($student->get_id());
+		$membership = FALSE;
+	}
+}
+else
+{
+	if (isset($_POST['join']))
+	{
+		$group->add_student_to_group($student->get_id());
+		$membership = TRUE;
+	}
+}
+if ($membership === FALSE && $group->get_public() == 0)
+{
+	?>
+	<script>
+		window.location = "<?php echo BASE ?>group/";
+	</script>
+	die();
+	<?php
 }
 ?>
 <html>
@@ -74,19 +96,22 @@ if($group->get_if_student_is_member($student->get_id()))
 								<div class="content-box">
 									<div class="group-admin-options">
 										<?php
-										if($membership)
+										if ($membership)
 										{
 											?>
 											<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
-											<button class="btn btn-danger btn-sm"><span class="fa fa-sign-out"></span> Leave</button>
+											<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#leaveModal"><span class="fa fa-sign-out"></span> Leave</button>
 											<button class="btn btn-warning btn-sm"><span class="fa fa-pencil"></span> Edit</button>
 											<?php
 										}
 										else
 										{
-											?>
-											<button class="btn btn-primary btn-sm"><span class="fa fa-plus"></span> Join Group</button>
-											<?php
+											if($group->check_if_max_is_reached() === FALSE)
+											{
+												?>
+												<form action="" method="POST"><button class="btn btn-primary btn-sm" type="submit" name="join"><span class="fa fa-plus"></span> Join Group</button></form>
+												<?php
+											}
 										}
 										?>
 									</div>
@@ -119,7 +144,7 @@ if($group->get_if_student_is_member($student->get_id()))
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment ?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment    ?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>
@@ -154,6 +179,60 @@ if($group->get_if_student_is_member($student->get_id()))
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title" id="inviteModalLabel">Invite a Buddy</h4>
+					</div>
+					<form>
+						<div class="modal-body">
+
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Send Invite</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Leave Prompt Modal -->
+		<div class="modal fade modal-inverse" id="leaveModal" tabindex="-1" role="dialog" aria-labelledby="leaveModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="leaveModalLabel">Are you sure?</h4>
+					</div>
+					<form action="" method="POST">
+						<div class="modal-body">
+							<?php
+							if ($group->get_public() == 0)
+							{
+								?>
+								This group is private, and you former invitation does no longer work.<br/>
+								<?php
+							}
+							else
+							{
+								?>
+								Eventhough this is a public group, there's a limited amount of memberships.<br/>
+								<?php
+							}
+							?>
+							Are you sure you want to leave the group?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-dismiss="modal">Nope!</button>
+							<button type="submit" class="btn btn-danger" name="leave">Yes</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- Edit Modal -->
+		<div class="modal fade modal-inverse" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="editModalLabel">Invite a Buddy</h4>
 					</div>
 					<form>
 						<div class="modal-body">

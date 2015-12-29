@@ -121,7 +121,7 @@ if (isset($_POST['addGroupSubmit']))
 					<div class="row">
 						<h3>Your groups</h3>
 						<?php
-						$group_ids = $student->get_all_group_ids_that_student_created();
+						$group_ids = $student->get_group_ids_that_student_is_part_of();
 						foreach ($group_ids as $group_id)
 						{
 							$group = new Group($group_id);
@@ -162,7 +162,7 @@ if (isset($_POST['addGroupSubmit']))
 					<div class="row">
 						<h3>Suggested public groups</h3>
 						<?php
-						$group_ids = $student->get_public_groups_where_student_has_not_created();
+						$group_ids = $student->get_public_groups_where_student_is_not_member();
 						foreach ($group_ids as $group_id)
 						{
 							$group = new Group($group_id);
@@ -170,7 +170,7 @@ if (isset($_POST['addGroupSubmit']))
 							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<a href="<?php echo BASE ?>group/details.php?id=<?php echo $group->get_id() ?>">
+										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
 											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>);">
 												<div class="group-header">
 													<h3><?php echo $group->get_name() ?></h3>

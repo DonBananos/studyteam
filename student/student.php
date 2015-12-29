@@ -59,20 +59,20 @@ class Student
 		$this->set_fullname($fullname);
 		$this->set_avatar_number($avatar);
 	}
-	
+
 	public function change_password($password)
 	{
 		$salt_to_use = $this->get_salt() . SALT;
-		
+
 		$hashed_pass = hash_hmac('sha512', $password, $salt_to_use);
-		
+
 		return $this->save_new_password($hashed_pass);
 	}
-	
+
 	private function save_new_password($password)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE student SET password = ? WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -81,7 +81,7 @@ class Student
 		}
 		$stmt->bind_param('si', $password, $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
-		if($stmt->affected_rows > 0)
+		if ($stmt->affected_rows > 0)
 		{
 			$stmt->close();
 			return true;
@@ -92,12 +92,12 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_all_group_ids_that_student_created()
 	{
 		global $dbCon;
 		$group_ids = array();
-		
+
 		$sql = "SELECT id FROM `group` WHERE creator_student_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -107,7 +107,7 @@ class Student
 		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$group_ids[] = $group_id;
 		}
@@ -119,12 +119,53 @@ class Student
 		$stmt->close();
 		return false;
 	}
-	
+
+	public function get_group_ids_that_student_is_part_of($max = null)
+	{
+		global $dbCon;
+
+		$group_ids = array();
+		if ($max !== null)
+		{
+			$safe_max = sanitize_int($max);
+			$sql = "SELECT group_id FROM student_group WHERE student_id = ? ORDER BY join_datetime DESC LIMIT ?;";
+			$stmt = $dbCon->prepare($sql); //Prepare Statement
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+			$stmt->bind_param('ii', $this->get_id(), $safe_max); //Bind parameters.
+		}
+		else
+		{
+			$sql = "SELECT group_id FROM student_group WHERE student_id = ? ORDER BY join_datetime DESC;";
+			$stmt = $dbCon->prepare($sql); //Prepare Statement
+			if ($stmt === false)
+			{
+				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+			}
+			$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		}
+		$stmt->execute(); //Execute
+		$stmt->bind_result($group_id);
+		while ($stmt->fetch())
+		{
+			$group_ids[] = $group_id;
+		}
+		if (count($group_ids) > 0)
+		{
+			$stmt->close();
+			return $group_ids;
+		}
+		$stmt->close();
+		return false;
+	}
+
 	public function get_public_groups_where_student_has_not_created()
 	{
 		global $dbCon;
 		$group_ids = array();
-		
+
 		$sql = "SELECT id FROM `group` WHERE creator_student_id != ? AND public = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -134,7 +175,7 @@ class Student
 		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$group_ids[] = $group_id;
 		}
@@ -147,15 +188,42 @@ class Student
 		return false;
 	}
 	
+	public function get_public_groups_where_student_is_not_member()
+	{
+		global $dbCon;
+		$group_ids = array();
+
+		$sql = "SELECT id FROM `group` INNER JOIN student_group ON group.id = student_group.group_id WHERE student_id != ? AND public = 1 GROUP BY group_id;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($group_id);
+		while ($stmt->fetch())
+		{
+			$group_ids[] = $group_id;
+		}
+		if (count($group_ids) > 0)
+		{
+			$stmt->close();
+			return $group_ids;
+		}
+		$stmt->close();
+		return false;
+	}
+
 	public function get_avatar()
 	{
-		return AVATAR_LOCATION.$this->get_avatar_number().'.png';
+		return AVATAR_LOCATION . $this->get_avatar_number() . '.png';
 	}
-	
+
 	public function apply_for_buddies($applier_student_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "INSERT INTO buddy (buddy_1_student_id, buddy_2_student_id) VALUES (?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -174,11 +242,11 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function check_if_buddies($other_student_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE ((buddy_1_student_id = ? AND buddy_2_student_id = ?) OR (buddy_2_student_id = ? AND buddy_1_student_id = ?)) AND buddy_status = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -197,11 +265,11 @@ class Student
 		$stmt->close();
 		return FALSE;
 	}
-	
+
 	public function check_if_buddies_pending($other_student_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE (buddy_1_student_id = ? AND buddy_2_student_id = ?) OR (buddy_2_student_id = ? AND buddy_1_student_id = ?) AND buddy_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -220,11 +288,11 @@ class Student
 		$stmt->close();
 		return FALSE;
 	}
-	
+
 	public function get_number_of_buddies_pending()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS pending FROM buddy WHERE buddy_2_student_id = ? AND buddy_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -243,11 +311,11 @@ class Student
 		$stmt->close();
 		return 0;
 	}
-	
+
 	public function get_number_of_buddies()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS buddies FROM buddy WHERE (buddy_2_student_id = ? OR buddy_1_student_id = ?) AND buddy_status = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -266,13 +334,13 @@ class Student
 		$stmt->close();
 		return 0;
 	}
-	
+
 	public function get_all_buddy_ids()
 	{
 		global $dbCon;
-		
+
 		$buddies = array();
-		
+
 		$sql = "SELECT buddy_1_student_id, buddy_2_student_id FROM buddy WHERE (buddy_1_student_id = ? OR buddy_2_student_id = ?) AND buddy_status = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -282,9 +350,9 @@ class Student
 		$stmt->bind_param('ii', $this->get_id(), $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddy_1_id, $buddy_2_id);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
-			if($buddy_1_id == $this->get_id())
+			if ($buddy_1_id == $this->get_id())
 			{
 				$buddies[] = $buddy_2_id;
 			}
@@ -296,13 +364,13 @@ class Student
 		$stmt->close();
 		return $buddies;
 	}
-	
+
 	public function get_all_pending_buddy_ids()
 	{
 		global $dbCon;
-		
+
 		$pending = array();
-		
+
 		$sql = "SELECT buddy_1_student_id FROM buddy WHERE buddy_2_student_id = ? AND buddy_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -312,18 +380,18 @@ class Student
 		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddy_1_id);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$pending[] = $buddy_1_id;
 		}
 		$stmt->close();
 		return $pending;
 	}
-	
+
 	public function accept_buddy_pending($buddy_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE buddy SET buddy_status = 1 WHERE buddy_2_student_id = ? AND buddy_1_student_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -332,7 +400,7 @@ class Student
 		}
 		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
 		$stmt->execute(); //Execute
-		if($stmt->affected_rows > 0)
+		if ($stmt->affected_rows > 0)
 		{
 			$stmt->close();
 			return true;
@@ -343,11 +411,11 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function decline_buddy_pending($buddy_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE buddy SET buddy_status = 2 WHERE buddy_2_student_id = ? AND buddy_1_student_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -356,7 +424,7 @@ class Student
 		}
 		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
 		$stmt->execute(); //Execute
-		if($stmt->affected_rows > 0)
+		if ($stmt->affected_rows > 0)
 		{
 			$stmt->close();
 			return true;
@@ -367,11 +435,11 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function save_new_avatar($avatar_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE student SET avatar = ? WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -380,7 +448,7 @@ class Student
 		}
 		$stmt->bind_param('ii', $avatar_id, $this->get_id()); //Bind parameters.
 		$stmt->execute(); //Execute
-		if($stmt->affected_rows > 0)
+		if ($stmt->affected_rows > 0)
 		{
 			$stmt->close();
 			$this->set_values_with_id($this->id);
@@ -392,7 +460,7 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_id()
 	{
 		return $this->id;
@@ -437,12 +505,12 @@ class Student
 	{
 		return $this->permission;
 	}
-	
+
 	public function get_fullname()
 	{
 		return $this->fullname;
 	}
-	
+
 	private function get_avatar_number()
 	{
 		return $this->avatar;
@@ -492,14 +560,15 @@ class Student
 	{
 		$this->permission = $permission;
 	}
-	
+
 	private function set_fullname($fullname)
 	{
 		$this->fullname = $fullname;
 	}
-	
+
 	private function set_avatar_number($avatar)
 	{
 		$this->avatar = $avatar;
 	}
+
 }

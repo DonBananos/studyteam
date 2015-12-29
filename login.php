@@ -27,7 +27,7 @@ if (isset($_SESSION['logged_in']))
 	{
 		?>
 		<script>
-			window.location = "<?php echo W1BASE ?>member_area.php";
+			window.location = "<?php echo BASE ?>";
 			die();
 		</script>
 		<?php
