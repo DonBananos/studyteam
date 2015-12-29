@@ -8,6 +8,7 @@ session_regenerate_id();
 //General
 define("BASE", "/studyteam/");
 define("W1BASE", "/studyteam/");
+define("ROOT_PATH", "/var/www/html/studyteam/");
 define("SECURE", FALSE);
 define("SERVER", "http://127.0.0.1:8080");
 

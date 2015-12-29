@@ -5,6 +5,11 @@ RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^student/buddies/?$ student/buddies.php [NC,L]
 
+#Redirect to Student settings
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^student/settings/?$ student/settings.php [NC,L]
+
 #Redirect to correct student details
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]

@@ -368,6 +368,31 @@ class Student
 		return $error;
 	}
 	
+	public function save_new_avatar($avatar_id)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE student SET avatar = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $avatar_id, $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		if($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			$this->set_values_with_id($this->id);
+			return true;
+		}
+		echo $stmt->error;
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
 	public function get_id()
 	{
 		return $this->id;

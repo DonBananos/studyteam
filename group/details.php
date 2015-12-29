@@ -13,6 +13,12 @@ if (!isset($_SESSION['logged_in']) OR ! isset($_GET['id']))
 $student = new Student($_SESSION['user_id']);
 
 $group = new Group($_GET['id']);
+
+$membership = FALSE;
+if($group->get_if_student_is_member($student->get_id()))
+{
+	$membership = TRUE;
+}
 ?>
 <html>
     <head>
@@ -67,9 +73,22 @@ $group = new Group($_GET['id']);
 							<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
 								<div class="content-box">
 									<div class="group-admin-options">
-										<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
-										<button class="btn btn-danger btn-sm"><span class="fa fa-sign-out"></span> Leave</button>
-										<button class="btn btn-warning btn-sm"><span class="fa fa-pencil"></span> Edit</button>
+										<?php
+										if($membership)
+										{
+											?>
+											<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
+											<button class="btn btn-danger btn-sm"><span class="fa fa-sign-out"></span> Leave</button>
+											<button class="btn btn-warning btn-sm"><span class="fa fa-pencil"></span> Edit</button>
+											<?php
+										}
+										else
+										{
+											?>
+											<button class="btn btn-primary btn-sm"><span class="fa fa-plus"></span> Join Group</button>
+											<?php
+										}
+										?>
 									</div>
 									<hr class="minor-line">
 									<div class="group-info">

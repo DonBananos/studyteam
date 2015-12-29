@@ -211,6 +211,7 @@ class Group
 		$stmt->execute(); //Execute
 		$stmt->bind_result($members);
 		$stmt->fetch();
+		$stmt->close();
 		return $members;
 	}
 	
@@ -272,6 +273,28 @@ class Group
 		$error = $stmt->error;
 		$stmt->close();
 		return $error;
+	}
+	
+	public function get_if_student_is_member($student_id)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $student_id, $this->get_id()); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		$stmt->close();
+		if($members > 0)
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 	
 	public function get_id()

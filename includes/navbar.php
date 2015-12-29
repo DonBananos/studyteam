@@ -48,7 +48,7 @@
 							<?php
 						}
 						?>
-						<li><a href="">Settings</a></li>
+						<li><a href="<?php echo BASE ?>student/settings/">Settings</a></li>
 						<?php
 						if ($student->get_permission() !== 1)
 						{
