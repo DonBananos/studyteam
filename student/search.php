@@ -59,7 +59,7 @@ else
 							?>
 						</div>
 						<div class="row">
-							<form action="<?php echo BASE ?>student/search.php" method="GET">
+							<form action="<?php echo BASE ?>search/" method="GET">
 								<label>Search for a Student</label>
 								<input type="text" name="s" value="<?php echo $search_string ?>" class="form-control">
 								<input type="submit" class="btn btn-primary" value="Search!">
@@ -76,7 +76,7 @@ else
 								<?php echo $search_student->get_fullname() ?><br/>
 								<label>Email: </label>
 								<?php echo $search_student->get_email() ?><br/>
-								<a href="<?php echo BASE ?>student/details.php?id=<?php echo $search_student->get_id() ?>" class="btn btn-default">Details</a>
+								<a href="<?php echo BASE ?>student/<?php echo $search_student->get_username() ?>/" class="btn btn-default">Details</a>
 								<div class="clearfix"></div>
 								<hr>
 								<?php

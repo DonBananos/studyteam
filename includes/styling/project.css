@@ -496,3 +496,8 @@ h4.student-name>a:hover
 	color: #2D2D2A;
 	font-size: 110%;
 }
+
+.navbar-avatar
+{
+	width: 40px;
+}

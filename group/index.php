@@ -50,7 +50,7 @@ if (isset($_POST['addGroupSubmit']))
 						</div>
 						<div class="pull-right">
 							<button class="btn btn-success" data-toggle="modal" data-target="#addGroupModal">
-								<span class="fa fa-plus"></span>
+								<span class="fa fa-plus"></span> Create Group
 							</button>
 							<div class="modal fade modal-inverse" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel">
 								<div class="modal-dialog" role="document">

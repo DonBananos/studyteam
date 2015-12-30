@@ -128,7 +128,7 @@ class Student
 		if ($max !== null)
 		{
 			$safe_max = sanitize_int($max);
-			$sql = "SELECT group_id FROM student_group WHERE student_id = ? ORDER BY join_datetime DESC LIMIT ?;";
+			$sql = "SELECT group_id FROM student_group WHERE student_id = ? AND active = 1 ORDER BY join_datetime DESC LIMIT ?;";
 			$stmt = $dbCon->prepare($sql); //Prepare Statement
 			if ($stmt === false)
 			{
@@ -138,7 +138,7 @@ class Student
 		}
 		else
 		{
-			$sql = "SELECT group_id FROM student_group WHERE student_id = ? ORDER BY join_datetime DESC;";
+			$sql = "SELECT group_id FROM student_group WHERE student_id = ? AND active = 1 ORDER BY join_datetime DESC;";
 			$stmt = $dbCon->prepare($sql); //Prepare Statement
 			if ($stmt === false)
 			{
@@ -193,7 +193,7 @@ class Student
 		global $dbCon;
 		$group_ids = array();
 
-		$sql = "SELECT id FROM `group` INNER JOIN student_group ON group.id = student_group.group_id WHERE student_id != ? AND public = 1 GROUP BY group_id;";
+		$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ?) AND public = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -439,6 +439,13 @@ class Student
 	public function save_new_avatar($avatar_id)
 	{
 		global $dbCon;
+		
+		//Sanitize and check if is integer!
+		$safe_avatar_id = sanitize_int($avatar_id);
+		if(!validate_int($safe_avatar_id))
+		{
+			return FALSE;
+		}
 
 		$sql = "UPDATE student SET avatar = ? WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
@@ -459,6 +466,104 @@ class Student
 		echo $error;
 		$stmt->close();
 		return $error;
+	}
+	
+	public function get_buddies_for_possible_invite_for_group($group_id)
+	{
+		global $dbCon;
+		
+		if($this->get_if_student_can_invite_in_group($group_id))
+		{
+			$possible_invites = $this->get_buddy_ids_for_group_that_can_be_invited($group_id); 
+			return $possible_invites;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	
+	public function get_if_student_can_invite_in_group($group_id)
+	{
+		global $dbCon;
+		//Sanitize and check if is integer!
+		$safe_group_id = sanitize_int($group_id);
+		if(!validate_int($safe_group_id))
+		{
+			return FALSE;
+		}
+		//Check if student is even part of the group he/she is trying to invite members to
+		if(!$this->get_if_student_is_part_of_group($safe_group_id))
+		{
+			return FALSE;
+		}
+		$sql = "SELECT level FROM student_group WHERE student_id = ? AND group_id = ? AND active = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->get_id(), $safe_group_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($level);
+		$stmt->fetch();
+		$stmt->close();
+		if($level == 2 || $level == 3)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function get_if_student_is_part_of_group($group_id)
+	{
+		$all_groups_of_student = $this->get_group_ids_that_student_is_part_of();
+		if(in_array($group_id, $all_groups_of_student))
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	private function get_buddy_ids_for_group_that_can_be_invited($group_id)
+	{
+		$possible_buddy_ids = array();
+		$buddy_ids = $this->get_all_buddy_ids();
+		foreach($buddy_ids as $buddy_id)
+		{
+			if(!$this->check_if_buddy_is_part_of_group($buddy_id, $group_id))
+			{
+				$possible_buddy_ids[] = $buddy_id;
+			}
+		}
+		return $possible_buddy_ids;
+	}
+	
+	private function check_if_buddy_is_part_of_group($buddy_id, $group_id)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(*) AS members FROM student_group WHERE group_id = ? AND student_id = ? AND active = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', sanitize_int($group_id), sanitize_int($buddy_id)); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		if ($buddies > 0)
+		{
+			if($buddies != 1)
+			{
+				//There's something wrong here!
+			}
+			$stmt->close();
+			return TRUE;
+		}
+		$stmt->close();
+		return FALSE;
 	}
 
 	public function get_id()

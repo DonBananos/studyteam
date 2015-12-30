@@ -1,5 +1,10 @@
 RewriteEngine On
 
+#Redirect to search
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^search/?$ student/search.php [NC,L]
+
 #Redirect to buddy overview
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]

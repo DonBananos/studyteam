@@ -20,9 +20,9 @@
 			$num_group_invites = 0;
 			?>
 			<ul class="nav navbar-nav navbar-right">
-				<li><form style="padding-bottom: 0; margin-bottom: 0; margin-top: 8px;" action="<?php echo BASE ?>student/search.php" method="GET"><input  type="text" name="s" placeholder="Username, Email or Name" class="form-control" placeholder="Search"></form></li>
+				<li><form style="padding-bottom: 0; margin-bottom: 0; margin-top: 8px;" action="<?php echo BASE ?>search/" method="GET"><input  type="text" name="s" placeholder="Username, Email or Name" class="form-control" placeholder="Search"></form></li>
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					<a href="#" class="dropdown-toggle form-inline" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 						<?php echo $student->get_firstname(); ?>
 						<?php
 						if ($num_buddies_pending > 0)
@@ -30,7 +30,7 @@
 							echo "($num_buddies_pending)";
 						}
 						?>
-						<span class="caret"></span></a>
+						<span class="fa fa-caret-down"></span></a>
 					<ul class="dropdown-menu dropdown-inverted">
 						<li><a href="<?php echo BASE ?>student/<?php echo strtolower($student->get_username()); ?>/">My Profile</a></li>
 						<li><a href="<?php echo BASE ?>student/buddies/">My Buddies</a></li>

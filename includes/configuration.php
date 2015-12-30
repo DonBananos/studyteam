@@ -96,6 +96,26 @@ function sanitize_url($url)
 	return filter_var($url, FILTER_SANITIZE_URL);
 }
 
+function validate_email($email)
+{
+	return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function validate_int($int)
+{
+	return filter_var($int, FILTER_VALIDATE_INT);
+}
+
+function validate_float($float)
+{
+	return filter_var($float, FILTER_VALIDATE_FLOAT);
+}
+
+function validate_url($url)
+{
+	return filter_var($url, FILTER_VALIDATE_URL);
+}
+
 function get_permission_name_from_id($id)
 {
 	global $dbCon;
