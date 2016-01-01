@@ -76,7 +76,19 @@ if ($student_visited->check_if_buddies_pending($student->get_id()))
 				<div class="page-header">
 					<div class="row">
 						<div class="col-lg-2 col-md-2 col-sm-3 hidden-xs">
-							<img src="<?php echo $student_visited->get_avatar() ?>" class="student-avatar profile-header-avatar">
+							<div class="profile-header-avatar">
+								<img src="<?php echo $student_visited->get_avatar() ?>" class="student-avatar">
+								<?php
+								if ($student->get_id() === $student_visited->get_id())
+								{
+									?>
+									<a href="<?php echo BASE ?>student/settings/#avatar">
+										<span class="fa fa-image fa-2x"></span>
+									</a>
+									<?php
+								}
+								?>
+							</div>
 						</div>
 						<div class="col-lg-10 col-md-10 col-sm-9 col-xs-12">
 							<h1><?php echo $student_visited->get_fullname() ?></h1>

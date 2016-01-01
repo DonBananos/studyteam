@@ -501,3 +501,27 @@ h4.student-name>a:hover
 {
 	width: 40px;
 }
+
+.profile-header-avatar
+{
+	position: absolute;
+}
+
+.profile-header-avatar > a > span
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	visibility: hidden;
+}
+
+.profile-header-avatar > a
+{
+	border: none !important;
+	background-color: inherit !important;
+}
+
+.profile-header-avatar:hover > a > span
+{
+	visibility: visible;
+}

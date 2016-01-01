@@ -32,7 +32,7 @@ if (isset($_POST['saveSelection']))
 				<div class="page-header">
 					<h1>StudyTeam Settings</h1>
 				</div>
-				<div class="row">
+				<div class="row" id="avatar">
 					<label>Select your Avatar</label><br/>
 					<?php
 					$path = ROOT_PATH . "includes/_media/_images/avatars/*.png";
