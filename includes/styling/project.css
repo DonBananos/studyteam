@@ -525,3 +525,34 @@ h4.student-name>a:hover
 {
 	visibility: visible;
 }
+
+.invite-info
+{
+    background: rgba(51,67,70, 0.8) !important;
+	color: #F5FBEF;
+	margin-left: -30px;
+	margin-top: 10px;
+    border: #2D2D2A 1px solid;
+	border-left: none;
+	border-radius: 0px 5px 5px 0px;
+	padding: 10px;
+	height: 222px;
+}
+
+.invite-info > .invite-list-info > a,
+.invite-info > .invite-list-info > a:active,
+.invite-info > .invite-list-info > a:visited
+{
+	color: white !important;
+}
+
+.invite-info > .invite-list-info > a:hover
+{
+	color: #2D2D2A !important;
+}
+
+.overflow-auto
+{
+	overflow-x: auto;
+	overflow-y: auto;
+}

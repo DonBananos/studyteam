@@ -3,6 +3,10 @@ require_once '../includes/configuration.php';
 require_once '../student/student.php';
 require_once './group.php';
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 if (!isset($_SESSION['logged_in']) OR ! isset($_GET['id']))
 {
 	?>
@@ -22,6 +26,20 @@ if ($group->get_if_student_is_member($student->get_id()))
 	{
 		$group->remove_student_from_group($student->get_id());
 		$membership = FALSE;
+	}
+	if (isset($_POST['invite']))
+	{
+		if (validate_int($_POST['buddy']))
+		{
+			$raw_student_id = $_POST['buddy'];
+			$safe_student_id = sanitize_int($raw_student_id);
+			$safe_message = sanitize_text($_POST['message']);
+			$invite_student = new Student($safe_student_id);
+			$answer = $group->invite_student($safe_student_id, $student->get_id(), $safe_message, $invite_student->get_email(), $invite_student->get_fullname(), $student->get_email(), $student->get_fullname());
+			?>
+			<script>alert("<?php echo $answer ?>");</script>
+			<?php
+		}
 	}
 }
 else
@@ -144,7 +162,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment      ?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment         ?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>
@@ -180,19 +198,24 @@ if ($membership === FALSE && $group->get_public() == 0)
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title" id="inviteModalLabel">Invite a Buddy</h4>
 					</div>
-					<form>
+					<form action="" method="POST" name="group_invite_form">
 						<div class="modal-body">
 							<div class="row">
-								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 col-lg-offset-3 col-md-offset-3 col-sm-offset-3">
-									<select class="form-control">
+								<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+									<select class="form-control" required="required" name="buddy">
 										<option selected="selected" disabled="disabled">Pick a buddy</option>
 										<?php
 										$possible_invites = $student->get_buddies_for_possible_invite_for_group($group->get_id());
 										foreach ($possible_invites AS $possible_invite_student_id)
 										{
 											$possible_invite_student = new Student($possible_invite_student_id);
+											$disabled = "";
+											if ($possible_invite_student->check_if_invite_for_group_is_pending($group->get_id()))
+											{
+												$disabled = "disabled='disable'";
+											}
 											?>
-											<option>
+											<option <?php echo $disabled ?> value="<?php echo $possible_invite_student->get_id() ?>">
 												<?php echo $possible_invite_student->get_fullname(); ?> (<?php echo $possible_invite_student->get_username() ?>)
 											</option>
 											<?php
@@ -203,13 +226,13 @@ if ($membership === FALSE && $group->get_public() == 0)
 							</div>
 							<div class="row">
 								<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-									<textarea class="form-control textarea" placeholder="Write a short Invite Message"></textarea>
+									<textarea class="form-control textarea" placeholder="Write a short Invite Message" name="message"></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary">Send Invite</button>
+							<input type="submit" class="btn btn-primary" value="Send Invite" name="invite">
 						</div>
 					</form>
 				</div>

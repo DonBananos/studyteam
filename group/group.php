@@ -143,13 +143,13 @@ class Group
 	{
 		global $dbCon;
 		
-		$sql = "INSERT INTO group_invite (student_id, invitor_student_id, message) VALUES (?, ?, ?);";
+		$sql = "INSERT INTO group_invites (student_id, group_id, invitor_id, message) VALUES (?, ?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('iis', $student_id, $invited_by_student_id, $message); //Bind parameters.
+		$stmt->bind_param('iiis', $student_id, $this->id, $invited_by_student_id, $message); //Bind parameters.
 		$stmt->execute();
 		$id = $stmt->insert_id;
 		if ($id > 0)
@@ -173,7 +173,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($members);
 		$stmt->fetch();
@@ -190,7 +190,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($members);
 		$stmt->fetch();
@@ -286,7 +286,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id, $level, $join_datetime);
 		while($stmt->fetch())
@@ -316,7 +316,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $student_id, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('ii', $student_id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($members);
 		$stmt->fetch();

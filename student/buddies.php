@@ -18,7 +18,7 @@ if (isset($_POST['buddyAccept']))
 	$safe_buddy_id = sanitize_int($raw_buddy_id);
 	$student->accept_buddy_pending($safe_buddy_id);
 }
-elseif(isset($_POST['buddyDecline']))
+elseif (isset($_POST['buddyDecline']))
 {
 	$raw_buddy_id = $_POST['buddyId'];
 	$safe_buddy_id = sanitize_int($raw_buddy_id);
@@ -101,9 +101,8 @@ elseif(isset($_POST['buddyDecline']))
 				</div>
 			</div>
 		</div>
-	</div>
-	<?php
-	require '../includes/footer.php';
-	?>
-</body>
+		<?php
+		require '../includes/footer.php';
+		?>
+	</body>
 </html>

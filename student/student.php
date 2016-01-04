@@ -79,7 +79,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('si', $password, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('si', $password, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		if ($stmt->affected_rows > 0)
 		{
@@ -104,7 +104,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
 		while ($stmt->fetch())
@@ -134,7 +134,7 @@ class Student
 			{
 				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 			}
-			$stmt->bind_param('ii', $this->get_id(), $safe_max); //Bind parameters.
+			$stmt->bind_param('ii', $this->id, $safe_max); //Bind parameters.
 		}
 		else
 		{
@@ -144,7 +144,7 @@ class Student
 			{
 				trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 			}
-			$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+			$stmt->bind_param('i', $this->id); //Bind parameters.
 		}
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
@@ -172,7 +172,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
 		while ($stmt->fetch())
@@ -199,7 +199,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($group_id);
 		while ($stmt->fetch())
@@ -230,7 +230,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $applier_student_id, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('ii', $applier_student_id, $this->id); //Bind parameters.
 		$stmt->execute();
 		$rows = $stmt->affected_rows;
 		if ($rows == 1)
@@ -253,7 +253,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('iiii', $other_student_id, $this->get_id(), $other_student_id, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('iiii', $other_student_id, $this->id, $other_student_id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddies);
 		$stmt->fetch();
@@ -276,7 +276,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('iiii', $other_student_id, $this->get_id(), $other_student_id, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('iiii', $other_student_id, $this->id, $other_student_id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddies);
 		$stmt->fetch();
@@ -299,7 +299,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($pending);
 		$stmt->fetch();
@@ -322,7 +322,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $this->get_id()); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddies);
 		$stmt->fetch();
@@ -347,7 +347,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $this->get_id()); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddy_1_id, $buddy_2_id);
 		while ($stmt->fetch())
@@ -377,7 +377,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($buddy_1_id);
 		while ($stmt->fetch())
@@ -398,7 +398,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $buddy_id); //Bind parameters.
 		$stmt->execute(); //Execute
 		if ($stmt->affected_rows > 0)
 		{
@@ -422,7 +422,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $buddy_id); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $buddy_id); //Bind parameters.
 		$stmt->execute(); //Execute
 		if ($stmt->affected_rows > 0)
 		{
@@ -453,7 +453,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $avatar_id, $this->get_id()); //Bind parameters.
+		$stmt->bind_param('ii', $avatar_id, $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		if ($stmt->affected_rows > 0)
 		{
@@ -503,7 +503,7 @@ class Student
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $safe_group_id); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $safe_group_id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($level);
 		$stmt->fetch();
@@ -564,6 +564,57 @@ class Student
 		}
 		$stmt->close();
 		return FALSE;
+	}
+	
+	public function check_if_invite_for_group_is_pending($group_id)
+	{
+		global $dbCon;
+		
+		$sql = "SELECT COUNT(id) AS ids FROM group_invites WHERE student_id = ? AND group_id = ? AND response_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', sanitize_int($this->id), sanitize_int($group_id)); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($ids);
+		$stmt->fetch();
+		if ($ids > 0)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$stmt->close();
+		return FALSE;
+	}
+	
+	public function get_all_pending_invites()
+	{
+		global $dbCon;
+		
+		$invites = array();
+		
+		$sql = "SELECT id, group_id, invitor_id, message, time FROM group_invites WHERE student_id = ? AND response_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($id, $group_id, $invitor_id, $message, $time);
+		while ($stmt->fetch())
+		{
+			$invite = array();
+			$invite['group_id'] = $group_id;
+			$invite['invitor_id'] = $invitor_id;
+			$invite['message'] = $message;
+			$invite['time'] = $time;
+			$invites[$id] = $invite;
+		}
+		$stmt->close();
+		return $invites;
 	}
 
 	public function get_id()
