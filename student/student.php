@@ -616,7 +616,92 @@ class Student
 		$stmt->close();
 		return $invites;
 	}
-
+	
+	/*
+	 * Function changes invite in db to accepted
+	 */
+	public function accept_pending_invite($invite_id)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE group_invites SET response_status = 1 WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $invite_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		if ($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
+	/*
+	 * Function changes invite in db to accepted
+	 */
+	public function decline_pending_invite($invite_id)
+	{
+		global $dbCon;
+		
+		$sql = "UPDATE group_invites SET response_status = 2 WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $invite_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		if ($stmt->affected_rows > 0)
+		{
+			$stmt->close();
+			return true;
+		}
+		$error = $stmt->error;
+		echo $error;
+		$stmt->close();
+		return $error;
+	}
+	
+	public function get_student_level_in_group($group_id)
+	{
+		global $dbCon;
+		
+		//Sanitize and check if is integer!
+		$safe_group_id = sanitize_int($group_id);
+		if(!validate_int($safe_group_id))
+		{
+			return FALSE;
+		}
+		//Check if student is even part of the group he/she is trying to invite members to
+		if(!$this->get_if_student_is_part_of_group($safe_group_id))
+		{
+			return FALSE;
+		}
+		$sql = "SELECT level FROM student_group WHERE student_id = ? AND group_id = ? AND active = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $safe_group_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($level);
+		$stmt->fetch();
+		$stmt->close();
+		if($level > 0 && validate_int($level))
+		{
+			return $level;
+		}
+		return FALSE;
+	}
+	
 	public function get_id()
 	{
 		return $this->id;

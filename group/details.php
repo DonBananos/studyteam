@@ -116,11 +116,23 @@ if ($membership === FALSE && $group->get_public() == 0)
 										<?php
 										if ($membership)
 										{
+											if ($student->get_if_student_can_invite_in_group($group->get_id()))
+											{
+												?>
+												<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
+												<?php
+											}
 											?>
-											<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
 											<button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#leaveModal"><span class="fa fa-sign-out"></span> Leave</button>
-											<button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"><span class="fa fa-pencil"></span> Edit</button>
 											<?php
+											$student_level_in_group = $student->get_student_level_in_group($group->get_id());
+											if ($student_level_in_group === 2 || $student_level_in_group === 3)
+											{
+												//If student level is 2 (admin) or 3 (owner)
+												?>
+												<button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"><span class="fa fa-pencil"></span> Edit</button>
+												<?php
+											}
 										}
 										else
 										{
@@ -162,7 +174,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment         ?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment             ?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>
@@ -190,54 +202,93 @@ if ($membership === FALSE && $group->get_public() == 0)
 				</div>
 			</div>
 		</div>
-		<!-- Invite Modal -->
-		<div class="modal fade modal-inverse" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="inviteModalLabel">Invite a Buddy</h4>
+		<?php
+		if ($membership)
+		{
+			if ($student->get_if_student_can_invite_in_group($group->get_id()))
+			{
+				?>
+				<!-- Invite Modal -->
+				<div class="modal fade modal-inverse" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="inviteModalLabel">Invite a Buddy to join <?php echo $group->get_name() ?></h4>
+							</div>
+							<form action="" method="POST" name="group_invite_form">
+								<div class="modal-body">
+									<div class="row">
+										<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+											<select class="form-control" required="required" name="buddy">
+												<option selected="selected" disabled="disabled">Pick a buddy</option>
+												<?php
+												$possible_invites = $student->get_buddies_for_possible_invite_for_group($group->get_id());
+												foreach ($possible_invites AS $possible_invite_student_id)
+												{
+													$possible_invite_student = new Student($possible_invite_student_id);
+													$disabled = "";
+													if ($possible_invite_student->check_if_invite_for_group_is_pending($group->get_id()))
+													{
+														$disabled = "disabled='disable'";
+													}
+													?>
+													<option <?php echo $disabled ?> value="<?php echo $possible_invite_student->get_id() ?>">
+														<?php echo $possible_invite_student->get_fullname(); ?> (<?php echo $possible_invite_student->get_username() ?>)
+													</option>
+													<?php
+												}
+												?>
+											</select>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+											<textarea class="form-control textarea" placeholder="Write a short Invite Message" name="message"></textarea>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									<input type="submit" class="btn btn-primary" value="Send Invite" name="invite">
+								</div>
+							</form>
+						</div>
 					</div>
-					<form action="" method="POST" name="group_invite_form">
-						<div class="modal-body">
-							<div class="row">
-								<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-									<select class="form-control" required="required" name="buddy">
-										<option selected="selected" disabled="disabled">Pick a buddy</option>
-										<?php
-										$possible_invites = $student->get_buddies_for_possible_invite_for_group($group->get_id());
-										foreach ($possible_invites AS $possible_invite_student_id)
-										{
-											$possible_invite_student = new Student($possible_invite_student_id);
-											$disabled = "";
-											if ($possible_invite_student->check_if_invite_for_group_is_pending($group->get_id()))
-											{
-												$disabled = "disabled='disable'";
-											}
-											?>
-											<option <?php echo $disabled ?> value="<?php echo $possible_invite_student->get_id() ?>">
-												<?php echo $possible_invite_student->get_fullname(); ?> (<?php echo $possible_invite_student->get_username() ?>)
-											</option>
-											<?php
-										}
-										?>
-									</select>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-lg-8 col-md-8 col-sm-10 col-xs-12 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-									<textarea class="form-control textarea" placeholder="Write a short Invite Message" name="message"></textarea>
-								</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<input type="submit" class="btn btn-primary" value="Send Invite" name="invite">
-						</div>
-					</form>
 				</div>
-			</div>
-		</div>
+				<?php
+			}
+			?>
+			<?php
+			$student_level_in_group = $student->get_student_level_in_group($group->get_id());
+			if ($student_level_in_group === 2 || $student_level_in_group === 3)
+			{
+				//If student level is 2 (admin) or 3 (owner)
+				?>
+				<!-- Edit Modal -->
+				<div class="modal fade modal-inverse" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="editModalLabel">Edit <?php echo $group->get_name() ?></h4>
+							</div>
+							<form>
+								<div class="modal-body">
+
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									<button type="button" class="btn btn-primary">Save Edits</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<?php
+			}
+		}
+		?>
 		<!-- Leave Prompt Modal -->
 		<div class="modal fade modal-inverse" id="leaveModal" tabindex="-1" role="dialog" aria-labelledby="leaveModalLabel">
 			<div class="modal-dialog" role="document">
@@ -267,26 +318,6 @@ if ($membership === FALSE && $group->get_public() == 0)
 						<div class="modal-footer">
 							<button type="button" class="btn btn-primary" data-dismiss="modal">Nope!</button>
 							<button type="submit" class="btn btn-danger" name="leave">Yes</button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
-		<!-- Edit Modal -->
-		<div class="modal fade modal-inverse" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
-			<div class="modal-dialog" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="editModalLabel">Edit <?php echo $group->get_name() ?></h4>
-					</div>
-					<form>
-						<div class="modal-body">
-
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-							<button type="button" class="btn btn-primary">Save Edits</button>
 						</div>
 					</form>
 				</div>

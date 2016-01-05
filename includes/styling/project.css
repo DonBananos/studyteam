@@ -556,3 +556,25 @@ h4.student-name>a:hover
 	overflow-x: auto;
 	overflow-y: auto;
 }
+
+.modal-inverse > .modal-dialog > .modal-content > .modal-header > .close > span
+{
+	color: #C7CB85;
+}
+
+.modal-inverse > .modal-dialog > .modal-content > .modal-header > .close
+{
+	opacity: 0.5;
+	transition: 0.5s;
+	font-size: 25px;
+}
+
+.modal-inverse > .modal-dialog > .modal-content > .modal-header > .close:hover
+{
+	opacity: 0.8;
+}
+
+.invite-modal-group-name
+{
+	font-weight: bold;
+}
