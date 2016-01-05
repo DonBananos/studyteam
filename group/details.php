@@ -116,7 +116,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										<?php
 										if ($membership)
 										{
-											if ($student->get_if_student_can_invite_in_group($group->get_id()))
+											if ($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1)
 											{
 												?>
 												<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
@@ -174,7 +174,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); //This is a Comment             ?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username());?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>
@@ -205,7 +205,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 		<?php
 		if ($membership)
 		{
-			if ($student->get_if_student_can_invite_in_group($group->get_id()))
+			if ($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1)
 			{
 				?>
 				<!-- Invite Modal -->

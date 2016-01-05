@@ -187,7 +187,7 @@ class Student
 		$stmt->close();
 		return false;
 	}
-	
+
 	public function get_public_groups_where_student_is_not_member()
 	{
 		global $dbCon;
@@ -439,10 +439,10 @@ class Student
 	public function save_new_avatar($avatar_id)
 	{
 		global $dbCon;
-		
+
 		//Sanitize and check if is integer!
 		$safe_avatar_id = sanitize_int($avatar_id);
-		if(!validate_int($safe_avatar_id))
+		if (!validate_int($safe_avatar_id))
 		{
 			return FALSE;
 		}
@@ -467,33 +467,26 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_buddies_for_possible_invite_for_group($group_id)
 	{
 		global $dbCon;
-		
-		if($this->get_if_student_can_invite_in_group($group_id))
-		{
-			$possible_invites = $this->get_buddy_ids_for_group_that_can_be_invited($group_id); 
-			return $possible_invites;
-		}
-		else
-		{
-			return NULL;
-		}
+
+		$possible_invites = $this->get_buddy_ids_for_group_that_can_be_invited($group_id);
+		return $possible_invites;
 	}
-	
+
 	public function get_if_student_can_invite_in_group($group_id)
 	{
 		global $dbCon;
 		//Sanitize and check if is integer!
 		$safe_group_id = sanitize_int($group_id);
-		if(!validate_int($safe_group_id))
+		if (!validate_int($safe_group_id))
 		{
 			return FALSE;
 		}
 		//Check if student is even part of the group he/she is trying to invite members to
-		if(!$this->get_if_student_is_part_of_group($safe_group_id))
+		if (!$this->get_if_student_is_part_of_group($safe_group_id))
 		{
 			return FALSE;
 		}
@@ -508,41 +501,41 @@ class Student
 		$stmt->bind_result($level);
 		$stmt->fetch();
 		$stmt->close();
-		if($level == 2 || $level == 3)
+		if ($level == 2 || $level == 3)
 		{
 			return TRUE;
 		}
 		return FALSE;
 	}
-	
+
 	public function get_if_student_is_part_of_group($group_id)
 	{
 		$all_groups_of_student = $this->get_group_ids_that_student_is_part_of();
-		if(in_array($group_id, $all_groups_of_student))
+		if (in_array($group_id, $all_groups_of_student))
 		{
 			return TRUE;
 		}
 		return FALSE;
 	}
-	
+
 	private function get_buddy_ids_for_group_that_can_be_invited($group_id)
 	{
 		$possible_buddy_ids = array();
 		$buddy_ids = $this->get_all_buddy_ids();
-		foreach($buddy_ids as $buddy_id)
+		foreach ($buddy_ids as $buddy_id)
 		{
-			if(!$this->check_if_buddy_is_part_of_group($buddy_id, $group_id))
+			if ($this->check_if_buddy_is_part_of_group($buddy_id, $group_id) === FALSE)
 			{
 				$possible_buddy_ids[] = $buddy_id;
 			}
 		}
 		return $possible_buddy_ids;
 	}
-	
+
 	private function check_if_buddy_is_part_of_group($buddy_id, $group_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS members FROM student_group WHERE group_id = ? AND student_id = ? AND active = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -551,11 +544,11 @@ class Student
 		}
 		$stmt->bind_param('ii', sanitize_int($group_id), sanitize_int($buddy_id)); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($members);
+		$stmt->bind_result($buddies);
 		$stmt->fetch();
 		if ($buddies > 0)
 		{
-			if($buddies != 1)
+			if ($buddies != 1)
 			{
 				//There's something wrong here!
 			}
@@ -565,11 +558,11 @@ class Student
 		$stmt->close();
 		return FALSE;
 	}
-	
+
 	public function check_if_invite_for_group_is_pending($group_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(id) AS ids FROM group_invites WHERE student_id = ? AND group_id = ? AND response_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -588,13 +581,13 @@ class Student
 		$stmt->close();
 		return FALSE;
 	}
-	
+
 	public function get_all_pending_invites()
 	{
 		global $dbCon;
-		
+
 		$invites = array();
-		
+
 		$sql = "SELECT id, group_id, invitor_id, message, time FROM group_invites WHERE student_id = ? AND response_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -616,14 +609,15 @@ class Student
 		$stmt->close();
 		return $invites;
 	}
-	
+
 	/*
 	 * Function changes invite in db to accepted
 	 */
+
 	public function accept_pending_invite($invite_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE group_invites SET response_status = 1 WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -642,14 +636,15 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	/*
 	 * Function changes invite in db to accepted
 	 */
+
 	public function decline_pending_invite($invite_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "UPDATE group_invites SET response_status = 2 WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -668,19 +663,19 @@ class Student
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_student_level_in_group($group_id)
 	{
 		global $dbCon;
-		
+
 		//Sanitize and check if is integer!
 		$safe_group_id = sanitize_int($group_id);
-		if(!validate_int($safe_group_id))
+		if (!validate_int($safe_group_id))
 		{
 			return FALSE;
 		}
 		//Check if student is even part of the group he/she is trying to invite members to
-		if(!$this->get_if_student_is_part_of_group($safe_group_id))
+		if (!$this->get_if_student_is_part_of_group($safe_group_id))
 		{
 			return FALSE;
 		}
@@ -695,13 +690,13 @@ class Student
 		$stmt->bind_result($level);
 		$stmt->fetch();
 		$stmt->close();
-		if($level > 0 && validate_int($level))
+		if ($level > 0 && validate_int($level))
 		{
 			return $level;
 		}
 		return FALSE;
 	}
-	
+
 	public function get_id()
 	{
 		return $this->id;
