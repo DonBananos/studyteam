@@ -119,7 +119,7 @@ class Group
 			<body>
 			  <p>
 				Hi ' . $student_name . '!<br/>You\'ve been invited to join the group \'' . $this->get_name() . '\' by ' . $invited_by_student_name . '.<br/>
-				<a href="' . SERVER . BASE . 'student/invites.php">Click here</a> to go to your invites!.<br/>
+				<a href="' . SERVER . BASE . 'group/my-invites/">Click here</a> to go to your invites!.<br/>
 				<br/>
 				Regards,<br/>
 				StudyTeam

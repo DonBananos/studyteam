@@ -10,6 +10,7 @@ error_reporting(E_ALL);
 
 if (!isset($_SESSION['logged_in']) OR ! isset($_GET['id']))
 {
+	$_SESSION['tried_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	?>
 	<script>window.location = "<?php echo BASE ?>";</script>
 	<?php

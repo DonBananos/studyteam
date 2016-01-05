@@ -581,6 +581,29 @@ class Student
 		$stmt->close();
 		return FALSE;
 	}
+	
+	public function get_number_of_pending_invites()
+	{
+		global $dbCon;
+
+		$sql = "SELECT COUNT(*) AS pending FROM group_invites WHERE student_id = ? AND response_status = 0;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($pending);
+		$stmt->fetch();
+		if ($pending > 0)
+		{
+			$stmt->close();
+			return $pending;
+		}
+		$stmt->close();
+		return 0;
+	}
 
 	public function get_all_pending_invites()
 	{

@@ -23,6 +23,15 @@ if (isset($_POST['login']))
 
 if (isset($_SESSION['logged_in']))
 {
+	if (!empty($_SESSION['tried_url']))
+	{
+		$tried_url = $_SESSION['tried_url'];
+		$_SESSION['tried_url'] = null;
+		?>
+		<script>window.location = "<?php echo $tried_url ?>";</script>
+		<?php
+		die();
+	}
 	if ($_SESSION['logged_in'] == TRUE)
 	{
 		?>

@@ -10,6 +10,11 @@ RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
 RewriteRule ^student/buddies/?$ student/buddies.php [NC,L]
 
+#Redirect to Student Group Invites
+RewriteCond %{REQUEST_FILENAME} !-d [NC]
+RewriteCond %{REQUEST_FILENAME} !-f [NC]
+RewriteRule ^group/my-invites/?$ student/invites.php [NC,L]
+
 #Redirect to Student settings
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]

@@ -5,6 +5,7 @@ require './student_controller.php';
 
 if (!isset($_SESSION['logged_in']))
 {
+	$_SESSION['tried_url'] = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 	?>
 	<script>window.location = "<?php echo BASE ?>";</script>
 	<?php
