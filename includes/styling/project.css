@@ -296,7 +296,9 @@ form .small-pad
 
 .textarea
 {
-	resize: none;
+	resize: vertical;
+	height: auto;
+	overflow: visible;
 }
 
 .scouch-right
@@ -371,6 +373,14 @@ form .small-pad
 {
 	padding-top: 2px;
 	padding-bottom: 2px;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.small-line
+{
+	padding-top: 2px;
+	padding-bottom: 15px;
 	margin-top: 0;
 	margin-bottom: 0;
 }
@@ -577,4 +587,14 @@ h4.student-name>a:hover
 .invite-modal-group-name
 {
 	font-weight: bold;
+}
+
+.form-left-label
+{
+	padding-top: 8px;
+}
+
+.form-left-label:after
+{
+	content: ":";
 }

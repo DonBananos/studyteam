@@ -79,4 +79,28 @@ class Group_controller
 		$stmt->close();
 		return $categories;
 	}
+	
+	public function validate_if_category($category_id)
+	{
+		global $dbCon;
+		
+		$safe_category_id = sanitize_int($category_id);
+		
+		$sql = "SELECT COUNT(*) AS categories FROM group_category WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $safe_category_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($categories);
+		$stmt->fetch();
+		$stmt->close();
+		if($categories == 1)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
 }

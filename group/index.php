@@ -23,7 +23,7 @@ if (isset($_POST['addGroupSubmit']))
 	$desc = $_POST['desc'];
 
 	$new_group_result = $gc->create_new_group($name, $public, $category, $max, $student->get_id(), $desc);
-	if($new_group_result !== FALSE)
+	if ($new_group_result !== FALSE)
 	{
 		$new_group = new Group($new_group_result);
 		//Since group is created, we save the creator as a member with 'owner' level.
@@ -122,6 +122,7 @@ if (isset($_POST['addGroupSubmit']))
 						<h3>Your groups</h3>
 						<?php
 						$group_ids = $student->get_group_ids_that_student_is_part_of();
+						$printed_groups = 0;
 						foreach ($group_ids as $group_id)
 						{
 							$group = new Group($group_id);
@@ -156,50 +157,64 @@ if (isset($_POST['addGroupSubmit']))
 								</div>
 							</div>
 							<?php
+							$printed_groups++;
+						}
+						if ($printed_groups < 1)
+						{
+							?>
+						<p>You are not member of a group yet. Try to find a group, or <a data-toggle="modal" data-target="#addGroupModal" style="cursor: pointer;">create one now!</a></p>
+							<?php
 						}
 						?>
 					</div>
-					<div class="row">
-						<h3>Suggested public groups</h3>
+					<?php
+					$suggested_group_ids = $student->get_public_groups_where_student_is_not_member();
+					if (count($suggested_group_ids) > 0)
+					{
+						?>
+						<div class="row">
+							<h3>Suggested public groups</h3>
+							<?php
+							foreach ($suggested_group_ids as $suggested_group_id)
+							{
+								$suggested_group = new Group($suggested_group_id);
+								?>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<a href="<?php echo BASE ?>group/<?php echo $suggested_group->get_id() ?>/">
+												<div class="group" id="group-1" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
+													<div class="group-header">
+														<h3><?php echo $suggested_group->get_name() ?></h3>
+														<div class="publicity">
+															<?php
+															if ($suggested_group->get_public() == 1)
+															{
+																?>
+																<span class="fa fa-unlock fa-2x"></span>
+																<?php
+															}
+															else
+															{
+																?>
+																<span class="fa fa-lock fa-2x"></span>
+																<?php
+															}
+															?>
+														</div>
+													</div>
+												</div>
+											</a>
+										</div>
+									</div>
+								</div>
+								<?php
+							}
+							?>
+						</div>
 						<?php
-						$group_ids = $student->get_public_groups_where_student_is_not_member();
-						foreach ($group_ids as $group_id)
-						{
-							$group = new Group($group_id);
-							?>
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>);">
-												<div class="group-header">
-													<h3><?php echo $group->get_name() ?></h3>
-													<div class="publicity">
-														<?php
-														if ($group->get_public() == 1)
-														{
-															?>
-															<span class="fa fa-unlock fa-2x"></span>
-															<?php
-														}
-														else
-														{
-															?>
-															<span class="fa fa-lock fa-2x"></span>
-															<?php
-														}
-														?>
-													</div>
-												</div>
-											</div>
-										</a>
-									</div>
-								</div>
-							</div>
-							<?php
-						}
-						?>
-					</div>
+					}
+					?>
 				</div>
 			</div>
 		</div>

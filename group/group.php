@@ -2,6 +2,7 @@
 
 class Group
 {
+
 	private $id;
 	private $name;
 	private $school_id;
@@ -14,16 +15,16 @@ class Group
 	private $category_name;
 	private $category_image;
 	private $public;
-	
+
 	function __construct($group_id)
 	{
 		$this->set_values($group_id);
 	}
-	
+
 	private function set_values($id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT id, name, public, school_id, education_id, max_members, creator_student_id, created_time, description, category_id FROM `group` WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -51,11 +52,11 @@ class Group
 		}
 		return true;
 	}
-	
+
 	private function set_category_values()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT name, image FROM group_category WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -69,24 +70,29 @@ class Group
 		$this->set_category_name($category_name);
 		$this->set_category_image($category_image);
 	}
-	
+
 	public function get_public_or_private()
 	{
-		if($this->get_public() == 1)
+		if ($this->get_public() == 1)
 		{
 			return 'Public';
 		}
 		return 'Private';
 	}
-	
+
 	public function invite_student($student_id, $invited_by_student_id, $raw_message, $student_email, $student_name, $invited_by_student_email, $invited_by_student_name)
 	{
 		//Student name can be first, full or username - Haven't really decided yet
-		
+
 		$safe_message = sanitize_text($raw_message);
-		
+
+		if ($this->check_if_max_is_reached())
+		{
+			return "It's not possible to invite new members, since the group is full";
+		}
+
 		$answer = $this->save_invite_in_db($student_id, $invited_by_student_id, $safe_message);
-		if($answer === TRUE)
+		if ($answer === TRUE)
 		{
 			return $this->send_invite_by_email($student_email, $safe_message, $student_name, $invited_by_student_email, $invited_by_student_name);
 		}
@@ -95,7 +101,7 @@ class Group
 			return $answer;
 		}
 	}
-	
+
 	private function send_invite_by_email($student_email, $message, $student_name, $invited_by_student_email, $invited_by_student_name)
 	{
 		// multiple recipients
@@ -112,8 +118,8 @@ class Group
 			</head>
 			<body>
 			  <p>
-				Hi '.$student_name.'!<br/>You\'ve been invited to join the group \''.$this->get_name().'\' by '.$invited_by_student_name.'.<br/>
-				<a href="'.SERVER.BASE.'student/invites.php">Click here</a> to go to your invites!.<br/>
+				Hi ' . $student_name . '!<br/>You\'ve been invited to join the group \'' . $this->get_name() . '\' by ' . $invited_by_student_name . '.<br/>
+				<a href="' . SERVER . BASE . 'student/invites.php">Click here</a> to go to your invites!.<br/>
 				<br/>
 				Regards,<br/>
 				StudyTeam
@@ -127,22 +133,22 @@ class Group
 		$headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
 
 		// Additional headers
-		$headers .= 'To: <'.$student_email.'>' . "\r\n";
-		$headers .= 'cc: <'.$invited_by_student_email.'>' . "\r\n";
+		$headers .= 'To: <' . $student_email . '>' . "\r\n";
+		$headers .= 'cc: <' . $invited_by_student_email . '>' . "\r\n";
 		$headers .= 'From: StudyTeam Bot <studyteam@heibosoft.com>' . "\r\n";
 
 		// Mail it
-		if(mail($to, $subject, $message, $headers))
+		if (mail($to, $subject, $message, $headers))
 		{
 			return "Invite has been sent!";
 		}
 		return "Invite created, but there was an error sending the email!";
 	}
-	
+
 	private function save_invite_in_db($student_id, $invited_by_student_id, $message)
 	{
 		global $dbCon;
-		
+
 		$sql = "INSERT INTO group_invites (student_id, group_id, invitor_id, message) VALUES (?, ?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -162,11 +168,11 @@ class Group
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_number_of_registered_members()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) as members FROM student_group WHERE group_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -179,11 +185,11 @@ class Group
 		$stmt->fetch();
 		return $members;
 	}
-	
+
 	public function get_number_of_pending_invites()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) as pending_invites FROM group_invites WHERE group_id = ? AND response_status = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -196,11 +202,11 @@ class Group
 		$stmt->fetch();
 		return $members;
 	}
-	
+
 	public function get_number_of_declined_invites()
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) as pending_invites FROM group_invites WHERE group_id = ? AND response_status = 2;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -214,20 +220,20 @@ class Group
 		$stmt->close();
 		return $members;
 	}
-	
+
 	public function get_array_with_invites()
 	{
 		
 	}
-	
+
 	public function add_student_to_group($student_id, $level = 1)
 	{
-		if($this->get_if_student_is_member($student_id))
+		if ($this->get_if_student_is_member($student_id))
 		{
 			return TRUE;
 		}
 		global $dbCon;
-		
+
 		$sql = "INSERT INTO student_group (student_id, group_id, level) VALUES (?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -246,15 +252,15 @@ class Group
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function remove_student_from_group($student_id)
 	{
-		if($this->get_if_student_is_member($student_id) === FALSE)
+		if ($this->get_if_student_is_member($student_id) === FALSE)
 		{
 			return TRUE;
 		}
 		global $dbCon;
-		
+
 		$sql = "UPDATE student_group SET active = 0 WHERE group_id = ? AND student_id = ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
@@ -273,13 +279,13 @@ class Group
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_array_with_members_and_levels()
 	{
 		global $dbCon;
-	
+
 		$members_and_levels = array();
-		
+
 		$sql = "SELECT student_id, level, join_datetime FROM student_group WHERE group_id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -289,14 +295,14 @@ class Group
 		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($student_id, $level, $join_datetime);
-		while($stmt->fetch())
+		while ($stmt->fetch())
 		{
 			$member = array();
 			$member['level'] = $level;
 			$member['joined'] = $join_datetime;
 			$members_and_levels[$student_id] = $member;
 		}
-		if(count($members_and_levels) > 0)
+		if (count($members_and_levels) > 0)
 		{
 			$stmt->close();
 			return $members_and_levels;
@@ -305,11 +311,11 @@ class Group
 		$stmt->close();
 		return $error;
 	}
-	
+
 	public function get_if_student_is_member($student_id)
 	{
 		global $dbCon;
-		
+
 		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ? AND active = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
@@ -321,22 +327,186 @@ class Group
 		$stmt->bind_result($members);
 		$stmt->fetch();
 		$stmt->close();
-		if($members > 0)
+		if ($members > 0)
 		{
 			return TRUE;
 		}
 		return FALSE;
 	}
-	
+
 	public function check_if_max_is_reached()
 	{
-		if($this->get_number_of_registered_members() < $this->max_members)
+		if ($this->get_number_of_registered_members() < $this->max_members)
 		{
 			return FALSE;
 		}
 		return TRUE;
 	}
-	
+
+	public function update_group($name, $max_size, $category, $description)
+	{
+		$return_message = "You have updated ";
+		$updated_values = 0;
+		$safe_name = sanitize_text($name);
+		$safe_max_size = sanitize_int($max_size);
+		$safe_category = sanitize_int($category);
+		$safe_description = sanitize_text($description);
+		if ($safe_name != $this->name)
+		{
+			if ($this->save_new_group_name($safe_name))
+			{
+				$this->set_name($safe_name);
+				$return_message .= "Group name";
+				$updated_values++;
+			}
+		}
+		if ($safe_max_size != $this->max_members)
+		{
+			if ($this->save_new_group_max_size($safe_max_size))
+			{
+				$this->set_max_members($safe_max_size);
+				if ($updated_values > 0)
+				{
+					$return_message .= ", ";
+				}
+				$return_message .= "Maximum number of members";
+				$updated_values++;
+			}
+		}
+		if ($safe_category != $this->category_id)
+		{
+			if ($this->save_new_group_category($safe_category))
+			{
+				$this->set_category_id($safe_category);
+				$this->set_category_values();
+				if ($updated_values > 0)
+				{
+					$return_message .= ", ";
+				}
+				$return_message .= "Group category";
+				$updated_values++;
+			}
+		}
+		if ($safe_description != $this->description)
+		{
+			if ($this->save_new_group_description($safe_description))
+			{
+				$this->set_description($safe_description);
+				if ($updated_values > 0)
+				{
+					$return_message .= ", ";
+				}
+				$return_message .= "Group description";
+				$updated_values++;
+			}
+		}
+		if ($updated_values == 0)
+		{
+			$return_message = "No changes were saved.";
+		}
+		return $return_message;
+	}
+
+	private function save_new_group_description($description)
+	{
+		global $dbCon;
+
+		$safe_description = sanitize_text($description);
+
+		$sql = "UPDATE `group` SET description = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $safe_description, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	private function save_new_group_name($group_name)
+	{
+		global $dbCon;
+
+		$safe_name = sanitize_text($group_name);
+
+		$sql = "UPDATE `group` SET name = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $safe_name, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	private function save_new_group_max_size($max_size)
+	{
+		global $dbCon;
+
+		$safe_max_size = sanitize_int($max_size);
+
+		$sql = "UPDATE `group` SET max_members = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $safe_max_size, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	private function save_new_group_category($category_id)
+	{
+		global $dbCon;
+
+		$safe_category_id = sanitize_int($category_id);
+
+		$sql = "UPDATE `group` SET category_id = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $safe_category_id, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
 	public function get_id()
 	{
 		return $this->id;
@@ -391,7 +561,7 @@ class Group
 	{
 		return $this->category_image;
 	}
-	
+
 	public function get_public()
 	{
 		return $this->public;
@@ -451,9 +621,10 @@ class Group
 	{
 		$this->category_image = $category_image;
 	}
-	
+
 	private function set_public($public)
 	{
 		$this->public = $public;
 	}
+
 }

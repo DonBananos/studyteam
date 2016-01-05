@@ -2,6 +2,7 @@
 require_once '../includes/configuration.php';
 require_once '../student/student.php';
 require_once './group.php';
+require_once './group_controller.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -17,8 +18,10 @@ if (!isset($_SESSION['logged_in']) OR ! isset($_GET['id']))
 $student = new Student($_SESSION['user_id']);
 
 $group = new Group($_GET['id']);
+$gc = new Group_controller();
 
 $membership = FALSE;
+$edited = FALSE;
 if ($group->get_if_student_is_member($student->get_id()))
 {
 	$membership = TRUE;
@@ -27,7 +30,7 @@ if ($group->get_if_student_is_member($student->get_id()))
 		$group->remove_student_from_group($student->get_id());
 		$membership = FALSE;
 	}
-	if (isset($_POST['invite']))
+	elseif (isset($_POST['invite']))
 	{
 		if (validate_int($_POST['buddy']))
 		{
@@ -36,9 +39,41 @@ if ($group->get_if_student_is_member($student->get_id()))
 			$safe_message = sanitize_text($_POST['message']);
 			$invite_student = new Student($safe_student_id);
 			$answer = $group->invite_student($safe_student_id, $student->get_id(), $safe_message, $invite_student->get_email(), $invite_student->get_fullname(), $student->get_email(), $student->get_fullname());
-			?>
-			<script>alert("<?php echo $answer ?>");</script>
-			<?php
+		}
+		else
+		{
+			$answer = "Something went wrong. Please reload page and try again!";
+		}
+		?>
+		<script>alert("<?php echo $answer ?>");</script>
+		<?php
+	}
+	elseif (isset($_POST['edit']))
+	{
+		$student_level_in_group = $student->get_student_level_in_group($group->get_id());
+		if ($student_level_in_group === 2 || $student_level_in_group === 3)
+		{
+			$safe_name = sanitize_text($_POST['editGroupName']);
+			$safe_max_size = sanitize_int($_POST['editGroupSize']);
+			$safe_category = sanitize_int($_POST['editGroupCategory']);
+			$safe_description = sanitize_text($_POST['editGroupDescription']);
+			if ($student_level_in_group === 2)
+			{
+				$safe_name = $group->get_name();
+				$safe_max_size = $group->get_max_members();
+				$safe_category = $group->get_category_id();
+				$edit_message = $group->update_group($safe_name, $safe_max_size, $safe_category, $safe_description);
+				$edited = TRUE;
+			}
+			elseif ($student_level_in_group === 3)
+			{
+				if ($gc->validate_if_category($safe_category) === FALSE)
+				{
+					$safe_category = $group->get_category_id();
+				}
+				$edit_message = $group->update_group($safe_name, $safe_max_size, $safe_category, $safe_description);
+				$edited = TRUE;
+			}
 		}
 	}
 }
@@ -116,10 +151,10 @@ if ($membership === FALSE && $group->get_public() == 0)
 										<?php
 										if ($membership)
 										{
-											if ($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1)
+											if (($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1) && $group->check_if_max_is_reached() === FALSE)
 											{
 												?>
-												<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
+												<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#inviteModal"><span class="fa fa-plus"></span> Invite</button>
 												<?php
 											}
 											?>
@@ -174,7 +209,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										$member = new Student($student_id);
 										?>
 										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username());?>">
+											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); ?>">
 												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
 													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
 												</div>
@@ -205,7 +240,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 		<?php
 		if ($membership)
 		{
-			if ($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1)
+			if (($student->get_if_student_can_invite_in_group($group->get_id()) || $group->get_public() === 1) && $group->check_if_max_is_reached() === FALSE)
 			{
 				?>
 				<!-- Invite Modal -->
@@ -271,15 +306,79 @@ if ($membership === FALSE && $group->get_public() == 0)
 						<div class="modal-content">
 							<div class="modal-header">
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="editModalLabel">Edit <?php echo $group->get_name() ?></h4>
+								<h4 class="modal-title" id="editModalLabel">Edit '<?php echo $group->get_name() ?>'</h4>
 							</div>
-							<form>
+							<form action="" method="POST" name="editGroupForm">
 								<div class="modal-body">
-
+									<?php
+									if ($student_level_in_group === 3)
+									{
+										?>
+										<div class="row form-group" id="editGroupName">
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+												<label for="groupNameInput" class="form-left-label">Group name</label>
+											</div>
+											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+												<input type="text" name="editGroupName" class="form-control" value="<?php echo $group->get_name() ?>" id="groupNameInput" required="required">
+											</div>
+										</div>
+										<div class="row form-group" id="editGroupMaxSize">
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+												<label for="groupSizeInput" class="form-left-label">Max size</label>
+											</div>
+											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+												<input type="number" name="editGroupSize" class="form-control" value="<?php echo $group->get_max_members() ?>" id="groupSizeInput" required="required" min="<?php echo $group->get_number_of_registered_members() ?>">
+											</div>
+										</div>
+										<div class="row form-group" id="editGroupCategory">
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+												<label for="groupCategorySelect" class="form-left-label">Category</label>
+											</div>
+											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+												<select class="form-control" name="editGroupCategory" id="groupCategorySelect" required="required">
+													<?php
+													$categories = $gc->get_category_names_and_ids();
+													foreach ($categories as $cat_id => $cat_name)
+													{
+														if ($cat_id === $group->get_category_id())
+														{
+															?>
+															<option value="<?php echo $cat_id ?>" selected="selected"><?php echo $cat_name ?></option>
+															<?php
+														}
+														else
+														{
+															?>
+															<option value="<?php echo $cat_id ?>"><?php echo $cat_name ?></option>
+															<?php
+														}
+													}
+													?>
+												</select>
+											</div>
+										</div>
+										<hr class="small-line">
+										<?php
+									}
+									if ($student_level_in_group === 2 || $student_level_in_group === 3)
+									{
+										?>
+										<div class="row form-group" id="editGroupMaxSize">
+											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+												<label for="groupDescriptionTextArea" class="form-left-label">Description</label>
+											</div>
+											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+												<textarea name="editGroupDescription" class="form-control textarea" id="groupDescriptionTextArea" required="required" rows="5"><?php echo $group->get_description() ?></textarea>
+											</div>
+										</div>
+										<?php
+									}
+									?>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-									<button type="button" class="btn btn-primary">Save Edits</button>
+									<button type="reset" class="btn btn-warning">Discard Edits</button>
+									<button type="submit" class="btn btn-primary" name="edit">Save Edits</button>
 								</div>
 							</form>
 						</div>
@@ -325,6 +424,12 @@ if ($membership === FALSE && $group->get_public() == 0)
 		</div>
 		<?php
 		require '../includes/footer.php';
+		if ($edited === TRUE)
+		{
+			?>
+			<script>alert("<?php echo $edit_message ?>");</script>
+			<?php
+		}
 		?>
     </body>
 </html>
