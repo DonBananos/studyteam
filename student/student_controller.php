@@ -25,6 +25,17 @@ class Student_controller
 
 	public function create_student($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
+		if(!$this->validate_input($username, $firstname, $lastname, $email, $pass1, $pass2))
+		{
+			return 
+		}
+		
+		
+
+/*
+		
+
+		
 		//We generate a random string between 40 and 50 characters of length, to
 		//use as the salt.
 		$salt = generate_random_string(40, 50);
@@ -96,11 +107,30 @@ class Student_controller
 		//Close down the statement (good practice)
 		$stmt->close();
 		return $error;
+		*/
 	}
 
 	/*
 	 * Function used to hash a password
 	 */
+
+	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
+	{
+		if(!$this->validate_username($username) !== TRUE)
+		{
+			return false;
+		}
+		
+		if(!$this->validate_password($pass1) !== TRUE)
+		{
+			return false;
+		}
+
+		if(!$this->compare_passwords($pass1, $pass2) !== TRUE)
+		{
+			return false;
+		}
+	}
 
 	private function hash_password($password, $salt)
 	{
@@ -185,15 +215,48 @@ class Student_controller
 	}
 
 	/*
-	 * Function that checks if a string is an email
-	 */
+		Function that checks if username is valid.
+		See defined constant "REGEX_USERNAME" in configuration.php around line 34.
+	*/
+	function validate_username($uname)
+	{
+		//return preg_match(REGEX_USERNAME, $username);
+		return preg_match(REGEX_USERNAME, $uname);
+	}
 
-	function check_if_email($string)
+	/*
+		Function that checks if password is valid.
+		See defined constant "REGEX_PASSWORD" in configuration.php around line 35.
+	*/
+	function validate_password($password)
+	{
+		return preg_match(REGEX_PASSWORD, $password);
+	}
+
+	/*
+		Function that checks if email is valid.
+	*/
+	function validate_email($string)
 	{
 		//We use the built in filter_var function to validate the email.
 		//filter_var returns either the filtered data or false, which means we
 		//can simply return the answer of the function! simple!
 		return filter_var($string, FILTER_VALIDATE_EMAIL);
+	}
+
+	/*
+		Function that checks if firstname is valid.
+		1) Trim input
+		2) check if string length > 1
+	*/
+	function validate_name($name)
+	{
+		$trim = trim($name);
+		if(strlen($trim) > 1)
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	/*
