@@ -185,15 +185,69 @@ class Student_controller
 	}
 
 	/*
-	 * Function that checks if a string is an email
-	 */
+		Function that checks if username is valid.
+		See defined constant "REGEX_USERNAME" in configuration.php around line 34.
+	*/
+	function validate_username($username)
+	{
+		if(preg_match(REGEX_USERNAME))
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
 
-	function check_if_email($string)
+	/*
+		Function that checks if password is valid.
+		See defined constant "REGEX_PASSWORD" in configuration.php around line 35.
+	*/
+	function validate_password($password)
+	{
+		if(preg_match(REGEX_PASSWORD))
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	/*
+		Function that checks if email is valid.
+	*/
+	function validate_email($string)
 	{
 		//We use the built in filter_var function to validate the email.
 		//filter_var returns either the filtered data or false, which means we
 		//can simply return the answer of the function! simple!
 		return filter_var($string, FILTER_VALIDATE_EMAIL);
+	}
+
+	/*
+		Function that checks if firstname is valid.
+		1) Trim input
+		2) check if string length > 1
+	*/
+	function validate_firstname($firstname)
+	{
+		$trim = trim($firstname);
+		if(strlen($trim) > 1)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	/*
+		Function that checks if lastname is valid.
+		1) Trims input
+		2) check if string length > 1
+	*/
+	function validate_lastname($lastname)
+	{
+		if(strlen($trim) > 1)
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	/*
