@@ -187,7 +187,7 @@ function upload_image($path, $post_id = null, $max_width)
     {
         mkdir($upload_directory, 0777, true);
     }
-    $image_name = getNextAvailableImageName($upload_directory, getImageType($_FILES['imageFile']['name']));
+    $image_name = get_free_image_name($upload_directory, getImageType($_FILES['imageFile']['name']));
  
     $upload_file = $upload_directory . $image_name;
     $image_path .= $image_name;
@@ -269,67 +269,18 @@ function resizeImage($image, $max_width, $max_height)
     }
 }
  
-function getNextAvailableImageName($folder, $extension, $thumb = false)
+function get_free_image_name($folder, $extension)
 {
-    $number = 1;
+    $name_exists = TRUE;
  
-    if ($thumb)
+    while ($name_exists === TRUE)
     {
-        $name = "THUMB_";
-    }
-    else
-    {
-        $name = "IMAGE_";
-    }
-    $name .= "000";
- 
-    $name_exists = true;
- 
-    while ($name_exists)
-    {
-        if (!file_exists($folder . $name . $number . '.' . $extension))
+		$name = generate_random_string(40, 50);
+		
+        if (!file_exists($folder . $name . '.' . $extension))
         {
-            $name_exists = false;
+            $name_exists = FALSE;
             return $name . $number . '.' . $extension;
-        }
-        else
-        {
-            $number++;
-            if ($number > 9)
-            {
-                if ($thumb)
-                {
-                    $name = "THUMB_";
-                }
-                else
-                {
-                    $name = "IMAGE_";
-                }
-                $name .= "00";
-            }
-            elseif ($number > 99)
-            {
-                if ($thumb)
-                {
-                    $name = "THUMB_";
-                }
-                else
-                {
-                    $name = "IMAGE_";
-                }
-                $name .= "0";
-            }
-            elseif ($number > 999)
-            {
-                if ($thumb)
-                {
-                    $name = "THUMB_";
-                }
-                else
-                {
-                    $name = "IMAGE_";
-                }
-            }
         }
     }
 }
