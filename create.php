@@ -7,11 +7,35 @@ $sc = new Student_controller();
 if (isset($_POST['join']))
 {
 	$username = sanitize_text($_POST['username']);
+	if(strlen(trim($username)) < 1)
+	{
+		die("Bastard");
+	}
 	$firstname = sanitize_text($_POST['firstname']);
+	if(strlen(trim($firstname)) < 1)
+	{
+		die("Bastard");
+	}
 	$lastname = sanitize_text($_POST['lastname']);
+	if(strlen(trim($lastname)) < 1)
+	{
+		die("Bastard");
+	}
 	$email = sanitize_email($_POST['email']);
+	if(strlen(trim($email)) < 1)
+	{
+		die("Bastard");
+	}
 	$pass1 = sanitize_text($_POST['password1']);
+	if(strlen(trim($pass1)) < 1)
+	{
+		die("Bastard");
+	}
 	$pass2 = sanitize_text($_POST['password2']);
+	if(strlen(trim($pass2)) < 1)
+	{
+		die("Bastard");
+	}
 	if (strlen($_POST['phone']) > 0)
 	{
 		echo 'FREAKING BOT!';
@@ -51,22 +75,22 @@ if (isset($_POST['join']))
 					</div>
 					<form name="join-form" action="" method="POST">
 						<div class="row">
-							<input type="text" name="username" class="form-control" placeholder="Username">
+							<input type="text" name="username" class="form-control" placeholder="Username" required="required">
 						</div>
 						<div class="row">
-							<input type="text" name="firstname" class="form-control" placeholder="Firstname">
+							<input type="text" name="firstname" class="form-control" placeholder="Firstname" required="required">
 						</div>
 						<div class="row">
-							<input type="text" name="lastname" class="form-control" placeholder="Lastname">
+							<input type="text" name="lastname" class="form-control" placeholder="Lastname" required="required">
 						</div>
 						<div class="row">
-							<input type="email" name="email" class="form-control" placeholder="Email">
+							<input type="email" name="email" class="form-control" placeholder="Email" required="required">
 						</div>
 						<div class="row">
-							<input type="password" name="password1" class="form-control" placeholder="Password">
+							<input type="password" name="password1" class="form-control" placeholder="Password" required="required">
 						</div>
 						<div class="row">
-							<input type="password" name="password2" class="form-control" placeholder="Retype Password">
+							<input type="password" name="password2" class="form-control" placeholder="Retype Password" required="required">
 						</div>
 						<div class="row">
 							<input type="tel" class="form-control" placeholder="Telephone" name="phone" style="display: none"> 

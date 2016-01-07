@@ -218,7 +218,7 @@ class Student_controller
 		}
 		//If the id is not set in the user array, or ID is less than one, we
 		//can't log the login attempt for a specific user
-		if (!isset($user_array['id']) || $user_array['id'] < 1)
+		if (!isset($user_array['id']) && !validate_int($user_array['id']))
 		{
 			//We save the login attempt, without passing a user id, and passing
 			//the 0 value as response (0 == false in SQL)

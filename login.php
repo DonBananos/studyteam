@@ -9,7 +9,15 @@ $sc = new Student_controller();
 if (isset($_POST['login']))
 {
 	$user = sanitize_text($_POST['user']);
+	if(strlen(trim($user)) < 1)
+	{
+		die("Bastard");
+	}
 	$pass = sanitize_text($_POST['pass']);
+	if(strlen(trim($pass)) < 1)
+	{
+		die("Bastard");
+	}
 	$answer = $sc->log_member_in($user, $pass);
 	if ($answer !== FALSE && $answer !== TRUE)
 	{
@@ -83,10 +91,10 @@ if (isset($_SESSION['logged_in']))
 							<input style="display:none" type="password" name="fakepasswordremembered"/>
 							<!-- Now for the real form -->
 							<div class="row">
-								<input type="text" name="user" class="form-control" placeholder="Username or Email">
+								<input type="text" name="user" class="form-control" placeholder="Username or Email" required="required">
 							</div>
 							<div class="row">
-								<input type="password" name="pass" class="form-control" placeholder="Password">
+								<input type="password" name="pass" class="form-control" placeholder="Password" required="required">
 							</div>
 							<div class="row">
 								<input type="submit" name="login" class="btn btn-primary" value="Login">

@@ -132,7 +132,7 @@ if (isset($_POST['addGroupSubmit']))
 								<div class="row">
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>);">
+											<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $group->get_category_image() ?>);">
 												<div class="group-header">
 													<h3><?php echo $group->get_name() ?></h3>
 													<div class="publicity">
@@ -184,7 +184,7 @@ if (isset($_POST['addGroupSubmit']))
 									<div class="row">
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<a href="<?php echo BASE ?>group/<?php echo $suggested_group->get_id() ?>/">
-												<div class="group" id="group-1" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
+												<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
 													<div class="group-header">
 														<h3><?php echo $suggested_group->get_name() ?></h3>
 														<div class="publicity">

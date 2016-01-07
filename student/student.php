@@ -511,9 +511,12 @@ class Student
 	public function get_if_student_is_part_of_group($group_id)
 	{
 		$all_groups_of_student = $this->get_group_ids_that_student_is_part_of();
-		if (in_array($group_id, $all_groups_of_student))
+		if(is_array($all_groups_of_student))
 		{
-			return TRUE;
+			if (in_array($group_id, $all_groups_of_student))
+			{
+				return TRUE;
+			}
 		}
 		return FALSE;
 	}

@@ -216,7 +216,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 												</div>
 												<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
 													<h4 class="student-name">
-														<?php echo $member->get_fullname() ?>
+														<?php echo $member->get_username() ?>
 													</h4>
 													<span class="student-info">
 														<?php echo get_member_level_name_from_level($member_data['level']) ?>
@@ -229,7 +229,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 									}
 									?>
 									<div class="group-admin-options no-btm-pad">
-										<button class="btn btn-default btn-sm"><span class="fa fa-group"></span> All Members</button>
+										<button class="btn btn-default btn-sm" data-toggle="modal" data-target="#membersModal"><span class="fa fa-group"></span> All Members</button>
 									</div>
 								</div>
 							</div>
@@ -387,39 +387,205 @@ if ($membership === FALSE && $group->get_public() == 0)
 				</div>
 				<?php
 			}
+			?>
+			<!-- Leave Prompt Modal -->
+			<div class="modal fade modal-inverse" id="leaveModal" tabindex="-1" role="dialog" aria-labelledby="leaveModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="leaveModalLabel">Are you sure?</h4>
+						</div>
+						<form action="" method="POST">
+							<div class="modal-body">
+								<?php
+								if ($group->get_public() == 0)
+								{
+									?>
+									This group is private, and you former invitation does no longer work.<br/>
+									<?php
+								}
+								else
+								{
+									?>
+									Eventhough this is a public group, there's a limited amount of memberships.<br/>
+									<?php
+								}
+								?>
+								Are you sure you want to leave the group?
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-primary" data-dismiss="modal">Nope!</button>
+								<button type="submit" class="btn btn-danger" name="leave">Yes</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<?php
 		}
 		?>
-		<!-- Leave Prompt Modal -->
-		<div class="modal fade modal-inverse" id="leaveModal" tabindex="-1" role="dialog" aria-labelledby="leaveModalLabel">
+		<!-- All Members Modal -->
+		<div class="modal fade modal-inverse" id="membersModal" tabindex="-1" role="dialog" aria-labelledby="membersModalLabel">
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title" id="leaveModalLabel">Are you sure?</h4>
+						<h4 class="modal-title" id="membersModalLabel">All Members of <?php echo $group->get_name() ?></h4>
 					</div>
-					<form action="" method="POST">
-						<div class="modal-body">
+					<div class="modal-body">
+						<div id="m-members-overview">
 							<?php
-							if ($group->get_public() == 0)
+							$student_level_in_group = $student->get_student_level_in_group($group->get_id());
+							if ($student_level_in_group === 3)
 							{
-								?>
-								This group is private, and you former invitation does no longer work.<br/>
-								<?php
+								$all_members_array = $group->get_array_with_members_and_levels(FALSE, FALSE);
 							}
 							else
 							{
-								?>
-								Eventhough this is a public group, there's a limited amount of memberships.<br/>
-								<?php
+								$all_members_array = $group->get_array_with_members_and_levels(TRUE, FALSE);
+							}
+							$runs = 1;
+							$inactive_members_array = array();
+							foreach ($all_members_array as $student_id => $member_data)
+							{
+								if ($member_data['active'] != 1)
+								{
+									$inactive_members_array[$student_id] = $member_data;
+								}
+								else
+								{
+									$member = new Student($student_id);
+									?>
+									<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+										<div class="row">
+											<div class="group-member-block">
+												<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); ?>/">
+													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+														<div class="row">
+															<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
+														</div>
+													</div>
+													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+														<div class="row">
+															<h4 class="student-name">
+																<?php echo $member->get_username() ?>
+															</h4>
+															<span class="student-info">
+																<?php echo get_member_level_name_from_level($member_data['level']) ?> | Joined <?php echo date("Y-m-d", strtotime($member_data['joined'])) ?>
+															</span>
+														</div>
+													</div>
+													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+														<div class="student-options">
+															<?php
+															$member_level_in_group = $member->get_student_level_in_group($group->get_id());
+															if ($student_level_in_group == 3 && $member_level_in_group == 1)
+															{
+																?>
+																<form class="form-inline" action="" method="POST">
+																	<input type="hidden" name="sid" value="<?php echo $member->get_id() ?>">
+																	<input type="submit" name="madmin" value="Upgrade to Admin" class="btn btn-warning">
+																</form>
+																<?php
+															}
+															elseif ($student_level_in_group == 3 && $member_level_in_group == 2)
+															{
+																?>
+																<form class="form-inline" action="" method="POST">
+																	<input type="hidden" name="sid" value="<?php echo $member->get_id() ?>">
+																	<input type="submit" name="dadmin" value="Downgrade to Member" class="btn btn-warning">
+																</form>
+																<?php
+															}
+															if (($student_level_in_group == 2 || $student_level_in_group == 3) && $member_level_in_group != 3)
+															{
+																?>
+																<form class="form-inline" action="" method="POST">
+																	<input type="hidden" name="sid" value="<?php echo $member->get_id() ?>">
+																	<input type="submit" name="kuser" value="Kick" class="btn btn-danger">
+																</form>
+																<?php
+															}
+															?>
+														</div>
+													</div>
+												</a>
+											</div>
+										</div>
+									</div>
+									<?php
+									if ($runs % 2 == 0 && $runs != count($all_members_array))
+									{
+										?>
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<div class="row">
+												<hr class="minor-line">
+											</div>
+										</div>
+										<?php
+									}
+								}
+								$runs++;
+							}
+							if (is_array($inactive_members_array))
+							{
+								if (count($inactive_members_array) > 0)
+								{
+									?>
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<hr>
+										<h3>Former members of group</h3>
+									</div>
+									<?php
+									foreach ($inactive_members_array as $student_id => $member_data)
+									{
+										if ($member_data['active'] != 1)
+										{
+											$member = new Student($student_id);
+											?>
+											<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+												<div class="row">
+													<div class="group-member-block">
+														<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); ?>/">
+															<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+																<div class="row">
+																	<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
+																</div>
+															</div>
+															<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+																<div class="row">
+																	<h4 class="student-name">
+																		<?php echo $member->get_username() ?>
+																	</h4>
+																	<span class="student-info">
+																		<?php echo get_member_level_name_from_level($member_data['level']) ?> | Joined <?php echo date("Y-m-d", strtotime($member_data['joined'])) ?>
+																	</span>
+																</div>
+															</div>
+														</a>
+													</div>
+												</div>
+											</div>
+											<?php
+											if ($runs % 2 == 0 && $runs != count($all_members_array))
+											{
+												?>
+												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+													<div class="row">
+														<hr class="minor-line">
+													</div>
+												</div>
+												<?php
+											}
+										}
+										$runs++;
+									}
+								}
 							}
 							?>
-							Are you sure you want to leave the group?
 						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-primary" data-dismiss="modal">Nope!</button>
-							<button type="submit" class="btn btn-danger" name="leave">Yes</button>
-						</div>
-					</form>
+					</div>
 				</div>
 			</div>
 		</div>

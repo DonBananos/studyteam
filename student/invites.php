@@ -99,82 +99,84 @@ if (isset($_POST['decline']))
 					?>
 					<div class="row">
 						<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-							<?php
-							$group_invites = $student->get_all_pending_invites();
-							foreach ($group_invites as $group_invite_id => $group_invite)
-							{
-								$group = new Group($group_invite['group_id']);
-								$invitor = new Student($group_invite['invitor_id']);
-								?>
-								<div class="row">
-									<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>);">
-												<div class="group-header">
-													<h3><?php echo $group->get_name() ?></h3>
+							<div class="row">
+								<?php
+								$group_invites = $student->get_all_pending_invites();
+								foreach ($group_invites as $group_invite_id => $group_invite)
+								{
+									$group = new Group($group_invite['group_id']);
+									$invitor = new Student($group_invite['invitor_id']);
+									?>
+									<div class="row">
+										<div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+											<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
+												<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $group->get_category_image() ?>);">
+													<div class="group-header">
+														<h3><?php echo $group->get_name() ?></h3>
+													</div>
 												</div>
-											</div>
-										</a>
-									</div>
-									<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-										<div class="invite-info">
-											<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#replyModal<?php echo $group_invite_id ?>">Reply</button>
-											<hr class="minor-line" style="margin-top: 5px">
-											<div class="overflow-auto invite-list-info">
-												Invited by: <a href=""><?php echo $invitor->get_fullname() ?></a><br/>
-												Invited at: <?php echo $group_invite['time'] ?><br/>
-												<?php
-												if (!empty($group_invite['message']))
-												{
-													echo 'Invite Message: ' . $group_invite['message'] . '<br/>';
-												}
-												?>
-												<br/>
-												<?php echo $group->get_public_or_private() ?> Group<br/>
-												<?php echo $group->get_number_of_registered_members() ?> / <?php echo $group->get_max_members() ?> Members<br/>
+											</a>
+										</div>
+										<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+											<div class="invite-info">
+												<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#replyModal<?php echo $group_invite_id ?>">Reply</button>
+												<hr class="minor-line" style="margin-top: 5px">
+												<div class="overflow-auto invite-list-info">
+													Invited by: <a href=""><?php echo $invitor->get_fullname() ?></a><br/>
+													Invited at: <?php echo $group_invite['time'] ?><br/>
+													<?php
+													if (!empty($group_invite['message']))
+													{
+														echo 'Invite Message: ' . $group_invite['message'] . '<br/>';
+													}
+													?>
+													<br/>
+													<?php echo $group->get_public_or_private() ?> Group<br/>
+													<?php echo $group->get_number_of_registered_members() ?> / <?php echo $group->get_max_members() ?> Members<br/>
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<!-- Reply Modal for Invite <?php echo $group_invite_id ?> -->
-								<div class="modal fade modal-inverse" id="replyModal<?php echo $group_invite_id ?>" tabindex="-1" role="dialog" aria-labelledby="replyModal<?php echo $group_invite_id ?>Label">
-									<div class="modal-dialog" role="document">
-										<div class="modal-content">
-											<div class="modal-header">
-												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-												<h4 class="modal-title" id="replyModal<?php echo $group_invite_id ?>Label">Reply to Invite</h4>
+									<!-- Reply Modal for Invite <?php echo $group_invite_id ?> -->
+									<div class="modal fade modal-inverse" id="replyModal<?php echo $group_invite_id ?>" tabindex="-1" role="dialog" aria-labelledby="replyModal<?php echo $group_invite_id ?>Label">
+										<div class="modal-dialog" role="document">
+											<div class="modal-content">
+												<div class="modal-header">
+													<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+													<h4 class="modal-title" id="replyModal<?php echo $group_invite_id ?>Label">Reply to Invite</h4>
+												</div>
+												<form action="" method="POST" name="inviteReplyForm">
+													<div class="modal-body">
+														You have been invited to join the <?php echo $group->get_public_or_private() ?> group <span class="invite-modal-group-name"><?php echo $group->get_name() ?></span><br/>
+														Group Description:<br/>
+														<?php echo $group->get_description() ?><br/>
+														<input type="hidden" name="invid" value="<?php echo $group_invite_id ?>">
+														<input type="hidden" name="gid" value="<?php echo $group_invite['group_id'] ?>">
+													</div>
+													<div class="modal-footer">
+														<button type="button" class="btn btn-default hidden-xs" data-dismiss="modal">Close</button>
+														<button type="submit" class="btn btn-primary hidden-xs" name="acceptAndGo">Accept and Go to Group</button>
+														<button type="submit" class="btn btn-primary" name="accept">Accept</button>
+														<button type="submit" class="btn btn-danger" name="decline">Decline</button>
+													</div>
+												</form>
 											</div>
-											<form action="" method="POST" name="inviteReplyForm">
-												<div class="modal-body">
-													You have been invited to join the <?php echo $group->get_public_or_private() ?> group <span class="invite-modal-group-name"><?php echo $group->get_name() ?></span><br/>
-													Group Description:<br/>
-													<?php echo $group->get_description() ?><br/>
-													<input type="hidden" name="invid" value="<?php echo $group_invite_id ?>">
-													<input type="hidden" name="gid" value="<?php echo $group_invite['group_id'] ?>">
-												</div>
-												<div class="modal-footer">
-													<button type="button" class="btn btn-default hidden-xs" data-dismiss="modal">Close</button>
-													<button type="submit" class="btn btn-primary hidden-xs" name="acceptAndGo">Accept Invite and Go to Group</button>
-													<button type="submit" class="btn btn-primary" name="accept">Accept Invite</button>
-													<button type="submit" class="btn btn-danger" name="decline">Decline Invite</button>
-												</div>
-											</form>
 										</div>
 									</div>
-								</div>
-								<?php
-							}
-							if (count($group_invites) === 0)
-							{
-								?>
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										No pending invites
+									<?php
+								}
+								if (count($group_invites) === 0)
+								{
+									?>
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											No pending invites
+										</div>
 									</div>
-								</div>
-								<?php
-							}
-							?>
+									<?php
+								}
+								?>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -280,26 +280,62 @@ class Group
 		return $error;
 	}
 
-	public function get_array_with_members_and_levels()
+	public function get_array_with_members_and_levels($active = TRUE, $max = 4)
 	{
+		if($max !== FALSE)
+		{
+			if(validate_int($max) != TRUE)
+			{
+				return "There was an error in the sql syntax. When using a limit, please make sure the limit is an integer";
+			}
+		}
 		global $dbCon;
 
 		$members_and_levels = array();
 
-		$sql = "SELECT student_id, level, join_datetime FROM student_group WHERE group_id = ?;";
+		if($active === TRUE)
+		{
+			if($max === FALSE)
+			{
+				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ? AND active = 1;";
+			}
+			else
+			{
+				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ? AND active = 1 LIMIT ?;";
+			}
+		}
+		else
+		{
+			if($max === FALSE)
+			{
+				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ?;";
+			}
+			else
+			{
+				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ? LIMIT ?;";
+			}
+		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->id); //Bind parameters.
+		if($max === FALSE)
+		{
+			$stmt->bind_param('i', $this->id); //Bind parameters.
+		}
+		else
+		{
+			$stmt->bind_param('ii', $this->id, $max); //Bind parameters.
+		}
 		$stmt->execute(); //Execute
-		$stmt->bind_result($student_id, $level, $join_datetime);
+		$stmt->bind_result($student_id, $level, $join_datetime, $active);
 		while ($stmt->fetch())
 		{
 			$member = array();
 			$member['level'] = $level;
 			$member['joined'] = $join_datetime;
+			$member['active'] = $active;
 			$members_and_levels[$student_id] = $member;
 		}
 		if (count($members_and_levels) > 0)

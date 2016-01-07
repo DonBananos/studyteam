@@ -544,7 +544,7 @@ h4.student-name>a:hover
 	margin-top: 10px;
     border: #2D2D2A 1px solid;
 	border-left: none;
-	border-radius: 0px 5px 5px 0px;
+	border-radius: 0px 10px 10px 0px;
 	padding: 10px;
 	height: 222px;
 }
@@ -597,4 +597,48 @@ h4.student-name>a:hover
 .form-left-label:after
 {
 	content: ":";
+}
+
+#m-members-overview
+{
+	max-height: 40vh;
+	overflow-x: hidden;
+}
+
+#m-members-overview .minor-line
+{
+	border-color: transparent;
+	margin-top: 5px;
+}
+
+#m-members-overview .student-options
+{
+	margin-top: 5px;
+}
+
+.group-member-block
+{
+	padding: 5px;
+}
+
+.group-member-block .student-avatar
+{
+	margin-bottom: 10px;
+	border: #C7CB85 solid 2px;
+}
+
+.group-member-block .student-name,
+.group-member-block .student-info
+{
+	margin-left: 15px;
+}
+
+.group-member-block .student-info
+{
+	margin-bottom: 8px;
+}
+
+.group-member-block .student-name
+{
+	font-size: 22px;
 }
