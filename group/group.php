@@ -398,7 +398,7 @@ class Group
 		$safe_name = sanitize_text($name);
 		$safe_max_size = sanitize_int($max_size);
 		$safe_category = sanitize_int($category);
-		$safe_description = sanitize_text($description);
+		$safe_description = $description; //WYSIWYG ALREADY SANITIZED
 		if ($safe_name != $this->name)
 		{
 			if ($this->save_new_group_name($safe_name))
@@ -777,7 +777,7 @@ class Group
 
 	public function get_description()
 	{
-		return $this->description;
+		return htmlspecialchars_decode($this->description);
 	}
 
 	public function get_category_id()

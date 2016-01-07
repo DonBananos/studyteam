@@ -59,7 +59,7 @@ if ($group->get_if_student_is_member($student->get_id()))
 			$safe_name = sanitize_text($_POST['editGroupName']);
 			$safe_max_size = sanitize_int($_POST['editGroupSize']);
 			$safe_category = sanitize_int($_POST['editGroupCategory']);
-			$safe_description = sanitize_text($_POST['editGroupDescription']);
+			$safe_description = $_POST['editGroupDescription'];
 			if ($student_level_in_group === 2)
 			{
 				$safe_name = $group->get_name();
@@ -142,6 +142,10 @@ if ($membership === FALSE && $group->get_public() == 0)
 	die();
 	<?php
 }
+if(isset($_POST['post-message']))
+{
+	//Post message 
+}
 ?>
 <html>
     <head>
@@ -172,15 +176,17 @@ if ($membership === FALSE && $group->get_public() == 0)
 									<div class="post-box">
 										<!-- Nav tabs -->
 										<ul class="nav nav-tabs" role="tablist">
-											<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab"><span class="fa fa-pencil-square-o"></span> Post Message</a></li>
+											<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab"><span class="fa fa-pencil-square-o"></span> Message</a></li>
 											<li role="presentation"><a href="#file" aria-controls="file" role="tab" data-toggle="tab"><span class="fa fa-file"></span> File</a></li>
 											<li role="presentation"><a href="#picture" aria-controls="picture" role="tab" data-toggle="tab"><span class="fa fa-image"></span> Picture</a></li>
 										</ul>
 										<!-- Tab panes -->
 										<div class="tab-content">
 											<div role="tabpanel" class="tab-pane active" id="message">
-												<form>
-													<textarea class="form-control textarea"></textarea>
+												<form action="" method="POST">
+													<textarea class="form-control textarea" id="post-textarea" name="post-text-message"></textarea>
+													<div class="clearfix"></div>
+													<button class="btn btn-primary" name="post-message" type="submit">Post</button>
 												</form>
 											</div>
 											<div role="tabpanel" class="tab-pane" id="file">
@@ -235,7 +241,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										Category: <?php echo $group->get_category_name() ?><br/>
 									</div>
 									<hr class="minor-line">
-									<?php echo $group->get_description() ?>
+									<?php echo $group->get_description(); ?>
 									<hr class="minor-line">
 									<?php
 									$num_pending_invites = $group->get_number_of_pending_invites();
@@ -412,10 +418,10 @@ if ($membership === FALSE && $group->get_public() == 0)
 									{
 										?>
 										<div class="row form-group" id="editGroupMaxSize">
-											<div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<label for="groupDescriptionTextArea" class="form-left-label">Description</label>
 											</div>
-											<div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<textarea name="editGroupDescription" class="form-control textarea" id="groupDescriptionTextArea" required="required" rows="5"><?php echo $group->get_description() ?></textarea>
 											</div>
 										</div>
@@ -658,5 +664,24 @@ if ($membership === FALSE && $group->get_public() == 0)
 			<?php
 		}
 		?>
+		<script>
+			$(document).ready(function () {
+				CKEDITOR.replace('post-textarea', {
+					toolbar: [
+						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
+						{name: 'links', items: ['Link', 'Unlink']},
+						{name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+						{name: 'colors', items: ['TextColor', 'BGColor']}
+					]
+				});
+				CKEDITOR.replace('groupDescriptionTextArea', {
+					toolbar: [
+						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']}
+					]
+				});//groupDescriptionTextArea
+			});
+		</script>
     </body>
 </html>
