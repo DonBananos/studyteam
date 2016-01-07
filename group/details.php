@@ -186,7 +186,9 @@ if(isset($_POST['post-message']))
 												<form action="" method="POST">
 													<textarea class="form-control textarea" id="post-textarea" name="post-text-message"></textarea>
 													<div class="clearfix"></div>
-													<button class="btn btn-primary" name="post-message" type="submit">Post</button>
+													<div class="post-options">
+														<button class="btn btn-primary" name="post-message" type="submit">Post</button>
+													</div>
 												</form>
 											</div>
 											<div role="tabpanel" class="tab-pane" id="file">
