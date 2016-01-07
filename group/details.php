@@ -174,16 +174,24 @@ elseif(isset($_POST['post-image-message']))
 	$group_id = $group->get_id();
 	if (isset($_POST['post-image-privacy']))
 	{
-		$public = sanitize_int($_POST['post-privacy']);
+		$public = sanitize_int($_POST['post-image-privacy']);
 	}
 	$post = $_POST['post-image-text-message'];
 	
-	//Upload image...
-
-	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
-	if (validate_int($post_result))
+	$image_path = upload_image(950);
+	if($image_path === FALSE)
 	{
-		//Success.. We got an ID in return...
+		//Sikke en bandit!
+	}
+	else
+	{
+		$post .= "<p><img src='".$image_path."' alt='".$group->get_name()." image upload'/></p>";
+
+		$post_result = $pc->create_post($student_id, $group_id, $public, $post);
+		if (validate_int($post_result))
+		{
+			//Success.. We got an ID in return...
+		}
 	}
 }
 ?>

@@ -11,7 +11,7 @@ define("W1BASE", "/studyteam/");
 define("ROOT_PATH", "/var/www/html/studyteam/");
 define("SECURE", FALSE);
 define("SERVER", "http://127.0.0.1:8080");
-define("IMAGE_LOCATION", ROOT_PATH."_uploads/_images/");
+define("IMAGE_LOCATION", "_uploads/_images/");
 
 //Database definitions
 //This is now pointing to the vps..
@@ -29,7 +29,7 @@ define("SALT", "d89F6O3CAdaok593Hvo6aG51sR");
 define("RESET_LIMIT", "24");
 
 //Set Avatar Location
-define("AVATAR_LOCATION", SERVER.BASE."includes/_media/_images/avatars/");
+define("AVATAR_LOCATION", SERVER . BASE . "includes/_media/_images/avatars/");
 
 // REGEX CREATE/EDIT USER
 define("REGEX_USERNAME", "/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,49}$/");
@@ -147,167 +147,206 @@ function get_permission_name_from_id($id)
 
 function get_member_level_name_from_level($level)
 {
-	if($level === 1)
+	if ($level === 1)
 	{
 		return "Member";
 	}
-	elseif($level === 2)
+	elseif ($level === 2)
 	{
 		return "Administrator";
 	}
-	elseif($level === 3)
+	elseif ($level === 3)
 	{
 		return "Owner";
 	}
 }
 
-function upload_image($path, $post_id = null, $max_width)
+function upload_image($max_width)
 {
-    $upload_directory = IMAGE_LOCATION;
-    $uploaded_url = SERVER.BASE;
- 
-    if (substr($path, -1) == '/')
-    {
-        $image_path = $path;
-    }
-    else
-    {
-        $image_path = $path . '/';
-    }
-    if (empty($post_id))
-    {
-        $image_path .= "cover/";
-    }
-    else
-    {
-        $image_path .= $post_id . "/";
-    }
-    $upload_directory .= $image_path;
-    if (!file_exists($upload_directory))
-    {
-        mkdir($upload_directory, 0777, true);
-    }
-    $image_name = get_free_image_name($upload_directory, getImageType($_FILES['imageFile']['name']));
- 
-    $upload_file = $upload_directory . $image_name;
-    $image_path .= $image_name;
-    $uploaded_url .= $image_path;
- 
-    if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $upload_file))
-    {
-        if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
-        {
-            $image = imagecreatefromjpeg($upload_file);
-        }
-        elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
-        {
-            $image = imagecreatefrompng($upload_file);
-        }
-        elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
-        {
-            $image = imagecreatefromgif($upload_file);
-        }
-        //Check for image resizing
-        list($width, $height) = getimagesize($upload_file);
-        if ($width > $max_width)
-        {
-            $new_width = $max_width;
-            $new_height = $height / $width * $new_width;
- 
-            $tmp = imagecreatetruecolor($new_width, $new_height);
- 
-            imagecopyresampled($tmp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
- 
-            if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
-            {
-                $exif = exif_read_data($upload_file);
-                if (!empty($exif['Orientation']))
-                {
-                    switch ($exif['Orientation'])
-                    {
-                        case 8:
-                            $tmp = imagerotate($tmp, 90, 0);
-                            break;
-                        case 3:
-                            $tmp = imagerotate($tmp, 180, 0);
-                            break;
-                        case 6:
-                            $tmp = imagerotate($tmp, -90, 0);
-                            break;
-                    }
-                }
-            }
-            if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
-            {
-                imagejpeg($tmp, $upload_file, 100);
-            }
-            elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
-            {
-                imagepng($tmp, $upload_file, 0);
-            }
-            elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
-            {
-                imagegif($tmp, $upload_file, 100);
-            }
-            imagedestroy($tmp);
-        }
- 
-        imagedestroy($image);
-        return $uploaded_url;
-    }
-    return false;
+	$path = '';
+	$upload_directory = ROOT_PATH . IMAGE_LOCATION;
+	$uploaded_url = SERVER . BASE;
+
+	$image_path = $path;
+	$upload_directory .= $image_path;
+	if (!file_exists($upload_directory))
+	{
+		mkdir($upload_directory, 0777, true);
+	}
+	$image_name = get_free_image_name($upload_directory, getImageType($_FILES['imageFile']['name']));
+
+	$upload_file = $upload_directory . $image_name;
+	$image_path .= IMAGE_LOCATION.$image_name;
+	$uploaded_url .= $image_path;
+
+	$file_type = trim(getImageType($_FILES['imageFile']['name']));
+	if($file_type == "jpg" || $file_type == "jpeg" || $file_type == "JPG" || $file_type == "png" || $file_type == "PNG" || $file_type == "gif" || $file_type == "GIF")
+	{
+		
+	}
+	else
+	{
+		return FALSE;
+	}
+	
+	if (move_uploaded_file($_FILES['imageFile']['tmp_name'], $upload_file))
+	{
+		if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+		{
+			$image = imagecreatefromjpeg($upload_file);
+		}
+		elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+		{
+			$image = imagecreatefrompng($upload_file);
+		}
+		elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+		{
+			$image = imagecreatefromgif($upload_file);
+		}
+		else
+		{
+			return FALSE;
+		}
+		//Check for image resizing
+		list($width, $height) = getimagesize($upload_file);
+		if ($width > $max_width)
+		{
+			$new_width = $max_width;
+			$new_height = $height / $width * $new_width;
+
+			$tmp = imagecreatetruecolor($new_width, $new_height);
+
+			imagecopyresampled($tmp, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				$exif = exif_read_data($upload_file);
+				if (!empty($exif['Orientation']))
+				{
+					switch ($exif['Orientation'])
+					{
+						case 8:
+							$tmp = imagerotate($tmp, 90, 0);
+							break;
+						case 3:
+							$tmp = imagerotate($tmp, 180, 0);
+							break;
+						case 6:
+							$tmp = imagerotate($tmp, -90, 0);
+							break;
+					}
+				}
+			}
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				imagejpeg($tmp, $upload_file, 100);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+			{
+				imagepng($tmp, $upload_file, 0);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+			{
+				imagegif($tmp, $upload_file, 100);
+			}
+			imagedestroy($tmp);
+		}
+		else
+		{
+			$tmp = imagecreatetruecolor($width, $height);
+
+			imagecopyresampled($tmp, $image, 0, 0, 0, 0, $width, $height, $width, $height);
+
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				$exif = exif_read_data($upload_file);
+				if (!empty($exif['Orientation']))
+				{
+					switch ($exif['Orientation'])
+					{
+						case 8:
+							$tmp = imagerotate($tmp, 90, 0);
+							break;
+						case 3:
+							$tmp = imagerotate($tmp, 180, 0);
+							break;
+						case 6:
+							$tmp = imagerotate($tmp, -90, 0);
+							break;
+					}
+				}
+			}
+			if (substr(strrchr($upload_file, "."), 1) == 'jpg' OR substr(strrchr($upload_file, "."), 1) == 'jpeg' OR substr(strrchr($upload_file, "."), 1) == 'JPG')
+			{
+				imagejpeg($tmp, $upload_file, 100);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'png' OR substr(strrchr($upload_file, "."), 1) == 'PNG')
+			{
+				imagepng($tmp, $upload_file, 0);
+			}
+			elseif (substr(strrchr($upload_file, "."), 1) == 'gif' OR substr(strrchr($upload_file, "."), 1) == 'GIF')
+			{
+				imagegif($tmp, $upload_file, 100);
+			}
+			imagedestroy($tmp);
+		}
+
+		imagedestroy($image);
+		return $uploaded_url;
+	}
+	return false;
 }
- 
+
 function resizeImage($image, $max_width, $max_height)
 {
-    //$width = imageWidth
-    //$height = imageHeight
- 
-    if (empty($max_height))
-    {
-        $optimal_height = $height * 100 / ($width / $max_width * 100);
-    }
+	//$width = imageWidth
+	//$height = imageHeight
+
+	if (empty($max_height))
+	{
+		$optimal_height = $height * 100 / ($width / $max_width * 100);
+	}
 }
- 
+
 function get_free_image_name($folder, $extension)
 {
-    $name_exists = TRUE;
- 
-    while ($name_exists === TRUE)
-    {
+	$name_exists = TRUE;
+
+	while ($name_exists === TRUE)
+	{
 		$name = generate_random_string(40, 50);
-		
-        if (!file_exists($folder . $name . '.' . $extension))
-        {
-            $name_exists = FALSE;
-            return $name . $number . '.' . $extension;
-        }
-    }
+
+		if (!file_exists($folder . $name . '.' . $extension))
+		{
+			$name_exists = FALSE;
+			return $name . '.' . $extension;
+		}
+	}
 }
- 
+
 function getImageType($imageName)
 {
-    $extension = substr($imageName, strpos($imageName, '.') + 1);
-    return $extension;
+	$extension = substr($imageName, strpos($imageName, '.') + 1);
+	return $extension;
 }
- 
+
 function turnImageNameToThumbName($image_name)
 {
-    if (substr($image_name, 0, strpos($image_name, "_") + 1) == "IMAGE_")
-    {
-        return "THUMB_" . substr($image_name, strpos($image_name, "_") + 1);
-    }
-    else
-    {
-        return 'THUMB_' . $image_name;
-    }
+	if (substr($image_name, 0, strpos($image_name, "_") + 1) == "IMAGE_")
+	{
+		return "THUMB_" . substr($image_name, strpos($image_name, "_") + 1);
+	}
+	else
+	{
+		return 'THUMB_' . $image_name;
+	}
 }
- 
+
 function getThumbUrlFromUrl($url)
 {
-    $filename = substr(strrchr($url, "/"), 1);
-    $other_part_of_url = substr($url, 0, strrpos($url, '/'));
-    $thumb_url = $other_part_of_url . '/' . turnImageNameToThumbName($filename);
- 
-    return $thumb_url;
+	$filename = substr(strrchr($url, "/"), 1);
+	$other_part_of_url = substr($url, 0, strrpos($url, '/'));
+	$thumb_url = $other_part_of_url . '/' . turnImageNameToThumbName($filename);
+
+	return $thumb_url;
 }

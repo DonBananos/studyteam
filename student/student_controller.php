@@ -119,7 +119,7 @@ class Student_controller
 		$error_msg = array();
 		if($this->validate_username($username) !== TRUE)
 		{
-			$error_msg .= "" .;
+			//$error_msg .= "" .;
 			return FALSE;
 		}
 		
@@ -271,7 +271,7 @@ class Student_controller
 		//Security 101 - Never tell the user which part is incorrect!
 		$failed_message = "Wrong Username/Email or Password";
 		//We check if the value given from the user is an email
-		if ($this->check_if_email($user))
+		if ($this->validate_email($user))
 		{
 			//And so it is! We get the member details with the email address.
 			$user_array = $this->get_member_with_email($user);
