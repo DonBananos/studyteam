@@ -11,6 +11,7 @@ define("W1BASE", "/studyteam/");
 define("ROOT_PATH", "/var/www/html/studyteam/");
 define("SECURE", FALSE);
 define("SERVER", "http://127.0.0.1:8080");
+define("IMAGE_LOCATION", ROOT_PATH."_uploads/_images/");
 
 //Database definitions
 //This is now pointing to the vps..
@@ -162,8 +163,8 @@ function get_member_level_name_from_level($level)
 
 function upload_image($path, $post_id = null, $max_width)
 {
-    $upload_directory = "/xampp/htdocs/studyteam/includes/_media/_images/";
-    $uploaded_url = "http://localhost/studyteam/";
+    $upload_directory = IMAGE_LOCATION;
+    $uploaded_url = SERVER.BASE;
  
     if (substr($path, -1) == '/')
     {
