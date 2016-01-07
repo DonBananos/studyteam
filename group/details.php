@@ -1,8 +1,15 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
 require_once '../includes/configuration.php';
 require_once '../student/student.php';
 require_once './group.php';
 require_once './group_controller.php';
+require_once '../post/post_controller.php';
+require_once '../post/post.php';
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -20,6 +27,7 @@ $student = new Student($_SESSION['user_id']);
 
 $group = new Group($_GET['id']);
 $gc = new Group_controller();
+$pc = new Post_controller();
 
 $membership = FALSE;
 $edited = FALSE;
@@ -142,9 +150,41 @@ if ($membership === FALSE && $group->get_public() == 0)
 	die();
 	<?php
 }
-if(isset($_POST['post-message']))
+if (isset($_POST['post-message']))
 {
-	//Post message 
+	$public = 0;
+	$student_id = $student->get_id();
+	$group_id = $group->get_id();
+	if (isset($_POST['post-privacy']))
+	{
+		$public = sanitize_int($_POST['post-privacy']);
+	}
+	$post = $_POST['post-text-message'];
+
+	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
+	if (validate_int($post_result))
+	{
+		//Success.. We got an ID in return...
+	}
+}
+elseif(isset($_POST['post-image-message']))
+{
+	$public = 0;
+	$student_id = $student->get_id();
+	$group_id = $group->get_id();
+	if (isset($_POST['post-image-privacy']))
+	{
+		$public = sanitize_int($_POST['post-privacy']);
+	}
+	$post = $_POST['post-image-text-message'];
+	
+	//Upload image...
+
+	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
+	if (validate_int($post_result))
+	{
+		//Success.. We got an ID in return...
+	}
 }
 ?>
 <html>
@@ -177,29 +217,105 @@ if(isset($_POST['post-message']))
 										<!-- Nav tabs -->
 										<ul class="nav nav-tabs" role="tablist">
 											<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab"><span class="fa fa-pencil-square-o"></span> Message</a></li>
-											<li role="presentation"><a href="#file" aria-controls="file" role="tab" data-toggle="tab"><span class="fa fa-file"></span> File</a></li>
 											<li role="presentation"><a href="#picture" aria-controls="picture" role="tab" data-toggle="tab"><span class="fa fa-image"></span> Picture</a></li>
 										</ul>
 										<!-- Tab panes -->
-										<div class="tab-content">
+										<div class="tab-content group-post-tab-content">
 											<div role="tabpanel" class="tab-pane active" id="message">
-												<form action="" method="POST">
-													<textarea class="form-control textarea" id="post-textarea" name="post-text-message"></textarea>
+												<form action="" method="POST" id="post-message-form">
+													<textarea class="form-control textarea" id="post-textarea" name="post-text-message" required="required"></textarea>
 													<div class="clearfix"></div>
-													<div class="post-options">
-														<button class="btn btn-primary" name="post-message" type="submit">Post</button>
+													<div class="post-options pull-right">
+														<div title="Choose whether the post is visible for non-members or not">
+															<?php
+															if ($group->get_public() == 1)
+															{
+																?>
+																<label class="radio-inline">
+																	<input type="radio" name="post-privacy" id="post-privacy-public" value="1" checked="checked">Public
+																</label>
+																<label class="radio-inline">
+																	<input type="radio" name="post-privacy" id="post-privacy-private" value="0">Private
+																</label>
+																<?php
+															}
+															else
+															{
+																//Posts can only be private, since the group is private..
+															}
+															?>
+														</div>
+														<button class="btn btn-primary" name="post-message" type="submit" id="post-message-button">Post</button>
 													</div>
+													<div class="clearfix"></div>
 												</form>
 											</div>
-											<div role="tabpanel" class="tab-pane" id="file">
-												<form>
-													<input type="file">
+											<div role="tabpanel" class="tab-pane" id="picture">
+												<form action="" method="POST" enctype="multipart/form-data">
+													<span class="btn btn-default btn-file btn-primary">
+														Browse <input type="file" name="imageFile" required="required">
+													</span>
+													<textarea class="form-control textarea" id="post-image-textarea" name="post-image-text-message" required="required"></textarea>
+													<div class="clearfix"></div>
+													<div class="post-options pull-right">
+														<div title="Choose whether the post is visible for non-members or not">
+															<?php
+															if ($group->get_public() == 1)
+															{
+																?>
+																<label class="radio-inline">
+																	<input type="radio" name="post-image-privacy" id="post-image-privacy-public" value="1" checked="checked">Public
+																</label>
+																<label class="radio-inline">
+																	<input type="radio" name="post-image-privacy" id="post-image-privacy-private" value="0">Private
+																</label>
+																<?php
+															}
+															else
+															{
+																//Posts can only be private, since the group is private..
+															}
+															?>
+														</div>
+														<button class="btn btn-primary" name="post-image-message" type="submit" id="post-image-message-button">Post</button>
+													</div>
+													<div class="clearfix"></div>
 												</form>
 											</div>
-											<div role="tabpanel" class="tab-pane" id="picture">...</div>
 										</div>
 									</div>
 								</div>
+								<?php
+								$all_post_ids = $group->get_posts();
+								if (is_array($all_post_ids) && count($all_post_ids) > 0)
+								{
+									foreach ($all_post_ids as $post_id)
+									{
+										$post = new Post($post_id);
+										$poster = new Student($post->get_student_id());
+										?>
+										<div class="content-box" id="post_<?php echo $post_id ?>">
+											<div class="row">
+												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+													<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
+													<div class="post-header">
+														<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
+													</div>
+													<div class="post-meta">
+														<?php echo date("Y-m-d", strtotime($post->get_time())); ?>
+													</div>
+													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+														<div class="post-content">
+															<?php echo $post->get_post() ?>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<?php
+									}
+								}
+								?>
 							</div>
 							<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
 								<div class="content-box">
@@ -673,7 +789,15 @@ if(isset($_POST['post-message']))
 						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
 						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
 						{name: 'links', items: ['Link', 'Unlink']},
-						{name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
+						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+						{name: 'colors', items: ['TextColor', 'BGColor']}
+					]
+				});
+				CKEDITOR.replace('post-image-textarea', {
+					toolbar: [
+						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
+						{name: 'links', items: ['Link', 'Unlink']},
 						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
 						{name: 'colors', items: ['TextColor', 'BGColor']}
 					]

@@ -642,3 +642,102 @@ h4.student-name>a:hover
 {
 	font-size: 22px;
 }
+
+.post-options
+{
+	margin-top: 10px !important;
+}
+
+.post-options > *
+{
+	display: inline;
+}
+
+.post-options > .radio-inline > input
+{
+	margin-top: 12px;
+}
+
+#post-message-form
+{
+	margin-bottom: 0 !important;
+}
+
+.group-post-tab-content
+{
+	margin-top: 5px;
+}
+
+#cke_post-textarea
+{
+	border-radius: 0 !important;
+}
+
+#post-message-button
+{
+	margin-left: 15px;
+	margin-right: 15px;
+}
+
+.student-avatar-thumb
+{
+	width: 50px;
+	float: left;
+	margin-left: 10px;
+	margin-right: 8px;
+	border: #C7CB85 solid 2px;
+}
+
+.post-header > a
+{
+	font-size: 120%;
+	font-family: 'Shadows Into Light', cursive;
+    font-weight: bold;
+	border: none;
+}
+
+.post-header > a:hover
+{
+	background-color: inherit;
+}
+
+.post-meta
+{
+	color: #4C4C47;
+	font-size: 85%;
+	text-transform: uppercase;
+}
+
+.post-content
+{
+	margin-top: 10px;
+}
+
+.post-content img
+{
+	max-width: 90%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] 
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}

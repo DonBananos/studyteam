@@ -739,6 +739,49 @@ class Group
 		$stmt->close();
 		return $error;
 	}
+	
+	public function get_posts($limit = NULL)
+	{
+		global $dbCon;
+		
+		$post_ids = array();
+		
+		if($limit === NULL)
+		{
+			$sql = "SELECT id FROM group_post WHERE group_id = ? ORDER BY time DESC;";
+		}
+		else
+		{
+			$sql = "SELECT id FROM group_post WHERE group_id = ? LIMIT ? ORDER BY time DESC;";
+		}
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		if($limit === NULL)
+		{
+			$stmt->bind_param('i', $this->id); //Bind parameters.
+		}
+		else
+		{
+			$stmt->bind_param('ii', $this->id, $limit); //Bind parameters.
+		}
+		$stmt->execute(); //Execute
+		$stmt->bind_result($post_id);
+		while($stmt->fetch())
+		{
+			$post_ids[] = $post_id;
+		}
+		if (count($post_ids) > 0)
+		{
+			$stmt->close();
+			return $post_ids;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
 
 	public function get_id()
 	{
