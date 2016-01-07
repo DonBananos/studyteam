@@ -27,7 +27,7 @@ class Student_controller
 	{
 		if(!$this->validate_input($username, $firstname, $lastname, $email, $pass1, $pass2))
 		{
-			return 
+			return FALSE;
 		}
 		
 		
@@ -116,19 +116,21 @@ class Student_controller
 
 	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
-		if(!$this->validate_username($username) !== TRUE)
+		$error_msg = array();
+		if($this->validate_username($username) !== TRUE)
 		{
-			return false;
+			$error_msg .= "" .;
+			return FALSE;
 		}
 		
-		if(!$this->validate_password($pass1) !== TRUE)
+		if($this->validate_password($pass1) !== TRUE)
 		{
-			return false;
+			return FALSE;
 		}
 
-		if(!$this->compare_passwords($pass1, $pass2) !== TRUE)
+		if($this->compare_passwords($pass1, $pass2) !== TRUE)
 		{
-			return false;
+			return FALSE;
 		}
 	}
 
