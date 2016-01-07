@@ -169,11 +169,18 @@ class Group
 		return $error;
 	}
 
-	public function get_number_of_registered_members()
+	public function get_number_of_registered_members($active = TRUE)
 	{
 		global $dbCon;
 
-		$sql = "SELECT COUNT(*) as members FROM student_group WHERE group_id = ?;";
+		if ($active != TRUE)
+		{
+			$sql = "SELECT COUNT(*) as members FROM student_group WHERE group_id = ?;";
+		}
+		else
+		{
+			$sql = "SELECT COUNT(*) as members FROM student_group WHERE group_id = ? AND active = 1;";
+		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -213,7 +220,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('i', $this->get_id()); //Bind parameters.
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
 		$stmt->bind_result($members);
 		$stmt->fetch();
@@ -240,7 +247,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('iii', $student_id, $this->get_id(), $level); //Bind parameters.
+		$stmt->bind_param('iii', $student_id, $this->id, $level); //Bind parameters.
 		$stmt->execute();
 		$rows = $stmt->affected_rows;
 		if ($rows == 1)
@@ -255,7 +262,12 @@ class Group
 
 	public function remove_student_from_group($student_id)
 	{
-		if ($this->get_if_student_is_member($student_id) === FALSE)
+		if (!validate_int($student_id))
+		{
+			return FALSE;
+		}
+		$safe_student_id = sanitize_int($student_id);
+		if ($this->get_if_student_is_member($safe_student_id) === FALSE)
 		{
 			return TRUE;
 		}
@@ -267,7 +279,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('ii', $this->get_id(), $student_id); //Bind parameters.
+		$stmt->bind_param('ii', $this->id, $safe_student_id); //Bind parameters.
 		$stmt->execute();
 		$rows = $stmt->affected_rows;
 		if ($rows == 1)
@@ -282,9 +294,9 @@ class Group
 
 	public function get_array_with_members_and_levels($active = TRUE, $max = 4)
 	{
-		if($max !== FALSE)
+		if ($max !== FALSE)
 		{
-			if(validate_int($max) != TRUE)
+			if (validate_int($max) != TRUE)
 			{
 				return "There was an error in the sql syntax. When using a limit, please make sure the limit is an integer";
 			}
@@ -293,9 +305,9 @@ class Group
 
 		$members_and_levels = array();
 
-		if($active === TRUE)
+		if ($active === TRUE)
 		{
-			if($max === FALSE)
+			if ($max === FALSE)
 			{
 				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ? AND active = 1;";
 			}
@@ -306,7 +318,7 @@ class Group
 		}
 		else
 		{
-			if($max === FALSE)
+			if ($max === FALSE)
 			{
 				$sql = "SELECT student_id, level, join_datetime, active FROM student_group WHERE group_id = ?;";
 			}
@@ -320,7 +332,7 @@ class Group
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		if($max === FALSE)
+		if ($max === FALSE)
 		{
 			$stmt->bind_param('i', $this->id); //Bind parameters.
 		}
@@ -537,6 +549,191 @@ class Group
 		{
 			$stmt->close();
 			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	public function update_student_level_in_group($student_id, $new_level, $responsible_id)
+	{
+		if ($student_id === $responsible_id)
+		{
+			//You can't update your own level..
+			return FALSE;
+		}
+		if ($this->check_if_student_has_owner_rights($responsible_id) === FALSE)
+		{
+			//Only a owner can update and downgrade members.
+			return FALSE;
+		}
+		$to_admin = FALSE;
+		$from_admin = FALSE;
+		if ($new_level == 1)
+		{
+			$from_admin = TRUE;
+		}
+		elseif ($new_level == 2)
+		{
+			$to_admin = TRUE;
+		}
+		if($to_admin === TRUE)
+		{
+			if($this->check_if_student_has_admin_rights($student_id) === TRUE)
+			{
+				//Can't give an admin the admin level!
+				return FALSE;
+			}
+			return $this->give_student_admin_rights_in_group($student_id);
+		}
+		elseif($from_admin === TRUE)
+		{
+			if($this->check_if_student_has_admin_rights($student_id) !== TRUE)
+			{
+				//Can't downgrade a student that is not admin
+				return FALSE;
+			}
+			return $this->revoke_admin_rights_from_student_in_group($student_id);
+		}
+	}
+
+	private function give_student_admin_rights_in_group($student_id)
+	{
+		if (!validate_int($student_id))
+		{
+			return FALSE;
+		}
+		$safe_student_id = sanitize_int($student_id);
+		global $dbCon;
+		
+		$sql = "UPDATE student_group SET level = 2 WHERE student_id = ? AND group_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $safe_student_id, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	private function revoke_admin_rights_from_student_in_group($student_id)
+	{
+		if (!validate_int($student_id))
+		{
+			return FALSE;
+		}
+		$safe_student_id = sanitize_int($student_id);
+		global $dbCon;
+		
+		$sql = "UPDATE student_group SET level = 1 WHERE student_id = ? AND group_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $safe_student_id, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+
+	public function kick_user_from_group($student_id, $responsible_id)
+	{
+		$responsible_is_allowed_to_do_action = FALSE;
+		if($this->check_if_student_has_admin_rights($student_id))
+		{
+			if($this->check_if_student_has_owner_rights($responsible_id))
+			{
+				$responsible_is_allowed_to_do_action = TRUE;
+			}
+		}
+		elseif($this->check_if_student_has_owner_rights($student_id))
+		{
+			//Owners can't be kicked! - yet....
+			return FALSE;
+		}
+		else
+		{
+			if($this->get_student_level_in_group($student_id) != 1)
+			{
+				//Somehow the user does not have a correct level.. abort mission....
+				return FALSE;
+			}
+			if($this->check_if_student_has_admin_rights($responsible_id))
+			{
+				$responsible_is_allowed_to_do_action = TRUE;
+			}
+			elseif($this->check_if_student_has_owner_rights($responsible_id))
+			{
+				$responsible_is_allowed_to_do_action = TRUE;
+			}
+		}
+		
+		if($responsible_is_allowed_to_do_action === TRUE)
+		{
+			return $this->remove_student_from_group($student_id);
+		}
+	}
+
+	private function check_if_student_has_admin_rights($student_id)
+	{
+		$student_level_in_group = $this->get_student_level_in_group($student_id);
+		if ($student_level_in_group == 2)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	private function check_if_student_has_owner_rights($student_id)
+	{
+		$student_level_in_group = $this->get_student_level_in_group($student_id);
+		if ($student_level_in_group == 3)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	private function get_student_level_in_group($student_id)
+	{
+		if (!validate_int($student_id))
+		{
+			return FALSE;
+		}
+		$safe_student_id = sanitize_int($student_id);
+		global $dbCon;
+
+		$sql = "SELECT level FROM student_group WHERE group_id = ? AND student_id = ? AND active = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $safe_student_id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($level);
+		$stmt->fetch();
+		if (validate_int($level))
+		{
+			$stmt->close();
+			return $level;
 		}
 		$error = $stmt->error;
 		$stmt->close();

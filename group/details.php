@@ -23,6 +23,8 @@ $gc = new Group_controller();
 
 $membership = FALSE;
 $edited = FALSE;
+$l_answer = FALSE;
+$k_answer = FALSE;
 if ($group->get_if_student_is_member($student->get_id()))
 {
 	$membership = TRUE;
@@ -75,6 +77,51 @@ if ($group->get_if_student_is_member($student->get_id()))
 				$edit_message = $group->update_group($safe_name, $safe_max_size, $safe_category, $safe_description);
 				$edited = TRUE;
 			}
+		}
+	}
+	if (isset($_POST['madmin']))
+	{
+		//Make the given user admin in group!
+
+		$user_to_be_admin = $_POST['sid'];
+		if (validate_int($user_to_be_admin))
+		{
+			$l_answer = $group->update_student_level_in_group($user_to_be_admin, 2, $student->get_id());
+		}
+		if ($l_answer === TRUE)
+		{
+			$new_admin = new Student($user_to_be_admin);
+			$level_message = $new_admin->get_fullname() . " is now an Administrator.";
+		}
+	}
+	elseif (isset($_POST['dadmin']))
+	{
+		//remove the admin rights from a given user!
+
+		$user_to_be_member = $_POST['sid'];
+		if (validate_int($user_to_be_member))
+		{
+			$l_answer = $group->update_student_level_in_group($user_to_be_member, 1, $student->get_id());
+		}
+		if ($l_answer === TRUE)
+		{
+			$old_admin = new Student($user_to_be_member);
+			$level_message = $old_admin->get_fullname() . " is no longer an Administrator.";
+		}
+	}
+	elseif (isset($_POST['kuser']))
+	{
+		//kick the user from the group
+
+		$user_to_be_kicked = $_POST['sid'];
+		if (validate_int($user_to_be_kicked))
+		{
+			$k_answer = $group->kick_user_from_group($user_to_be_kicked, $student->get_id());
+		}
+		if ($k_answer === TRUE)
+		{
+			$kicked_student = new Student($user_to_be_kicked);
+			$kicked_message = $kicked_student->get_fullname() . " is no longer part of the group.";
 		}
 	}
 }
@@ -498,7 +545,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 																</form>
 																<?php
 															}
-															if (($student_level_in_group == 2 || $student_level_in_group == 3) && $member_level_in_group != 3)
+															if (($student_level_in_group == 2 && $member_level_in_group == 1) || ($student_level_in_group == 3 && ($member_level_in_group == 1 || $member_level_in_group == 2)))
 															{
 																?>
 																<form class="form-inline" action="" method="POST">
@@ -538,6 +585,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 										<h3>Former members of group</h3>
 									</div>
 									<?php
+									$new_runs = 1;
 									foreach ($inactive_members_array as $student_id => $member_data)
 									{
 										if ($member_data['active'] != 1)
@@ -559,7 +607,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 																		<?php echo $member->get_username() ?>
 																	</h4>
 																	<span class="student-info">
-																		<?php echo get_member_level_name_from_level($member_data['level']) ?> | Joined <?php echo date("Y-m-d", strtotime($member_data['joined'])) ?>
+																		Former <?php echo get_member_level_name_from_level($member_data['level']) ?> | Joined <?php echo date("Y-m-d", strtotime($member_data['joined'])) ?>
 																	</span>
 																</div>
 															</div>
@@ -568,7 +616,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 												</div>
 											</div>
 											<?php
-											if ($runs % 2 == 0 && $runs != count($all_members_array))
+											if ($new_runs % 2 == 0 && $new_runs != count($all_members_array))
 											{
 												?>
 												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -579,7 +627,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 												<?php
 											}
 										}
-										$runs++;
+										$new_runs++;
 									}
 								}
 							}
@@ -595,6 +643,18 @@ if ($membership === FALSE && $group->get_public() == 0)
 		{
 			?>
 			<script>alert("<?php echo $edit_message ?>");</script>
+			<?php
+		}
+		if ($l_answer === TRUE)
+		{
+			?>
+			<script>alert("<?php echo $level_message ?>");</script>
+			<?php
+		}
+		if ($k_answer === TRUE)
+		{
+			?>
+			<script>alert("<?php echo $kicked_message ?>");</script>
 			<?php
 		}
 		?>
