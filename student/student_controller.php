@@ -25,31 +25,24 @@ class Student_controller
 
 	public function create_student($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
-		if(!$this->validate_input($username, $firstname, $lastname, $email, $pass1, $pass2))
+
+		/* 
+			validate_input() is in charge of validating the input parameters
+			before we do anything else. It returns an array of error messages 
+		*/
+		$error_array = $this->validate_input($username, $firstname, $lastname, $email, $pass1, $pass2);
+		/* 
+			If we receive an array that IS NOT empty then we have ERRORS. Therefore we return the array,
+			for UX purposes, and EXIT the current process.
+		*/
+		if(count($error_array)>0)
 		{
-			return FALSE;
-		}
-		
-		
-
-/*
-		
-
-		
-		//We generate a random string between 40 and 50 characters of length, to
-		//use as the salt.
-		$salt = generate_random_string(40, 50);
-
-		//First we check if passwords match
-		if ($this->compare_passwords($pass1, $pass2) === TRUE)
-		{
-			//If it is, we only need one of them!
-			$pass = $pass1;
+			return $error_array;
+			exit();
 		}
 		else
 		{
-			//If not, we return the answer, which should be an error message
-			return $this->compare_passwords($pass1, $pass2);
+			$pass = $pass1;
 		}
 
 		//Secondly, we check if the email is in the system
@@ -66,7 +59,11 @@ class Student_controller
 			return $this->check_for_username($username);
 		}
 
-		//If we reach this far, we need to has the password!
+		//We generate a random string between 40 and 50 characters of length, to
+		//use as the salt.
+		$salt = generate_random_string(40, 50);
+
+		//If we reach this far, we need to hash the password!
 		//The function returns the hashed password.
 		$password = $this->hash_password($pass, $salt);
 
@@ -107,33 +104,53 @@ class Student_controller
 		//Close down the statement (good practice)
 		$stmt->close();
 		return $error;
-		*/
+	}
+
+	/*
+		Function var validating text input from registration form.
+		If a parameter contains non-valid value an error message
+		will be added
+	*/
+	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
+	{
+		$error_array = array();
+
+		if($this->validate_username($username) !== 1)
+		{
+			$error_array[0] = "Invalid username";
+		}
+
+		if($this->validate_name($firstname) !== TRUE)
+		{
+			$error_array[1] = "Invalid firstname";
+		}
+
+		if($this->validate_name($lastname) !== TRUE)
+		{
+			$error_array[2] = "Invalid lastname";
+		}
+
+		if($this->validate_email($email) == FALSE)
+		{
+			$error_array[3] = "Invalid email";
+		}
+		
+		if($this->validate_password($pass1) === FALSE)
+		{
+			$error_array[4] = "Invalid password";
+		}
+
+		if($this->compare_passwords($pass1, $pass2) !== TRUE)
+		{
+			$error_array[5] = "Retyped password does not match";
+		}
+
+		return $error_array;
 	}
 
 	/*
 	 * Function used to hash a password
 	 */
-
-	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
-	{
-		$error_msg = array();
-		if($this->validate_username($username) !== TRUE)
-		{
-			//$error_msg .= "" .;
-			return FALSE;
-		}
-		
-		if($this->validate_password($pass1) !== TRUE)
-		{
-			return FALSE;
-		}
-
-		if($this->compare_passwords($pass1, $pass2) !== TRUE)
-		{
-			return FALSE;
-		}
-	}
-
 	private function hash_password($password, $salt)
 	{
 		//truncate the user's salt and the defined salt from the config file
@@ -147,7 +164,6 @@ class Student_controller
 	/*
 	 * Function that checks if two passwords match, returns error message if not
 	 */
-
 	public function compare_passwords($pass1, $pass2)
 	{
 		//We use 3 equal signs, which means that both the value but also the 
@@ -220,19 +236,48 @@ class Student_controller
 		Function that checks if username is valid.
 		See defined constant "REGEX_USERNAME" in configuration.php around line 34.
 	*/
-	function validate_username($uname)
+	function validate_username($username)
 	{
 		//return preg_match(REGEX_USERNAME, $username);
-		return preg_match(REGEX_USERNAME, $uname);
+		return preg_match(REGEX_USERNAME, $username);
+	}
+
+	/*
+		Function that checks if the username does not
+		contain 3 of the same chars in a row
+	*/
+	function dont_allow_3_in_a_row($text)
+	{
+		$arr = str_split($text);
+		$s = sizeof($arr);
+		for($i = 1; $i < $s; $i++)
+		{
+			if($i !== $s)
+			{
+				if($arr[$i] === $arr[$i-1] && $arr[$i] === $arr[$i+1])
+				{
+					return FALSE;
+				}
+			}
+		}
+		return TRUE;
 	}
 
 	/*
 		Function that checks if password is valid.
-		See defined constant "REGEX_PASSWORD" in configuration.php around line 35.
+		See defined constant "REGEX_PASSWORD" in configuration.php around line 35,
+		and dont_allow_3_in_a_row()
 	*/
 	function validate_password($password)
 	{
-		return preg_match(REGEX_PASSWORD, $password);
+		if($this->dont_allow_3_in_a_row($password) === FALSE)
+		{
+			return FALSE;
+		}
+		if(preg_match(REGEX_PASSWORD, $password) !== 1)
+		{
+			return FALSE;
+		}
 	}
 
 	/*
@@ -271,18 +316,25 @@ class Student_controller
 		//Security 101 - Never tell the user which part is incorrect!
 		$failed_message = "Wrong Username/Email or Password";
 		//We check if the value given from the user is an email
+		
 		if ($this->validate_email($user))
 		{
+			//die("It's an email!");
 			//And so it is! We get the member details with the email address.
 			$user_array = $this->get_member_with_email($user);
 		}
 		else
 		{
+			//die("It's a username!");
 			//Oh, it's not an email, maybe a username then?
 			$user_array = $this->get_member_with_username($user);
 		}
+
+		//die("TEST");
+
 		//If the id is not set in the user array, or ID is less than one, we
 		//can't log the login attempt for a specific user
+		//die(var_dump($user_array));
 		if (!isset($user_array['id']) && !validate_int($user_array['id']))
 		{
 			//We save the login attempt, without passing a user id, and passing
@@ -294,6 +346,7 @@ class Student_controller
 		//username OR email. We now hash the given password with the user's salt
 		$hashed_password = $this->hash_password($password, $user_array['salt']);
 		//We check if the saved password matches the given password
+		//die($hashed_password . '<br>' . $user_array['password']);
 		if ($this->compare_passwords($hashed_password, $user_array['password']) === TRUE)
 		{
 			//We check if the user is banned

@@ -16,10 +16,10 @@ if (isset($_POST['join']))
 	$answer = $sc->create_student($username, $firstname, $lastname, $email, $pass1, $pass2);
 	if ($answer !== TRUE)
 	{
-		echo $answer;
+		// Info is shown to the user.
 	}
 	else
-	{
+	{	
 		?>
 		<script>
 			alert("Welcome");
@@ -47,23 +47,60 @@ if (isset($_POST['join']))
 					</div>
 					<form name="join-form" action="" method="POST">
 						<div class="row">
-							<input type="text" name="username" class="form-control" placeholder="Username" >
+							<input type="text" name="username" class="form-control" placeholder="Username" required>
+							<?php 
+								if(!empty($answer[0]))
+								{
+									echo '<label>'. $answer[0] .'</label>';
+								}
+							?>
 						</div>
 						<div class="row">
-							<input type="text" name="firstname" class="form-control" placeholder="Firstname" >
+							<input type="text" name="firstname" class="form-control" placeholder="Firstname" required>
+							<?php
+								if(!empty($answer[1]))
+								{
+									echo '<label>'. $answer[1] .'</label>';
+								}
+							?>
 						</div>
 						<div class="row">
-							<input type="text" name="lastname" class="form-control" placeholder="Lastname" >
+							<input type="text" name="lastname" class="form-control" placeholder="Lastname" required>
+							<?php
+								if(!empty($answer[2]))
+								{
+									echo '<label>'. $answer[2] .'</label>';
+								}
+							?>
 						</div>
 						<div class="row">
-							<input type="email" name="email" class="form-control" placeholder="Email" >
+							<input type="text" name="email" class="form-control" placeholder="Email" required>
+							<?php 
+								if(!empty($answer[3]))
+								{
+									echo '<label>'. $answer[3] .'</label>';
+								}
+							?>
 						</div>
 						<div class="row">
-							<input type="password" name="password1" class="form-control" placeholder="Password" >
+							<input type="password" name="password1" class="form-control" placeholder="Password" required>
+							<?php
+								if(!empty($answer[4]))
+								{
+									echo '<label>'. $answer[4] .'</label>';
+								}
+							?>
 						</div>
 						<div class="row">
-							<input type="password" name="password2" class="form-control" placeholder="Retype Password" >
+							<input type="password" name="password2" class="form-control" placeholder="Retype Password" required>
+							<?php
+								if(!empty($answer[5]))
+								{
+									echo '<label>'. $answer[5] .'</label>';
+								}
+							?>
 						</div>
+						<br>
 						<div class="row">
 							<input type="tel" class="form-control" placeholder="Telephone" name="phone" style="display: none"> 
 							<input type="submit" name="join" class="btn btn-primary" value="Join the wonder">
