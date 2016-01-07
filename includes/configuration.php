@@ -162,7 +162,7 @@ function get_member_level_name_from_level($level)
 
 function upload_image($path, $post_id = null, $max_width)
 {
-    $upload_directory = "/xampp/htdocs\studyteam\includes\_media\_images/";
+    $upload_directory = "/xampp/htdocs/studyteam/includes/_media/_images/";
     $uploaded_url = "http://localhost/studyteam/";
  
     if (substr($path, -1) == '/')
