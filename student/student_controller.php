@@ -25,6 +25,17 @@ class Student_controller
 
 	public function create_student($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
+		if(!$this->validate_input($username, $firstname, $lastname, $email, $pass1, $pass2))
+		{
+			return 
+		}
+		
+		
+
+/*
+		
+
+		
 		//We generate a random string between 40 and 50 characters of length, to
 		//use as the salt.
 		$salt = generate_random_string(40, 50);
@@ -96,11 +107,30 @@ class Student_controller
 		//Close down the statement (good practice)
 		$stmt->close();
 		return $error;
+		*/
 	}
 
 	/*
 	 * Function used to hash a password
 	 */
+
+	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
+	{
+		if(!$this->validate_username($username) !== TRUE)
+		{
+			return false;
+		}
+		
+		if(!$this->validate_password($pass1) !== TRUE)
+		{
+			return false;
+		}
+
+		if(!$this->compare_passwords($pass1, $pass2) !== TRUE)
+		{
+			return false;
+		}
+	}
 
 	private function hash_password($password, $salt)
 	{
@@ -188,13 +218,10 @@ class Student_controller
 		Function that checks if username is valid.
 		See defined constant "REGEX_USERNAME" in configuration.php around line 34.
 	*/
-	function validate_username($username)
+	function validate_username($uname)
 	{
-		if(preg_match(REGEX_USERNAME))
-		{
-			return TRUE;
-		}
-		return FALSE;
+		//return preg_match(REGEX_USERNAME, $username);
+		return preg_match(REGEX_USERNAME, $uname);
 	}
 
 	/*
@@ -203,11 +230,7 @@ class Student_controller
 	*/
 	function validate_password($password)
 	{
-		if(preg_match(REGEX_PASSWORD))
-		{
-			return TRUE;
-		}
-		return FALSE;
+		return preg_match(REGEX_PASSWORD, $password);
 	}
 
 	/*
@@ -226,23 +249,9 @@ class Student_controller
 		1) Trim input
 		2) check if string length > 1
 	*/
-	function validate_firstname($firstname)
+	function validate_name($name)
 	{
-		$trim = trim($firstname);
-		if(strlen($trim) > 1)
-		{
-			return TRUE;
-		}
-		return FALSE;
-	}
-
-	/*
-		Function that checks if lastname is valid.
-		1) Trims input
-		2) check if string length > 1
-	*/
-	function validate_lastname($lastname)
-	{
+		$trim = trim($name);
 		if(strlen($trim) > 1)
 		{
 			return TRUE;

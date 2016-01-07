@@ -31,8 +31,8 @@ define("RESET_LIMIT", "24");
 define("AVATAR_LOCATION", SERVER.BASE."includes/_media/_images/avatars/");
 
 // REGEX CREATE/EDIT USER
-define("REGEX_USERNAME", "^[a-zA-Z0-9][a-zA-Z0-9._-]{2,49}$");
-define("REGEX_PASSWORD", "^(?=.*[^a-zA-Z])(?=.*[a-z])(?=.*[A-Z])\S{8,}$");
+define("REGEX_USERNAME", "/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,49}$/");
+define("REGEX_PASSWORD", "/^(?=.*[^a-zA-Z])(?=.*[a-z])(?=.*[A-Z])\S{8,}$/");
 
 
 //Let's do some connecting yo!
