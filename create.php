@@ -20,9 +20,10 @@ if (isset($_POST['join']))
 	}
 	else
 	{	
+		$sc->log_member_in($username, $pass1);
 		?>
 		<script>
-			alert("Welcome");
+			alert('Welcome! :)');
 			window.location = "<?php echo W1BASE ?>member_area.php";
 		</script>
 		<?php
