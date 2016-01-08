@@ -722,6 +722,33 @@ class Student
 		}
 		return FALSE;
 	}
+	
+	public function get_post_ids_for_member_feed()
+	{
+		global $dbCon;
+		
+		$post_ids = array();
+		
+		$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ?) ORDER BY time DESC;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($post_id);
+		while($stmt->fetch())
+		{
+			$post_ids[] = $post_id;
+		}
+		$stmt->close();
+		if (count($post_ids) > 0)
+		{
+			return $post_ids;
+		}
+		return FALSE;
+	}
 
 	public function get_id()
 	{
