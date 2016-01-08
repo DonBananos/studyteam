@@ -45,7 +45,53 @@ if (isset($_POST['join']))
 							<h1>Well Hello Stranger!</h1>
 							<p class="lead">Why don't you join the party?</p>
 						</div>
+
+						<!-- Trigger the modal with a button -->
+						<h5 data-toggle="modal" data-target="#myModal" style="mergin-left:0px;"><a style="color:white;">User Credential Policy</a></h5>
+
+						<!-- Modal -->
+						<div id="myModal" class="modal fade modal-inverse" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel">
+							<div class="modal-dialog">
+							    <!-- Modal content-->
+							    <div class="modal-content">
+						      		<div class="modal-header">
+						        		<button type="button" class="close" data-dismiss="modal">&times;</button>
+						        		<h4 class="modal-title">User Credential Policy</h4>
+						      		</div>
+						      	<div class="modal-body">
+						        	<p>
+						        		<b>Username:</b><br>
+						        		<ul>
+							        		<li>MIN 3 characters</li>
+											<li>MAX 255 characters</li>
+											<li>Only use A-Z a-z 0-9</li>
+											<li>Special characters allowed: - . _</li>
+											<li>No whitespaces</li>
+										</ul>
+						        	</p>
+						        	<p>
+						        		<b>Password:</b><br>
+						        		<ul>
+							        		<li>Minimum 8 characters long</li>
+											<li>Minimum 1 capital letter</li>
+											<li>Minimum 1 number</li>
+											<li>All Special characters allowed</li>
+											<li>No same 3 characters in a row</li>
+											<li>No whitespaces</li>
+										</ul>
+						        	</p>
+						      	</div>
+						      	<div class="modal-footer">
+						        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						      	</div>
+						    </div>
+						  </div>
+						</div>
+
 					</div>
+
+					
+
 					<form name="join-form" action="" method="POST">
 						<div class="row">
 							<input type="text" name="username" class="form-control" placeholder="Username" required>
