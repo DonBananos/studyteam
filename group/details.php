@@ -157,7 +157,7 @@ if (isset($_POST['post-message']))
 			$public = sanitize_int($_POST['post-privacy']);
 		}
 	}
-	$post = $_POST['post-text-message'];
+	$post = sanitize_text($_POST['post-text-message']);
 
 	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
 	if (!validate_int($post_result))
@@ -179,7 +179,7 @@ elseif (isset($_POST['post-image-message']))
 			$public = sanitize_int($_POST['post-image-privacy']);
 		}
 	}
-	$post = $_POST['post-image-text-message'];
+	$post = sanitize_text($_POST['post-image-text-message']);
 
 	$image_path = upload_image(950);
 	if ($image_path === FALSE)
