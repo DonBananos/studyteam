@@ -9,15 +9,16 @@ $sc = new Student_controller();
 if (isset($_POST['login']))
 {
 	$user = sanitize_text($_POST['user']);
-	if(strlen(trim($user)) < 1)
-	{
-		die("Bastard");
-	}
 	$pass = sanitize_text($_POST['pass']);
-	if(strlen(trim($pass)) < 1)
+
+	$error_msg;
+	if($sc->validate_username($user) !== 1 || validate_password($pass) === FALSE)
 	{
-		die("Bastard");
+		$error_msg = "Invalid username or password";
+		die();
 	}
+	else
+	{
 	$answer = $sc->log_member_in($user, $pass);
 	if ($answer !== FALSE && $answer !== TRUE)
 	{
@@ -49,6 +50,7 @@ if (isset($_SESSION['logged_in']))
 		</script>
 		<?php
 	}
+}
 }
 ?>
 <html>
@@ -95,6 +97,12 @@ if (isset($_SESSION['logged_in']))
 							</div>
 							<div class="row">
 								<input type="password" name="pass" class="form-control" placeholder="Password" required="required">
+								<?php
+									if(!empty($error_msg))
+									{
+										echo '<label>'. $error_msg .'</label>';
+									}
+								?>
 							</div>
 							<div class="row">
 								<input type="submit" name="login" class="btn btn-primary" value="Login">
