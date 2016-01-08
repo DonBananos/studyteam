@@ -306,26 +306,50 @@ elseif (isset($_POST['post-image-message']))
 									{
 										$post = new Post($post_id);
 										$poster = new Student($post->get_student_id());
-										?>
-										<div class="content-box" id="post_<?php echo $post_id ?>">
-											<div class="row">
-												<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-													<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
-													<div class="post-header">
-														<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
-													</div>
-													<div class="post-meta">
-														<?php echo date("Y-m-d H:i", strtotime($post->get_time())); ?>
-													</div>
+										if ($student->get_if_student_is_part_of_group($group->get_id()) !== FALSE && $post->get_public() === 0)
+										{
+											//Dont show
+										}
+										else
+										{
+											?>
+											<div class="content-box" id="post_<?php echo $post_id ?>">
+												<div class="row">
 													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-														<div class="post-content">
-															<?php echo $post->get_post() ?>
+														<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
+														<div class="post-header">
+															<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
+														</div>
+														<div class="post-meta">
+															<?php
+															if ($group->get_public() === 1)
+															{
+																if ($post->get_public() === 1)
+																{
+																	?>
+																	<span class="fa fa-unlock"></span>
+																	<?php
+																}
+																else
+																{
+																	?>
+																	<span class="fa fa-lock"></span>
+																	<?php
+																}
+															}
+															echo date("Y-m-d H:i", strtotime($post->get_time()));
+															?>
+														</div>
+														<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+															<div class="post-content">
+																<?php echo $post->get_post() ?>
+															</div>
 														</div>
 													</div>
 												</div>
 											</div>
-										</div>
-										<?php
+											<?php
+										}
 									}
 								}
 								$group_creator = new Student($group->get_creator_student_id());
@@ -425,7 +449,7 @@ elseif (isset($_POST['post-image-message']))
 									<hr class="minor-line">
 									<?php
 									$members_array = $group->get_array_with_members_and_levels();
-									if(is_array($members_array))
+									if (is_array($members_array))
 									{
 										foreach ($members_array as $student_id => $member_data)
 										{

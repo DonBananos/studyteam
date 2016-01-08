@@ -239,6 +239,10 @@ class Group
 		{
 			return TRUE;
 		}
+		if ($this->get_if_student_was_member($student_id))
+		{
+			return $this->re_add_student_in_group($student_id);
+		}
 		global $dbCon;
 
 		$sql = "INSERT INTO student_group (student_id, group_id, level) VALUES (?, ?, ?);";
@@ -274,6 +278,42 @@ class Group
 		global $dbCon;
 
 		$sql = "UPDATE student_group SET active = 0 WHERE group_id = ? AND student_id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $this->id, $safe_student_id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	private function re_add_student_in_group($student_id)
+	{
+		if (!validate_int($student_id))
+		{
+			return FALSE;
+		}
+		$safe_student_id = sanitize_int($student_id);
+		if ($this->get_if_student_is_member($safe_student_id) === TRUE)
+		{
+			return TRUE;
+		}
+		if($this->get_if_student_was_member($student_id) === FALSE)
+		{
+			return FALSE;
+		}
+		global $dbCon;
+
+		$sql = "UPDATE student_group SET active = 1, join_datetime = CURRENT_TIMESTAMP WHERE group_id = ? AND student_id = ?;";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
 		{
@@ -365,6 +405,28 @@ class Group
 		global $dbCon;
 
 		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ? AND active = 1;";
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('ii', $student_id, $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($members);
+		$stmt->fetch();
+		$stmt->close();
+		if ($members > 0)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function get_if_student_was_member($student_id)
+	{
+		global $dbCon;
+
+		$sql = "SELECT COUNT(*) AS member FROM student_group WHERE student_id = ? AND group_id = ? AND active = 0;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{

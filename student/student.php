@@ -193,7 +193,7 @@ class Student
 		global $dbCon;
 		$group_ids = array();
 
-		$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ?) AND public = 1;";
+		$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND public = 1;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -729,7 +729,7 @@ class Student
 		
 		$post_ids = array();
 		
-		$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ?) ORDER BY time DESC;";
+		$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) ORDER BY time DESC;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
