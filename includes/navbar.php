@@ -12,8 +12,6 @@
 		<div class="collapse navbar-collapse" id="studyteam-member-navbar">
 			<ul class="nav navbar-nav">
 				<li><a href="<?php echo BASE ?>group/">Groups</a></li>
-				<li><a href="#">Education</a></li>
-				<li><a href="#">School</a></li>
 			</ul>
 			<?php
 			$num_buddies_pending = $student->get_number_of_buddies_pending();
