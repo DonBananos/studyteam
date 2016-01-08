@@ -12,10 +12,10 @@ if (isset($_POST['login']))
 	$pass = sanitize_text($_POST['pass']);
 
 	$error_msg;
-	if($sc->validate_username($user) !== 1 || validate_password($pass) === FALSE)
+	if($sc->validate_username($user) !== 1 || $sc->validate_password($pass) === FALSE)
 	{
 		$error_msg = "Invalid username or password";
-		die();
+		$display_message;
 	}
 	else
 	{
