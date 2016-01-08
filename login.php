@@ -46,9 +46,9 @@ if (isset($_POST['login']))
 			?>
 			<script>
 				window.location = "<?php echo BASE ?>";
-				die();
 			</script>
 			<?php
+			die();
 		}
 	}
 }
