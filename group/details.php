@@ -220,80 +220,85 @@ elseif (isset($_POST['post-image-message']))
 						</div>
 						<div class="row">
 							<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
-								<div class="content-box">
-									<div class="post-box">
-										<!-- Nav tabs -->
-										<ul class="nav nav-tabs" role="tablist">
-											<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab"><span class="fa fa-pencil-square-o"></span> Message</a></li>
-											<li role="presentation"><a href="#picture" aria-controls="picture" role="tab" data-toggle="tab"><span class="fa fa-image"></span> Picture</a></li>
-										</ul>
-										<!-- Tab panes -->
-										<div class="tab-content group-post-tab-content">
-											<div role="tabpanel" class="tab-pane active" id="message">
-												<form action="" method="POST" id="post-message-form">
-													<textarea class="form-control textarea" id="post-textarea" name="post-text-message" required="required"></textarea>
-													<div class="clearfix"></div>
-													<div class="post-options pull-right">
-														<div title="Choose whether the post is visible for non-members or not">
-															<?php
-															if ($group->get_public() == 1)
-															{
-																?>
-																<label class="radio-inline">
-																	<input type="radio" name="post-privacy" id="post-privacy-public" value="1" checked="checked">Public
-																</label>
-																<label class="radio-inline">
-																	<input type="radio" name="post-privacy" id="post-privacy-private" value="0">Private
-																</label>
+								<?php
+								if ($membership === TRUE)
+								{
+									?>
+									<div class="content-box">
+										<div class="post-box">
+											<!-- Nav tabs -->
+											<ul class="nav nav-tabs" role="tablist">
+												<li role="presentation" class="active"><a href="#message" aria-controls="message" role="tab" data-toggle="tab"><span class="fa fa-pencil-square-o"></span> Message</a></li>
+												<li role="presentation"><a href="#picture" aria-controls="picture" role="tab" data-toggle="tab"><span class="fa fa-image"></span> Picture</a></li>
+											</ul>
+											<!-- Tab panes -->
+											<div class="tab-content group-post-tab-content">
+												<div role="tabpanel" class="tab-pane active" id="message">
+													<form action="" method="POST" id="post-message-form">
+														<textarea class="form-control textarea" id="post-textarea" name="post-text-message" required="required"></textarea>
+														<div class="clearfix"></div>
+														<div class="post-options pull-right">
+															<div title="Choose whether the post is visible for non-members or not">
 																<?php
-															}
-															else
-															{
-																//Posts can only be private, since the group is private..
-															}
-															?>
-														</div>
-														<button class="btn btn-primary" name="post-message" type="submit" id="post-message-button">Post</button>
-													</div>
-													<div class="clearfix"></div>
-												</form>
-											</div>
-											<div role="tabpanel" class="tab-pane" id="picture">
-												<form action="" method="POST" enctype="multipart/form-data">
-													<span class="btn btn-default btn-file btn-primary">
-														Browse <input type="file" name="imageFile" required="required">
-													</span>
-													<textarea class="form-control textarea" id="post-image-textarea" name="post-image-text-message" required="required"></textarea>
-													<div class="clearfix"></div>
-													<div class="post-options pull-right">
-														<div title="Choose whether the post is visible for non-members or not">
-															<?php
-															if ($group->get_public() == 1)
-															{
+																if ($group->get_public() == 1)
+																{
+																	?>
+																	<label class="radio-inline">
+																		<input type="radio" name="post-privacy" id="post-privacy-public" value="1" checked="checked">Public
+																	</label>
+																	<label class="radio-inline">
+																		<input type="radio" name="post-privacy" id="post-privacy-private" value="0">Private
+																	</label>
+																	<?php
+																}
+																else
+																{
+																	//Posts can only be private, since the group is private..
+																}
 																?>
-																<label class="radio-inline">
-																	<input type="radio" name="post-image-privacy" id="post-image-privacy-public" value="1" checked="checked">Public
-																</label>
-																<label class="radio-inline">
-																	<input type="radio" name="post-image-privacy" id="post-image-privacy-private" value="0">Private
-																</label>
-																<?php
-															}
-															else
-															{
-																//Posts can only be private, since the group is private..
-															}
-															?>
+															</div>
+															<button class="btn btn-primary" name="post-message" type="submit" id="post-message-button">Post</button>
 														</div>
-														<button class="btn btn-primary" name="post-image-message" type="submit" id="post-image-message-button">Post</button>
-													</div>
-													<div class="clearfix"></div>
-												</form>
+														<div class="clearfix"></div>
+													</form>
+												</div>
+												<div role="tabpanel" class="tab-pane" id="picture">
+													<form action="" method="POST" enctype="multipart/form-data">
+														<span class="btn btn-default btn-file btn-primary">
+															Browse <input type="file" name="imageFile" required="required">
+														</span>
+														<textarea class="form-control textarea" id="post-image-textarea" name="post-image-text-message" required="required"></textarea>
+														<div class="clearfix"></div>
+														<div class="post-options pull-right">
+															<div title="Choose whether the post is visible for non-members or not">
+																<?php
+																if ($group->get_public() == 1)
+																{
+																	?>
+																	<label class="radio-inline">
+																		<input type="radio" name="post-image-privacy" id="post-image-privacy-public" value="1" checked="checked">Public
+																	</label>
+																	<label class="radio-inline">
+																		<input type="radio" name="post-image-privacy" id="post-image-privacy-private" value="0">Private
+																	</label>
+																	<?php
+																}
+																else
+																{
+																	//Posts can only be private, since the group is private..
+																}
+																?>
+															</div>
+															<button class="btn btn-primary" name="post-image-message" type="submit" id="post-image-message-button">Post</button>
+														</div>
+														<div class="clearfix"></div>
+													</form>
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<?php
+									<?php
+								}
 								$all_post_ids = $group->get_posts();
 								if (is_array($all_post_ids) && count($all_post_ids) > 0)
 								{
