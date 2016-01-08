@@ -12,45 +12,45 @@ if (isset($_POST['login']))
 	$pass = sanitize_text($_POST['pass']);
 
 	$error_msg;
-	if($sc->validate_username($user) !== 1 || validate_password($pass) === FALSE)
+	if($sc->validate_username($user) !== 1 || $sc->validate_password($pass) === FALSE)
 	{
 		$error_msg = "Invalid username or password";
-		die();
+		$display_message;
 	}
 	else
 	{
-	$answer = $sc->log_member_in($user, $pass);
-	if ($answer !== FALSE && $answer !== TRUE)
-	{
-		$display_message = TRUE;
+		$answer = $sc->log_member_in($user, $pass);
+		if ($answer !== FALSE && $answer !== TRUE)
+		{
+			$display_message = TRUE;
+		}
+		elseif ($answer === FALSE)
+		{
+			$display_message = TRUE;
+		}
 	}
-	elseif ($answer === FALSE)
-	{
-		$display_message = TRUE;
-	}
-}
 
-if (isset($_SESSION['logged_in']))
-{
-	if (!empty($_SESSION['tried_url']))
+	if (isset($_SESSION['logged_in']))
 	{
-		$tried_url = $_SESSION['tried_url'];
-		$_SESSION['tried_url'] = null;
-		?>
-		<script>window.location = "<?php echo $tried_url ?>";</script>
-		<?php
-		die();
-	}
-	if ($_SESSION['logged_in'] == TRUE)
-	{
-		?>
-		<script>
-			window.location = "<?php echo BASE ?>";
+		if (!empty($_SESSION['tried_url']))
+		{
+			$tried_url = $_SESSION['tried_url'];
+			$_SESSION['tried_url'] = null;
+			?>
+			<script>window.location = "<?php echo $tried_url ?>";</script>
+			<?php
 			die();
-		</script>
-		<?php
+		}
+		if ($_SESSION['logged_in'] == TRUE)
+		{
+			?>
+			<script>
+				window.location = "<?php echo BASE ?>";
+				die();
+			</script>
+			<?php
+		}
 	}
-}
 }
 ?>
 <html>
