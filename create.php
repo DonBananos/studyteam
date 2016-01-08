@@ -19,7 +19,7 @@ if (isset($_POST['join']))
 		// Info is shown to the user.
 	}
 	else
-	{	
+	{
 		$sc->log_member_in($username, $pass1);
 		?>
 		<script>
@@ -46,111 +46,105 @@ if (isset($_POST['join']))
 							<p class="lead">Why don't you join the party?</p>
 						</div>
 
-						<!-- Trigger the modal with a button -->
-						<h5 data-toggle="modal" data-target="#myModal" style="mergin-left:0px;"><a style="color:white;">User Credential Policy</a></h5>
-
 						<!-- Modal -->
-						<div id="myModal" class="modal fade modal-inverse" tabindex="-1" role="dialog" aria-labelledby="addGroupModalLabel">
+						<div id="credentialPolicyModal" class="modal fade modal-inverse" tabindex="-1" role="dialog" aria-labelledby="credentialPolicyModalLabel">
 							<div class="modal-dialog">
-							    <!-- Modal content-->
-							    <div class="modal-content">
-						      		<div class="modal-header">
-						        		<button type="button" class="close" data-dismiss="modal">&times;</button>
-						        		<h4 class="modal-title">User Credential Policy</h4>
-						      		</div>
-						      	<div class="modal-body">
-						        	<p>
-						        		<b>Username:</b><br>
-						        		<ul>
-							        		<li>MIN 3 characters</li>
+								<!-- Modal content-->
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">User Credential Policy</h4>
+									</div>
+									<div class="modal-body">
+										<p>
+											<b>Username:</b><br>
+										<ul>
+											<li>MIN 3 characters</li>
 											<li>MAX 255 characters</li>
 											<li>Only use A-Z a-z 0-9</li>
 											<li>Special characters allowed: - . _</li>
 											<li>No whitespaces</li>
 										</ul>
-						        	</p>
-						        	<p>
-						        		<b>Password:</b><br>
-						        		<ul>
-							        		<li>Minimum 8 characters long</li>
+										</p>
+										<p>
+											<b>Password:</b><br>
+										<ul>
+											<li>Minimum 8 characters long</li>
 											<li>Minimum 1 capital letter</li>
 											<li>Minimum 1 number</li>
 											<li>All Special characters allowed</li>
 											<li>No same 3 characters in a row</li>
 											<li>No whitespaces</li>
 										</ul>
-						        	</p>
-						      	</div>
-						      	<div class="modal-footer">
-						        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						      	</div>
-						    </div>
-						  </div>
+										</p>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
 						</div>
-
 					</div>
-
-					
-
 					<form name="join-form" action="" method="POST">
 						<div class="row">
 							<input type="text" name="username" class="form-control" placeholder="Username" required>
-							<?php 
-								if(!empty($answer[0]))
-								{
-									echo '<label>'. $answer[0] .'</label>';
-								}
+							<?php
+							if (!empty($answer[0]))
+							{
+								echo '<label>' . $answer[0] . '</label>';
+							}
 							?>
 						</div>
 						<div class="row">
 							<input type="text" name="firstname" class="form-control" placeholder="Firstname" required>
 							<?php
-								if(!empty($answer[1]))
-								{
-									echo '<label>'. $answer[1] .'</label>';
-								}
+							if (!empty($answer[1]))
+							{
+								echo '<label>' . $answer[1] . '</label>';
+							}
 							?>
 						</div>
 						<div class="row">
 							<input type="text" name="lastname" class="form-control" placeholder="Lastname" required>
 							<?php
-								if(!empty($answer[2]))
-								{
-									echo '<label>'. $answer[2] .'</label>';
-								}
+							if (!empty($answer[2]))
+							{
+								echo '<label>' . $answer[2] . '</label>';
+							}
 							?>
 						</div>
 						<div class="row">
 							<input type="text" name="email" class="form-control" placeholder="Email" required>
-							<?php 
-								if(!empty($answer[3]))
-								{
-									echo '<label>'. $answer[3] .'</label>';
-								}
+							<?php
+							if (!empty($answer[3]))
+							{
+								echo '<label>' . $answer[3] . '</label>';
+							}
 							?>
 						</div>
 						<div class="row">
 							<input type="password" name="password1" class="form-control" placeholder="Password" required>
 							<?php
-								if(!empty($answer[4]))
-								{
-									echo '<label>'. $answer[4] .'</label>';
-								}
+							if (!empty($answer[4]))
+							{
+								echo '<label>' . $answer[4] . '</label>';
+							}
 							?>
 						</div>
 						<div class="row">
 							<input type="password" name="password2" class="form-control" placeholder="Retype Password" required>
 							<?php
-								if(!empty($answer[5]))
-								{
-									echo '<label>'. $answer[5] .'</label>';
-								}
+							if (!empty($answer[5]))
+							{
+								echo '<label>' . $answer[5] . '</label>';
+							}
 							?>
 						</div>
 						<br>
 						<div class="row">
 							<input type="tel" class="form-control" placeholder="Telephone" name="phone" style="display: none"> 
 							<input type="submit" name="join" class="btn btn-primary" value="Join the wonder">
+							<button type="button" data-toggle="modal" data-target="#credentialPolicyModal" class="btn btn-default"><span class="fa fa-question"></span> User Credential Policy</button>
 						</div>
 					</form>
 					<div class="row">

@@ -62,7 +62,7 @@ if ($group->get_if_student_is_member($student->get_id()))
 			$safe_name = sanitize_text($_POST['editGroupName']);
 			$safe_max_size = sanitize_int($_POST['editGroupSize']);
 			$safe_category = sanitize_int($_POST['editGroupCategory']);
-			$safe_description = $_POST['editGroupDescription'];
+			$safe_description = sanitize_text($_POST['editGroupDescription']);
 			if ($student_level_in_group === 2)
 			{
 				$safe_name = $group->get_name();
@@ -150,16 +150,21 @@ if (isset($_POST['post-message']))
 	$public = 0;
 	$student_id = $student->get_id();
 	$group_id = $group->get_id();
-	if (isset($_POST['post-privacy']))
+	if ($group->get_public() == 1)
 	{
-		$public = sanitize_int($_POST['post-privacy']);
+		if (isset($_POST['post-privacy']))
+		{
+			$public = sanitize_int($_POST['post-privacy']);
+		}
 	}
 	$post = $_POST['post-text-message'];
 
 	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
-	if (validate_int($post_result))
+	if (!validate_int($post_result))
 	{
-		//Success.. We got an ID in return...
+		?>
+		<script>alert("Error: <?php echo $post_result ?>");</script>
+		<?php
 	}
 }
 elseif (isset($_POST['post-image-message']))
@@ -306,7 +311,7 @@ elseif (isset($_POST['post-image-message']))
 									{
 										$post = new Post($post_id);
 										$poster = new Student($post->get_student_id());
-										if ($student->get_if_student_is_part_of_group($group->get_id()) !== FALSE && $post->get_public() === 0)
+										if ($membership === FALSE && $post->get_public() === 0)
 										{
 											//Dont show
 										}
@@ -860,7 +865,7 @@ elseif (isset($_POST['post-image-message']))
 		?>
 		<script>
 			$(document).ready(function () {
-				CKEDITOR.replace('post-textarea', {
+				.replace('post-textarea', {
 					toolbar: [
 						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
 						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
@@ -869,7 +874,7 @@ elseif (isset($_POST['post-image-message']))
 						{name: 'colors', items: ['TextColor', 'BGColor']}
 					]
 				});
-				CKEDITOR.replace('post-image-textarea', {
+				.replace('post-image-textarea', {
 					toolbar: [
 						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
 						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
@@ -878,11 +883,6 @@ elseif (isset($_POST['post-image-message']))
 						{name: 'colors', items: ['TextColor', 'BGColor']}
 					]
 				});
-				CKEDITOR.replace('groupDescriptionTextArea', {
-					toolbar: [
-						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']}
-					]
-				});//groupDescriptionTextArea
 			});
 		</script>
     </body>

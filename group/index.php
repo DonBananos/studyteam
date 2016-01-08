@@ -225,19 +225,5 @@ if (isset($_POST['addGroupSubmit']))
 		<?php
 		require '../includes/footer.php';
 		?>
-		<script>
-			$(document).ready(function () {
-				CKEDITOR.replace('group-desc-textarea', {
-					toolbar: [
-						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
-						{name: 'links', items: ['Link', 'Unlink']},
-						{name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe']},
-						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
-						{name: 'colors', items: ['TextColor', 'BGColor']}
-					]
-				});
-			});
-		</script>
     </body>
 </html>

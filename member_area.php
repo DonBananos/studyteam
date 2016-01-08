@@ -50,10 +50,28 @@ $student = new Student($_SESSION['user_id']);
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<img src="<?php echo $feed_poster->get_avatar() ?>" class="student-avatar-thumb">
 											<div class="post-header">
-												<a href="<?php echo BASE ?>student/<?php echo strtolower($feed_poster->get_username()) ?>/"><?php echo $feed_poster->get_username() ?></a> created a post in <a href="<?php echo BASE ?>group/<?php echo $feed_post_group->get_id() ?>/"><?php echo $feed_post_group->get_name() ?></a>
+												<a href="<?php echo BASE ?>student/<?php echo strtolower($feed_poster->get_username()) ?>/"><?php echo $feed_poster->get_username() ?></a>
+												created a 
+												<?php
+												if ($feed_post_group->get_public() === 1)
+												{
+													if ($feed_post->get_public() === 1)
+													{
+														echo "public";
+													}
+													else
+													{
+														echo "private";
+													}
+												}
+												?>
+												post in 
+												<a href="<?php echo BASE ?>group/<?php echo $feed_post_group->get_id() ?>/"><?php echo $feed_post_group->get_name() ?></a>
 											</div>
 											<div class="post-meta">
-												<?php echo date("Y-m-d H:i", strtotime($feed_post->get_time())); ?>
+												<?php
+												echo date("Y-m-d H:i", strtotime($feed_post->get_time()));
+												?>
 											</div>
 											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 												<div class="post-content">

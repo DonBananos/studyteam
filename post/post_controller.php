@@ -136,7 +136,6 @@ class Post_controller
 		$safe_student_id = sanitize_int($student_id);
 		$safe_group_id = sanitize_int($group_id);
 		$safe_public = sanitize_int($public);
-		
 		global $dbCon;
 		
 		$sql = "INSERT INTO group_post (student_id, group_id, public, post) VALUES (?, ?, ?, ?);";

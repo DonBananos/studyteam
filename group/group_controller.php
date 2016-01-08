@@ -16,7 +16,7 @@ class Group_controller
 		$new_group_data['category'] = sanitize_int($category_id);
 		$new_group_data['max'] = sanitize_int($max_members);
 		$new_group_data['creator'] = sanitize_int($user_id);
-		$new_group_data['desc'] = $description; //Already sanitized from WYSIWYG
+		$new_group_data['desc'] = sanitize_text($description); //Already sanitized from WYSIWYG
 		$result = $this->save_new_group($new_group_data);
 		return $result;
 	}
