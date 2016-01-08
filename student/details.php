@@ -83,7 +83,7 @@ if ($student_visited->check_if_buddies_pending($student->get_id()))
 								if ($student->get_id() === $student_visited->get_id())
 								{
 									?>
-									<a href="<?php echo BASE ?>student/settings/#avatar">
+									<a href="<?php echo BASE ?>settings/#avatar">
 										<span class="fa fa-image fa-2x"></span>
 									</a>
 									<?php

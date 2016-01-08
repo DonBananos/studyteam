@@ -34,12 +34,12 @@
 						<span class="fa fa-caret-down"></span></a>
 					<ul class="dropdown-menu dropdown-inverted">
 						<li><a href="<?php echo BASE ?>student/<?php echo strtolower($student->get_username()); ?>/">My Profile</a></li>
-						<li><a href="<?php echo BASE ?>student/buddies/">My Buddies</a></li>
+						<li><a href="<?php echo BASE ?>buddies/">My Buddies</a></li>
 						<?php
 						if ($num_buddies_pending > 0)
 						{
 							?>
-							<li><a href="<?php echo BASE ?>student/buddies/">Buddy Invites (<?php echo $num_buddies_pending ?>)</a></li>
+							<li><a href="<?php echo BASE ?>buddies/">Buddy Invites (<?php echo $num_buddies_pending ?>)</a></li>
 							<?php
 						}
 						if($num_group_invites > 0)
@@ -49,7 +49,7 @@
 							<?php
 						}
 						?>
-						<li><a href="<?php echo BASE ?>student/settings/">Settings</a></li>
+						<li><a href="<?php echo BASE ?>settings/">Settings</a></li>
 						<?php
 						if ($student->get_permission() !== 1)
 						{

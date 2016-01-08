@@ -1,9 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
 require_once '../includes/configuration.php';
 require_once '../student/student.php';
 require_once './group.php';
@@ -147,8 +142,8 @@ if ($membership === FALSE && $group->get_public() == 0)
 	<script>
 		window.location = "<?php echo BASE ?>group/";
 	</script>
-	die();
 	<?php
+	die();
 }
 if (isset($_POST['post-message']))
 {

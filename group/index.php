@@ -170,7 +170,7 @@ if (isset($_POST['addGroupSubmit']))
 					</div>
 					<?php
 					$suggested_group_ids = $student->get_public_groups_where_student_is_not_member();
-					if (count($suggested_group_ids) > 0)
+					if (count($suggested_group_ids) > 0 && is_array($suggested_group_ids))
 					{
 						?>
 						<div class="row">
@@ -184,7 +184,7 @@ if (isset($_POST['addGroupSubmit']))
 									<div class="row">
 										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 											<a href="<?php echo BASE ?>group/<?php echo $suggested_group->get_id() ?>/">
-												<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
+												<div class="group" id="group-<?php echo $suggested_group->get_id() ?>" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
 													<div class="group-header">
 														<h3><?php echo $suggested_group->get_name() ?></h3>
 														<div class="publicity">

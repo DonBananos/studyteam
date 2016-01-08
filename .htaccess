@@ -1,3 +1,5 @@
+Options -Indexes
+
 RewriteEngine On
 
 #Redirect to search
@@ -8,7 +10,7 @@ RewriteRule ^search/?$ student/search.php [NC,L]
 #Redirect to buddy overview
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
-RewriteRule ^student/buddies/?$ student/buddies.php [NC,L]
+RewriteRule ^buddies/?$ student/buddies.php [NC,L]
 
 #Redirect to Student Group Invites
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
@@ -18,7 +20,7 @@ RewriteRule ^group/my-invites/?$ student/invites.php [NC,L]
 #Redirect to Student settings
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
 RewriteCond %{REQUEST_FILENAME} !-f [NC]
-RewriteRule ^student/settings/?$ student/settings.php [NC,L]
+RewriteRule ^settings/?$ student/settings.php [NC,L]
 
 #Redirect to correct student details
 RewriteCond %{REQUEST_FILENAME} !-d [NC]
