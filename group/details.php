@@ -167,30 +167,35 @@ if (isset($_POST['post-message']))
 		//Success.. We got an ID in return...
 	}
 }
-elseif(isset($_POST['post-image-message']))
+elseif (isset($_POST['post-image-message']))
 {
 	$public = 0;
 	$student_id = $student->get_id();
 	$group_id = $group->get_id();
-	if (isset($_POST['post-image-privacy']))
+	if ($group->get_public() == 1)
 	{
-		$public = sanitize_int($_POST['post-image-privacy']);
+		if (isset($_POST['post-image-privacy']))
+		{
+			$public = sanitize_int($_POST['post-image-privacy']);
+		}
 	}
 	$post = $_POST['post-image-text-message'];
-	
+
 	$image_path = upload_image(950);
-	if($image_path === FALSE)
+	if ($image_path === FALSE)
 	{
 		//Sikke en bandit!
 	}
 	else
 	{
-		$post .= "<p><img src='".$image_path."' alt='".$group->get_name()." image upload'/></p>";
+		$post .= "<p><img src='" . $image_path . "' alt='" . $group->get_name() . " image upload'/></p>";
 
 		$post_result = $pc->create_post($student_id, $group_id, $public, $post);
-		if (validate_int($post_result))
+		if (!validate_int($post_result))
 		{
-			//Success.. We got an ID in return...
+			?>
+			<script>alert("Error: <?php echo $post_result ?>");</script>
+			<?php
 		}
 	}
 }
@@ -310,7 +315,7 @@ elseif(isset($_POST['post-image-message']))
 														<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
 													</div>
 													<div class="post-meta">
-														<?php echo date("Y-m-d", strtotime($post->get_time())); ?>
+														<?php echo date("Y-m-d H:i", strtotime($post->get_time())); ?>
 													</div>
 													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 														<div class="post-content">
@@ -323,7 +328,21 @@ elseif(isset($_POST['post-image-message']))
 										<?php
 									}
 								}
+								$group_creator = new Student($group->get_creator_student_id());
 								?>
+								<div class="content-box" id="post_c">
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<img src="<?php echo $group_creator->get_avatar() ?>" class="student-avatar-thumb">
+											<div class="post-header">
+												<a href="<?php echo BASE ?>student/<?php echo strtolower($group_creator->get_username()) ?>/"><?php echo $group_creator->get_username() ?></a> created the group
+											</div>
+											<div class="post-meta">
+												<?php echo date("Y-m-d H:i", strtotime($group->get_created_time())); ?>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 							<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
 								<div class="content-box">

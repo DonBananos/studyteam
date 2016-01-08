@@ -120,15 +120,18 @@ class Post_controller
 		//Validate and Sanitize
 		if(!validate_int($student_id))
 		{
-			return FALSE;
+			//Return is 0 or FALSE - Both are not good
+			return "Student ID is incorrect";
 		}
 		if(!validate_int($group_id))
 		{
-			return FALSE;
+			//Return is 0 or FALSE - Both are not good
+			return "Group ID is incorrect";
 		}
-		if(!validate_int($public))
+		if(validate_int($public) === FALSE)
 		{
-			return FALSE;
+			//Return is FALSE - This is not good
+			return "There's been an error in the public setting, public is ".$public." - should be integer.";
 		}
 		$safe_student_id = sanitize_int($student_id);
 		$safe_group_id = sanitize_int($group_id);
@@ -153,6 +156,6 @@ class Post_controller
 		$error = $stmt->error;
 		echo $error;
 		$stmt->close();
-		return FALSE;
+		return $error;
 	}
 }

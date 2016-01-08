@@ -536,7 +536,7 @@ class Student_controller
 	public function search_for_student($search_string)
 	{
 		$results = array();
-		if ($this->check_if_email($search_string))
+		if ($this->validate_email($search_string))
 		{
 			$results = $this->search_for_email(sanitize_email($search_string));
 		}
