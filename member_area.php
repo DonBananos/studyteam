@@ -66,6 +66,12 @@ $student = new Student($_SESSION['user_id']);
 								<?php
 							}
 						}
+						else
+						{
+							?>
+							<p>As you join groups, your feed will be filled with posts from your StudyTeam Society</p>
+							<?php
+						}
 						?>
 					</div>
 					<div class="col-lg-3 col-md-3 col-sm-4 hidden-xs">
@@ -74,23 +80,32 @@ $student = new Student($_SESSION['user_id']);
 							<hr class="minor-line">
 							<?php
 							$group_ids = $student->get_group_ids_that_student_is_part_of(5);
-							foreach ($group_ids as $group_id)
+							if (is_array($group_ids) && count($group_ids) > 0)
 							{
-								$group = new Group($group_id);
-								?>
-								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<div class="row">
-										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-											<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>); background-size: cover; background-position: center">
-												<div class="small-group-header">
+								foreach ($group_ids as $group_id)
+								{
+									$group = new Group($group_id);
+									?>
+									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+										<div class="row">
+											<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
+												<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>); background-size: cover; background-position: center">
+													<div class="small-group-header">
+													</div>
 												</div>
-											</div>
-											<div class="small-group-data">
-												<?php echo $group->get_name() ?>
-											</div>
-										</a>
+												<div class="small-group-data">
+													<?php echo $group->get_name() ?>
+												</div>
+											</a>
+										</div>
 									</div>
-								</div>
+									<?php
+								}
+							}
+							else
+							{
+								?>
+								<p>You are not member of a group yet.</p>
 								<?php
 							}
 							?>

@@ -329,20 +329,42 @@ elseif (isset($_POST['post-image-message']))
 									}
 								}
 								$group_creator = new Student($group->get_creator_student_id());
-								?>
-								<div class="content-box" id="post_c">
-									<div class="row">
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<img src="<?php echo $group_creator->get_avatar() ?>" class="student-avatar-thumb">
-											<div class="post-header">
-												<a href="<?php echo BASE ?>student/<?php echo strtolower($group_creator->get_username()) ?>/"><?php echo $group_creator->get_username() ?></a> created the group
-											</div>
-											<div class="post-meta">
-												<?php echo date("Y-m-d H:i", strtotime($group->get_created_time())); ?>
+								if ($group_creator->get_id() !== null && $group_creator->get_id() > 0)
+								{
+									?>
+									<div class="content-box" id="post_c">
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<img src="<?php echo $group_creator->get_avatar() ?>" class="student-avatar-thumb">
+												<div class="post-header">
+													<a href="<?php echo BASE ?>student/<?php echo strtolower($group_creator->get_username()) ?>/"><?php echo $group_creator->get_username() ?></a> created the group
+												</div>
+												<div class="post-meta">
+													<?php echo date("Y-m-d H:i", strtotime($group->get_created_time())); ?>
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
+									<?php
+								}
+								else
+								{
+									?>
+									<div class="content-box" id="post_c">
+										<div class="row">
+											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+												<div class="post-header">
+													Group created
+												</div>
+												<div class="post-meta">
+													<?php echo date("Y-m-d H:i", strtotime($group->get_created_time())); ?>
+												</div>
+											</div>
+										</div>
+									</div>
+									<?php
+								}
+								?>
 							</div>
 							<div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
 								<div class="content-box">
@@ -403,27 +425,30 @@ elseif (isset($_POST['post-image-message']))
 									<hr class="minor-line">
 									<?php
 									$members_array = $group->get_array_with_members_and_levels();
-									foreach ($members_array as $student_id => $member_data)
+									if(is_array($members_array))
 									{
-										$member = new Student($student_id);
-										?>
-										<div class="row">
-											<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); ?>">
-												<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
-													<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
-												</div>
-												<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
-													<h4 class="student-name">
-														<?php echo $member->get_username() ?>
-													</h4>
-													<span class="student-info">
-														<?php echo get_member_level_name_from_level($member_data['level']) ?>
-													</span>
-												</div>
-											</a>
-										</div>
-										<hr class="minor-line">
-										<?php
+										foreach ($members_array as $student_id => $member_data)
+										{
+											$member = new Student($student_id);
+											?>
+											<div class="row">
+												<a href="<?php echo BASE ?>student/<?php echo strtolower($member->get_username()); ?>">
+													<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+														<img src="<?php echo $member->get_avatar() ?>" class="student-avatar">
+													</div>
+													<div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+														<h4 class="student-name">
+															<?php echo $member->get_username() ?>
+														</h4>
+														<span class="student-info">
+															<?php echo get_member_level_name_from_level($member_data['level']) ?>
+														</span>
+													</div>
+												</a>
+											</div>
+											<hr class="minor-line">
+											<?php
+										}
 									}
 									?>
 									<div class="group-admin-options no-btm-pad">

@@ -124,46 +124,49 @@ if (isset($_POST['addGroupSubmit']))
 						<?php
 						$group_ids = $student->get_group_ids_that_student_is_part_of();
 						$printed_groups = 0;
-						foreach ($group_ids as $group_id)
+						if (is_array($group_ids))
 						{
-							$group = new Group($group_id);
-							?>
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								<div class="row">
-									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-										<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-											<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $group->get_category_image() ?>);">
-												<div class="group-header">
-													<h3><?php echo $group->get_name() ?></h3>
-													<div class="publicity">
-														<?php
-														if ($group->get_public() == 1)
-														{
-															?>
-															<span class="fa fa-unlock fa-2x"></span>
+							foreach ($group_ids as $group_id)
+							{
+								$group = new Group($group_id);
+								?>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
+												<div class="group" id="group-<?php echo $group->get_id() ?>" style="background-image: url(<?php echo $group->get_category_image() ?>);">
+													<div class="group-header">
+														<h3><?php echo $group->get_name() ?></h3>
+														<div class="publicity">
 															<?php
-														}
-														else
-														{
+															if ($group->get_public() == 1)
+															{
+																?>
+																<span class="fa fa-unlock fa-2x"></span>
+																<?php
+															}
+															else
+															{
+																?>
+																<span class="fa fa-lock fa-2x"></span>
+																<?php
+															}
 															?>
-															<span class="fa fa-lock fa-2x"></span>
-															<?php
-														}
-														?>
+														</div>
 													</div>
 												</div>
-											</div>
-										</a>
+											</a>
+										</div>
 									</div>
 								</div>
-							</div>
-							<?php
-							$printed_groups++;
+								<?php
+								$printed_groups++;
+							}
 						}
 						if ($printed_groups < 1)
 						{
 							?>
-						<p>You are not member of a group yet. Try to find a group, or <a data-toggle="modal" data-target="#addGroupModal" style="cursor: pointer;">create one now!</a></p>
+							<p>You are not member of a group yet. Try to find a group, or <a data-toggle="modal" data-target="#addGroupModal" style="cursor: pointer;">create one now!</a></p>
 							<?php
 						}
 						?>
