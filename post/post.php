@@ -8,6 +8,8 @@ class Post
 	private $time;
 	private $public;
 	private $post;
+	private $type;
+	private $img_path;
 	
 	function __construct($id)
 	{
@@ -24,7 +26,7 @@ class Post
 		}
 		$safe_id = sanitize_int($id);
 		
-		$sql = "SELECT id, student_id, group_id, time, public, post FROM group_post WHERE id = ?;";
+		$sql = "SELECT id, student_id, group_id, time, public, post, post_type, img_path FROM group_post WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -32,7 +34,7 @@ class Post
 		}
 		$stmt->bind_param('i', $safe_id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $student_id, $group_id, $time, $public, $post);
+		$stmt->bind_result($id, $student_id, $group_id, $time, $public, $post, $type, $img_path);
 		$stmt->fetch();
 		$this->set_id($id);
 		$this->set_student_id($student_id);
@@ -40,6 +42,8 @@ class Post
 		$this->set_time($time);
 		$this->set_public($public);
 		$this->set_post($post);
+		$this->set_type($type);
+		$this->set_img_path($img_path);
 		if(validate_int($id) && $id > 0)
 		{
 			return TRUE;
@@ -76,6 +80,16 @@ class Post
 	{
 		return $this->post;
 	}
+	
+	public function get_type()
+	{
+		return $this->type;
+	}
+
+	public function get_img_path()
+	{
+		return $this->img_path;
+	}
 
 	private function set_id($id)
 	{
@@ -105,5 +119,15 @@ class Post
 	private function set_post($post)
 	{
 		$this->post = $post;
+	}
+	
+	private function set_type($type)
+	{
+		$this->type = $type;
+	}
+
+	private function set_img_path($img_path)
+	{
+		$this->img_path = $img_path;
 	}
 }

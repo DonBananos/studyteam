@@ -140,8 +140,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 {
 	?>
 	<script>
-		window.location = "<?php echo BASE ?>group/";
-	</script>
+					window.location = "<?php echo BASE ?>group/";</script>
 	<?php
 	die();
 }
@@ -157,7 +156,7 @@ if (isset($_POST['post-message']))
 			$public = sanitize_int($_POST['post-privacy']);
 		}
 	}
-	$post = sanitize_text($_POST['post-text-message']);
+	$post = $_POST['post-text-message'];
 
 	$post_result = $pc->create_post($student_id, $group_id, $public, $post);
 	if (!validate_int($post_result))
@@ -179,7 +178,7 @@ elseif (isset($_POST['post-image-message']))
 			$public = sanitize_int($_POST['post-image-privacy']);
 		}
 	}
-	$post = sanitize_text($_POST['post-image-text-message']);
+	$post = $_POST['post-image-text-message'];
 
 	$image_path = upload_image(950);
 	if ($image_path === FALSE)
@@ -188,9 +187,7 @@ elseif (isset($_POST['post-image-message']))
 	}
 	else
 	{
-		$post .= "<p><img src='" . $image_path . "' alt='" . $group->get_name() . " image upload'/></p>";
-
-		$post_result = $pc->create_post($student_id, $group_id, $public, $post);
+		$post_result = $pc->create_post($student_id, $group_id, $public, $post, 2, $image_path);
 		if (!validate_int($post_result))
 		{
 			?>
@@ -317,13 +314,18 @@ elseif (isset($_POST['post-image-message']))
 										}
 										else
 										{
+											$header = "";
+											if ($post->get_type() === 2)
+											{
+												$header = " posted an image";
+											}
 											?>
-											<div class="content-box" id="post_<?php echo $post_id ?>">
+											<div class="content-box" id="post_<?php echo $post_id ?>" post-type="<?php echo $post->get_type() ?>">
 												<div class="row">
 													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 														<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
 														<div class="post-header">
-															<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
+															<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a><?php echo $header ?>
 														</div>
 														<div class="post-meta">
 															<?php
@@ -349,6 +351,16 @@ elseif (isset($_POST['post-image-message']))
 															<div class="post-content">
 																<?php echo $post->get_post() ?>
 															</div>
+															<?php
+															if ($post->get_type() === 2 && $post->get_img_path() !== NULL)
+															{
+																?>
+																<div class="post-image">
+																	<img src="<?php echo $post->get_img_path() ?>" alt="Uploaded user image">
+																</div>
+																<?php
+															}
+															?>
 														</div>
 													</div>
 												</div>
@@ -864,25 +876,25 @@ elseif (isset($_POST['post-image-message']))
 		}
 		?>
 		<script>
-			$(document).ready(function () {
-				.replace('post-textarea', {
+					$(document).ready(function () {
+			.replace('post-textarea', {
+			toolbar: [
+			{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+			{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
+			{name: 'links', items: ['Link', 'Unlink']},
+			{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+			{name: 'colors', items: ['TextColor', 'BGColor']}
+			]
+			});
+					.replace('post-image-textarea', {
 					toolbar: [
-						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
-						{name: 'links', items: ['Link', 'Unlink']},
-						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
-						{name: 'colors', items: ['TextColor', 'BGColor']}
+					{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
+					{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
+					{name: 'links', items: ['Link', 'Unlink']},
+					{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
+					{name: 'colors', items: ['TextColor', 'BGColor']}
 					]
-				});
-				.replace('post-image-textarea', {
-					toolbar: [
-						{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-						{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
-						{name: 'links', items: ['Link', 'Unlink']},
-						{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
-						{name: 'colors', items: ['TextColor', 'BGColor']}
-					]
-				});
+					});
 			});
 		</script>
     </body>

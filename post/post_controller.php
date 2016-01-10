@@ -7,12 +7,13 @@ class Post_controller
 		
 	}
 	
-	public function create_post($student_id, $group_id, $public, $post)
+	public function create_post($student_id, $group_id, $public, $post, $type = 1, $img_path = NULL)
 	{
 		if($this->validate_post($post) === FALSE)
 		{
 			return "Empty post. Posting aborted.";
 		}
+		$safe_post = $this->make_post_safe($post);
 		$validation_result = $this->validate_variables($student_id, $group_id, $public);
 		if($validation_result === FALSE)
 		{
@@ -22,7 +23,35 @@ class Post_controller
 		{
 			$public = $validation_result;
 		}
-		return $this->save_post($student_id, $group_id, $public, $post);
+		
+		//Check if type is accepted
+		if(is_int($type) && ($type === 1 || $type === 2))
+		{
+			//Type is either 1 or 2 (Regular post or Image post)
+		}
+		else
+		{
+			$type = 1; //Set type as 1!
+		}
+		
+		$safe_image_path = NULL;
+		if(!empty($img_path))
+		{
+			if($type !== 2)
+			{
+				$type = 2;
+			}
+			if(filter_var($img_path, FILTER_VALIDATE_URL))
+			{
+				$safe_image_path = sanitize_url($img_path);
+			}
+			else
+			{
+				return "There was an error with the uploaded image";
+			}
+		}
+		
+		return $this->save_post($student_id, $group_id, $public, $safe_post, $type, $safe_image_path);
 	}
 	
 	private function validate_variables($student_id, $group_id, $public)
@@ -115,7 +144,17 @@ class Post_controller
 		return FALSE;
 	}
 	
-	private function save_post($student_id, $group_id, $public, $post)
+	private function make_post_safe($post)
+	{
+		//Change all newlines to <br> (HTML breaks)
+		$br_post = nl2br($post);
+		//Remove all html tags, except <br>
+		$safe_post = strip_tags($br_post, '<br>');
+		
+		return $safe_post;
+	}
+	
+	private function save_post($student_id, $group_id, $public, $post, $type, $image_path)
 	{
 		//Validate and Sanitize
 		if(!validate_int($student_id))
@@ -138,13 +177,13 @@ class Post_controller
 		$safe_public = sanitize_int($public);
 		global $dbCon;
 		
-		$sql = "INSERT INTO group_post (student_id, group_id, public, post) VALUES (?, ?, ?, ?);";
+		$sql = "INSERT INTO group_post (student_id, group_id, public, post, post_type, img_path) VALUES (?, ?, ?, ?, ?, ?);";
 		$stmt = $dbCon->prepare($sql);
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		$stmt->bind_param('iiis', $safe_student_id, $safe_group_id, $safe_public, $post); //Bind parameters.
+		$stmt->bind_param('iiisis', $safe_student_id, $safe_group_id, $safe_public, $post, $type, $image_path); //Bind parameters.
 		$stmt->execute();
 		$id = $stmt->insert_id;
 		if ($id > 0)
