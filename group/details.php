@@ -140,7 +140,8 @@ if ($membership === FALSE && $group->get_public() == 0)
 {
 	?>
 	<script>
-					window.location = "<?php echo BASE ?>group/";</script>
+		window.location = "<?php echo BASE ?>group/";
+	</script>
 	<?php
 	die();
 }
