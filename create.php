@@ -4,29 +4,58 @@ require_once './student/student_controller.php';
 
 $sc = new Student_controller();
 
+if (isset($_SESSION['logged_in']) AND isset($_GET['id']))
+{
+	?>
+	<script>window.location = "<?php echo BASE ?>";</script>
+	<?php
+	die();
+}
+$username = "";
+$firstname = "";
+$lastname = "";
+$email = "";
+
+$error_message = "";
 if (isset($_POST['join']))
 {
 	$username = sanitize_text($_POST['username']);
 	$firstname = sanitize_text($_POST['firstname']);
 	$lastname = sanitize_text($_POST['lastname']);
 	$email = sanitize_email($_POST['email']);
-	$pass1 = sanitize_text($_POST['password1']);
-	$pass2 = sanitize_text($_POST['password2']);
 
-	$answer = $sc->create_student($username, $firstname, $lastname, $email, $pass1, $pass2);
-	if ($answer !== TRUE)
+	//First, let's check if token is correct!
+	$form_token = $_POST['token'];
+	$sess_token = retrieve_session_token();
+	if ($form_token === $sess_token)
 	{
-		// Info is shown to the user.
+		$pass1 = sanitize_text($_POST['password1']);
+		$pass2 = sanitize_text($_POST['password2']);
+
+		$answer = $sc->create_student($username, $firstname, $lastname, $email, $pass1, $pass2);
+		if ($answer !== TRUE)
+		{
+			?>
+			<script>
+				window.location = "#sign-up";
+			</script>
+			<?php
+			$error_message = "You have not filled out the form according to the requirements";
+		}
+		else
+		{
+			$sc->log_member_in($username, $pass1);
+			?>
+			<script>
+				alert('Welcome! :)');
+				window.location = "<?php echo W1BASE ?>member_area.php";
+			</script>
+			<?php
+		}
 	}
 	else
 	{
-		$sc->log_member_in($username, $pass1);
-		?>
-		<script>
-			alert('Welcome! :)');
-			window.location = "<?php echo W1BASE ?>member_area.php";
-		</script>
-		<?php
+		$error_message = "It seems as if the form has expired";
 	}
 }
 ?>
@@ -85,68 +114,142 @@ if (isset($_POST['join']))
 							</div>
 						</div>
 					</div>
-					<form name="join-form" action="" method="POST">
-						<?php
-						//This is where there will be generated a form token...
+					<?php
+					if (!empty($error_message))
+					{
 						?>
 						<div class="row">
-							<input type="text" name="username" class="form-control" placeholder="Username" required>
+							<div class="bs-callout bs-callout-danger">
+								<h4>Creation Error</h4>
+								<?php echo $error_message ?>
+							</div>
+						</div>
+						<?php
+					}
+					?>
+					<form name="join-form" action="" method="POST">
+						<?php
+						//Get a form token
+						$token = generate_form_token();
+						?>
+						<div class="row">
 							<?php
 							if (!empty($answer[0]))
 							{
-								echo '<label>' . $answer[0] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="text" name="username" class="form-control" placeholder="Username" required="required" value="<?php echo $username ?>">
+									<label class="control-label form-error-label"><?php echo $answer[0] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="text" name="username" class="form-control" placeholder="Username" required="required" value="<?php echo $username ?>">
+								<?php
 							}
 							?>
 						</div>
 						<div class="row">
-							<input type="text" name="firstname" class="form-control" placeholder="Firstname" required>
 							<?php
 							if (!empty($answer[1]))
 							{
-								echo '<label>' . $answer[1] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="text" name="firstname" class="form-control" placeholder="Firstname" required="required" value="<?php echo $firstname ?>">
+									<label class="control-label form-error-label"><?php echo $answer[1] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="text" name="firstname" class="form-control" placeholder="Firstname" required="required" value="<?php echo $firstname ?>">
+								<?php
 							}
 							?>
 						</div>
 						<div class="row">
-							<input type="text" name="lastname" class="form-control" placeholder="Lastname" required>
 							<?php
 							if (!empty($answer[2]))
 							{
-								echo '<label>' . $answer[2] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="text" name="lastname" class="form-control" placeholder="Lastname" required="required" value="<?php echo $lastname ?>">
+									<label class="control-label form-error-label"><?php echo $answer[2] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="text" name="lastname" class="form-control" placeholder="Lastname" required="required" value="<?php echo $lastname ?>">
+								<?php
 							}
 							?>
 						</div>
 						<div class="row">
-							<input type="text" name="email" class="form-control" placeholder="Email" required>
 							<?php
 							if (!empty($answer[3]))
 							{
-								echo '<label>' . $answer[3] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="text" name="email" class="form-control" placeholder="Email" required="required" value="<?php echo $email ?>">
+									<label class="control-label form-error-label"><?php echo $answer[3] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="text" name="email" class="form-control" placeholder="Email" required="required" value="<?php echo $email ?>">
+								<?php
 							}
 							?>
 						</div>
 						<div class="row">
-							<input type="password" name="password1" class="form-control" placeholder="Password" required>
 							<?php
 							if (!empty($answer[4]))
 							{
-								echo '<label>' . $answer[4] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="password" name="password1" class="form-control" placeholder="Password" required="required">
+									<label class="control-label form-error-label"><?php echo $answer[4] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="password" name="password1" class="form-control" placeholder="Password" required="required">
+								<?php
 							}
 							?>
 						</div>
 						<div class="row">
-							<input type="password" name="password2" class="form-control" placeholder="Retype Password" required>
 							<?php
 							if (!empty($answer[5]))
 							{
-								echo '<label>' . $answer[5] . '</label>';
+								?>
+								<div class="form-group has-error">
+									<input type="password" name="password2" class="form-control" placeholder="Retype Password" required="required">
+									<label class="control-label form-error-label"><?php echo $answer[4] ?></label>
+								</div>
+								<?php
+							}
+							else
+							{
+								?>
+								<input type="password" name="password2" class="form-control" placeholder="Retype Password" required="required">
+								<?php
 							}
 							?>
 						</div>
 						<br>
 						<div class="row">
 							<input type="tel" class="form-control" placeholder="Telephone" name="phone" style="display: none"> 
-							<input type="hidden" name="token" value="">
+							<input type="hidden" name="token" value="<?php echo $token ?>">
 							<input type="submit" name="join" class="btn btn-primary" value="Join the wonder">
 							<button type="button" data-toggle="modal" data-target="#credentialPolicyModal" class="btn btn-default"><span class="fa fa-question"></span> User Credential Policy</button>
 						</div>

@@ -350,3 +350,32 @@ function getThumbUrlFromUrl($url)
 
 	return $thumb_url;
 }
+
+/*
+ * Function to set a form token in a session, and return the token to be placed
+ * in a form.
+ * @return: Token, a random generated string between 30 and 60 characters.
+ * Look @ generate_random_string function in configuration.php for more info.
+ */
+function generate_form_token()
+{
+	$token = generate_random_string(30, 60);
+	$_SESSION['token'] = $token;
+	return $token;
+}
+
+/*
+ * Function to retreive the token from the session, set the session variable to
+ * null and return the token.
+ */
+function retrieve_session_token()
+{
+	$token = $_SESSION['token'];
+	if(empty($token))
+	{
+		return FALSE;
+	}
+	//Set Session token as null
+	$_SESSION['token'] = NULL;
+	return $token;
+}
