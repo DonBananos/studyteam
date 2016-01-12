@@ -229,6 +229,8 @@ p.lead
 	margin-top: 10px;
 	border: #2D2D2A 1px solid;
 	max-width: 600px;
+	background-size: cover;
+	background-position: center;
 }
 
 .group-header

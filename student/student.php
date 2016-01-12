@@ -188,12 +188,24 @@ class Student
 		return false;
 	}
 
-	public function get_public_groups_where_student_is_not_member()
+	public function get_public_groups_where_student_is_not_member($limit = NULL)
 	{
 		global $dbCon;
 		$group_ids = array();
 
-		$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND public = 1;";
+		if(!validate_int($limit))
+		{
+			$limit = NULL;
+		}
+		
+		if(!empty($limit))
+		{
+			$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND public = 1 LIMIT $limit;";
+		}
+		else
+		{
+			$sql = "SELECT id FROM `group` WHERE id NOT IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND public = 1;";
+		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -213,6 +225,26 @@ class Student
 		}
 		$stmt->close();
 		return false;
+	}
+	
+	public function get_group_suggestions_for_feed($limit)
+	{
+		$all_suggested_groups = $this->get_public_groups_where_student_is_not_member();
+		$number_of_suggestions = count($all_suggested_groups);
+		if($number_of_suggestions > $limit)
+		{
+			$random_suggestions = array_rand($all_suggested_groups, $limit);
+			$suggestions = array();
+			for($i = 0; $i < $limit; $i++)
+			{
+				$suggestions[] = $all_suggested_groups[$random_suggestions[$i]];
+			}
+		}
+		else
+		{
+			$suggestions = $all_suggested_groups;
+		}
+		return $suggestions;
 	}
 
 	public function get_avatar()
@@ -666,7 +698,6 @@ class Student
 	/*
 	 * Function changes invite in db to accepted
 	 */
-
 	public function decline_pending_invite($invite_id)
 	{
 		global $dbCon;
@@ -719,6 +750,55 @@ class Student
 		if ($level > 0 && validate_int($level))
 		{
 			return $level;
+		}
+		return FALSE;
+	}
+	
+	public function get_posts_for_member_feed($limit = NULL)
+	{
+		global $dbCon;
+		
+		$posts = array();
+		
+		if(!validate_int($limit))
+		{
+			$limit = NULL;
+		}
+		
+		if(!empty($limit))
+		{
+			$sql = "SELECT group_post.id, group_post.`time`, group_post.post_type, group_post.img_path, group_post.public, group_post.post, student.id, `group`.id, `group`.`name` FROM group_post INNER JOIN `group` ON group_post.group_id = `group`.id INNER JOIN student ON student_id = student.id WHERE group_id IN (SELECT student_group.group_id FROM student_group WHERE student_group.student_id = ? AND student_group.active = 1) AND removed = 0 ORDER BY time DESC LIMIT $limit;";
+		}
+		else
+		{
+			$sql = "SELECT group_post.id, group_post.`time`, group_post.post_type, group_post.img_path, group_post.public, group_post.post, student.id, `group`.id, `group`.`name` FROM group_post INNER JOIN `group` ON group_post.group_id = `group`.id INNER JOIN student ON student_id = student.id WHERE group_id IN (SELECT student_group.group_id FROM student_group WHERE student_group.student_id = ? AND student_group.active = 1) AND removed = 0 ORDER BY time DESC;";
+		}
+		$stmt = $dbCon->prepare($sql); //Prepare Statement
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
+		$stmt->execute(); //Execute
+		$stmt->bind_result($post_id, $post_time, $post_type, $img_path, $post_public, $post_content, $student_id, $group_id, $group_name);
+		while($stmt->fetch())
+		{
+			$post = array();
+			$post['post_id'] = $post_id;
+			$post['post_time'] = $post_time;
+			$post['post_type'] = $post_type;
+			$post['img_path'] = $img_path;
+			$post['post_public'] = $post_public;
+			$post['post_content'] = $post_content;
+			$post['student_id'] = $student_id;
+			$post['group_id'] = $group_id;
+			$post['group_name'] = $group_name;
+			$posts[] = $post;
+		}
+		$stmt->close();
+		if (count($posts) > 0)
+		{
+			return $posts;
 		}
 		return FALSE;
 	}
