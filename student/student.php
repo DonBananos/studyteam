@@ -723,13 +723,25 @@ class Student
 		return FALSE;
 	}
 	
-	public function get_post_ids_for_member_feed()
+	public function get_post_ids_for_member_feed($limit = NULL)
 	{
 		global $dbCon;
 		
 		$post_ids = array();
 		
-		$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) ORDER BY time DESC;";
+		if(!validate_int($limit))
+		{
+			$limit = NULL;
+		}
+		
+		if(!empty($limit))
+		{
+			$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND removed = 0 ORDER BY time DESC LIMIT $limit;";
+		}
+		else
+		{
+			$sql = "SELECT id FROM group_post WHERE group_id IN (SELECT group_id FROM student_group WHERE student_id = ? AND active = 1) AND removed = 0 ORDER BY time DESC;";
+		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{

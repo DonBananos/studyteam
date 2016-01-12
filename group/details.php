@@ -140,8 +140,7 @@ if ($membership === FALSE && $group->get_public() == 0)
 {
 	?>
 	<script>
-		window.location = "<?php echo BASE ?>group/";
-	</script>
+				window.location = "<?php echo BASE ?>group/";</script>
 	<?php
 	die();
 }
@@ -327,6 +326,33 @@ elseif (isset($_POST['post-image-message']))
 														<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
 														<div class="post-header">
 															<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a><?php echo $header ?>
+															<span class="feed-post-user-option">
+																<div class="dropdown pull-right">
+																	<button class="btn btn-default dropdown-toggle" type="button" id="feed-post-dropdownMenu<?php echo $post_id ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+																		<span class="caret"></span>
+																	</button>
+																	<ul class="dropdown-menu feed-post-dropdownMenu" aria-labelledby="feed-post-dropdownMenu<?php echo $post_id ?>">
+																		<?php
+																		if ($poster->get_id() === $student->get_id())
+																		{
+																			?>
+																			<li>
+																				<form action="" method="POST">
+																					<input type="hidden" name="delposid" value="<?php echo $post_id ?>">
+																					<button type="submit" class="btn btn-default btn-feed-post-dropdownMenu" name="delpos" disabled="disabled"><span class="fa fa-trash"></span> Delete Post</button>
+																				</form>
+																			</li>
+																			<li>
+																				<form>
+																					<button type="button" class="btn btn-default btn-feed-post-dropdownMenu" disabled="disabled"><span class="fa fa-edit"></span> Edit Post</button>
+																				</form>
+																			</li>
+																			<?php
+																		}
+																		?>
+																	</ul>
+																</div>
+															</span>
 														</div>
 														<div class="post-meta">
 															<?php
@@ -357,7 +383,20 @@ elseif (isset($_POST['post-image-message']))
 															{
 																?>
 																<div class="post-image">
-																	<img src="<?php echo $post->get_img_path() ?>" alt="Uploaded user image">
+																	<img src="<?php echo $post->get_img_path() ?>" alt="Uploaded user image" data-toggle="modal" data-target="#imageModal<?php echo $post_id ?>">
+																</div>
+																<div class="modal fade bs-example-modal-lg modal-inverse" tabindex="-1" role="dialog" id="imageModal<?php echo $post_id ?>">
+																	<div class="modal-dialog modal-lg">
+																		<div class="modal-header">
+																			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+																			<h4 class="modal-title" style="padding: 0 auto;">
+																				Image upload from <a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
+																			</h4>
+																		</div>
+																		<div class="modal-content">
+																			<img src="<?php echo $post->get_img_path() ?>" width="100%;">
+																		</div>
+																	</div>
 																</div>
 																<?php
 															}

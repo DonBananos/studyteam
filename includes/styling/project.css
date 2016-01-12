@@ -713,14 +713,6 @@ h4.student-name>a:hover
 	margin-top: 10px;
 }
 
-.post-content img
-{
-	max-width: 90%;
-	display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .btn-file {
     position: relative;
     overflow: hidden;
@@ -740,4 +732,108 @@ h4.student-name>a:hover
     background: white;
     cursor: inherit;
     display: block;
+}
+
+.post-image > img
+{
+	border-top: 1px solid #cecece;
+	padding-top: 5px;
+	margin-top: 5px;
+	max-width: 100%;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	cursor: pointer;
+}
+
+.feed-post-options
+{
+	border-top: 1px solid #cecece;
+	margin-top: 8px;
+	padding-top: 5px;
+}
+
+.feed-post-options > .feed-option
+{
+	margin-left: 25px;
+	margin-right: 25px;
+}
+
+.feed-post-options > .feed-option > a
+{
+	cursor: pointer;
+	color: #989898 !important;
+	border: none;
+}
+
+.feed-post-options > .feed-option > a:hover
+{
+	background-color: inherit;
+}
+
+.feed-comments > form > textarea
+{
+	width: 100%;
+	resize: none;
+	margin-top: 8px;
+}
+
+.feed-comments
+{
+	border-top: 1px solid #cecece;
+	margin-top: 8px;
+	padding-top: 5px;
+	width: 96%;
+	margin-left: 2%;
+}
+
+.modal-lg > .modal-content
+{
+	background-color: #2D2D2A;
+}
+
+.modal-title > a
+{
+	color: inherit !important;
+	border: none;
+	font-family: 'Shadows Into Light', cursive;
+}
+
+.modal-title > a:hover
+{
+	background-color: inherit;
+}
+
+.btn-feed-post-dropdownMenu
+{
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	border: none;
+	text-align: left;
+	padding-left: 10px;
+}
+
+.feed-post-dropdownMenu > li > form
+{
+	margin-bottom: 0;
+}
+
+.feed-post-user-option > .dropdown > .btn,
+.feed-post-user-option > .dropdown > .btn:focus,
+.feed-post-user-option > .dropdown > .btn:hover
+{
+	border: none !important;
+	background-color: inherit;
+}
+
+.feed-post-user-option > .dropdown > .btn:focus,
+.feed-post-user-option > .dropdown > .btn:hover
+{
+	color: #92AD94;
+}
+
+.feed-post-user-option a
+{
+	border: none;
 }

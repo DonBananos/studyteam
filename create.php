@@ -86,6 +86,9 @@ if (isset($_POST['join']))
 						</div>
 					</div>
 					<form name="join-form" action="" method="POST">
+						<?php
+						//This is where there will be generated a form token...
+						?>
 						<div class="row">
 							<input type="text" name="username" class="form-control" placeholder="Username" required>
 							<?php
@@ -143,6 +146,7 @@ if (isset($_POST['join']))
 						<br>
 						<div class="row">
 							<input type="tel" class="form-control" placeholder="Telephone" name="phone" style="display: none"> 
+							<input type="hidden" name="token" value="">
 							<input type="submit" name="join" class="btn btn-primary" value="Join the wonder">
 							<button type="button" data-toggle="modal" data-target="#credentialPolicyModal" class="btn btn-default"><span class="fa fa-question"></span> User Credential Policy</button>
 						</div>

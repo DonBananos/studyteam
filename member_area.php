@@ -26,13 +26,6 @@ $student = new Student($_SESSION['user_id']);
 		?>
 		<div class="page">
 			<div class="container">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<div class="row">
-						<div class="page-header">
-							<h1>Welcome <?php echo $student->get_firstname() ?>!</h1>
-						</div>
-					</div>
-				</div>
 				<div class="row">
 					<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
 						<div class="content-box" id="news_1">
@@ -81,6 +74,22 @@ $student = new Student($_SESSION['user_id']);
 									{
 										$header = " posted a new private image in ";
 									}
+									?>
+									<div class="modal fade bs-example-modal-lg modal-inverse" tabindex="-1" role="dialog" id="imageModal<?php echo $feed_post_id ?>">
+										<div class="modal-dialog modal-lg">
+											<div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+												<h4 class="modal-title" style="padding: 0 auto;">
+													Image upload from <a href="<?php echo BASE ?>student/<?php echo strtolower($feed_poster->get_username()) ?>/"><?php echo $feed_poster->get_username() ?></a>
+												</h4>
+											</div>
+											<div class="modal-content">
+												<img src="<?php echo $feed_post->get_img_path() ?>" width="100%;">
+											</div>
+										</div>
+									</div>
+
+									<?php
 								}
 								?>
 								<div class="content-box" id="post_<?php echo $feed_post_id ?>">
@@ -91,6 +100,18 @@ $student = new Student($_SESSION['user_id']);
 												<a href="<?php echo BASE ?>student/<?php echo strtolower($feed_poster->get_username()) ?>/"><?php echo $feed_poster->get_username() ?></a>
 												<?php echo $header ?>
 												<a href="<?php echo BASE ?>group/<?php echo $feed_post_group->get_id() ?>/"><?php echo $feed_post_group->get_name() ?></a>
+												<span class="feed-post-user-option">
+													<div class="dropdown pull-right">
+														<button class="btn btn-default dropdown-toggle" type="button" id="feed-post-dropdownMenu<?php echo $feed_post_id ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+															<span class="caret"></span>
+														</button>
+														<ul class="dropdown-menu feed-post-dropdownMenu" aria-labelledby="feed-post-dropdownMenu<?php echo $feed_post_id ?>">
+															<li>
+																<a href="<?php echo BASE ?>group/<?php echo $feed_post_group->get_id() ?>/#post_<?php echo $feed_post_id ?>"><span class="fa fa-external-link-square"></span> Go to post</a>
+															</li>
+														</ul>
+													</div>
+												</span>
 											</div>
 											<div class="post-meta">
 												<?php
@@ -106,11 +127,34 @@ $student = new Student($_SESSION['user_id']);
 												{
 													?>
 													<div class="post-image">
-														<img src="<?php echo $feed_post->get_img_path() ?>" alt="Uploaded user image">
+														<img src="<?php echo $feed_post->get_img_path() ?>" alt="Uploaded user image" data-toggle="modal" data-target="#imageModal<?php echo $feed_post_id ?>">
 													</div>
 													<?php
 												}
 												?>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<div class="feed-post-options">
+												<span class="feed-option">
+													<a onclick="tuPost(<?php echo $feed_post_id ?>);"><span class="fa fa-thumbs-up"></span> Thumbs Up</a>
+												</span>
+												<span class="feed-option">
+													<a onclick="openComment(<?php echo $feed_post_id ?>);"><span class="fa fa-comment"></span> Comment</a>
+												</span>
+											</div>
+										</div>
+									</div>
+									<div class="row" id="feedPost<?php echo $feed_post_id ?>Comment" style="display: none">
+										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+											<div class="feed-comments">
+												<form action="" method="POST">
+													<textarea name="post-comment-textarea" placeholder="Write a comment" readonly="readonly"></textarea>
+													<input type="hidden" name="postId" value="<?php echo $feed_post_id ?>">
+													<input type="submit" class="btn btn-primary pull-right btn-sm" value="Comment" name="create-comment">
+												</form>
 											</div>
 										</div>
 									</div>
@@ -170,5 +214,15 @@ $student = new Student($_SESSION['user_id']);
 		<?php
 		require './includes/footer.php';
 		?>
+		<script>
+			function tuPost(postId)
+			{
+				alert("Let's pretend you just gave thumbs up to post no. " + postId);
+			}
+			function openComment(postId)
+			{
+				$("#feedPost" + postId + "Comment").toggle(0);
+			}
+		</script>
     </body>
 </html>
