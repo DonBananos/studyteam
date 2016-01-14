@@ -15,11 +15,22 @@ class Student
 	private $permission;
 	private $avatar;
 
+	/*
+	 * The class constructor
+	 */
 	function __construct($id)
 	{
 		$this->set_values_with_id($id);
 	}
 
+	/*
+	 * This function receives an ID, and creates a student object with that ID
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int id			id of the student to create
+	 * @return boolean			TRUE if success
+	 * @return string error		string with mysql error message
+	 */
 	private function set_values_with_id($id)
 	{
 		global $dbCon;
@@ -45,6 +56,22 @@ class Student
 		return $error;
 	}
 
+	/*
+	 * Set values, used by the set_values_with_id function.
+	 * Calls all set functions in the object
+	 * 
+	 * @param int id				id of the student in the database
+	 * @param string username		the student's username
+	 * @param string firstname		the student's firstname
+	 * @param string lastname		the student's lastname
+	 * @param string email			the student's email
+	 * @param string password		the student's hashed password
+	 * @param string salt			the student's salt
+	 * @param string joined			Timestamp the student joined the application
+	 * @param int permission		integer pointing to a permission in the db
+	 * @param string fullname		the student's fullname (first + last)
+	 * @param int avatar			Number of the avatar the user is displayed with
+	 */
 	private function set_values($id, $username, $firstname, $lastname, $email, $password, $salt, $joined, $permission, $fullname, $avatar)
 	{
 		$this->set_id($id);
@@ -60,6 +87,13 @@ class Student
 		$this->set_avatar_number($avatar);
 	}
 
+	/*
+	 * Function to change a password for the student
+	 * Used for password reset
+	 * 
+	 * @param string password		the new password, from the reset password form
+	 * @return function return		value depends on save_new_password() function
+	 */
 	public function change_password($password)
 	{
 		$salt_to_use = $this->get_salt() . SALT;
@@ -69,6 +103,15 @@ class Student
 		return $this->save_new_password($hashed_pass);
 	}
 
+	/*
+	 * Function to save a new password for a user
+	 * Used in change_password function
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @param string password		The password to save as new password
+	 * @return boolean				TRUE if success
+	 * @return string error			error from mysql
+	 */
 	private function save_new_password($password)
 	{
 		global $dbCon;
@@ -93,6 +136,14 @@ class Student
 		return $error;
 	}
 
+	/*
+	 * Function to get all group ids that a student has created
+	 * Was used in prior stage to show groups, can be used later for overview
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @return array group_ids		Array of all the group ids
+	 * @return boolean				FALSE if fail or no groups
+	 */
 	public function get_all_group_ids_that_student_created()
 	{
 		global $dbCon;
@@ -120,6 +171,15 @@ class Student
 		return false;
 	}
 
+	/*
+	 * Function to get all group ids that the user is part of
+	 * Used on e.g. the group overview page and in the main feed
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @param int max				maximum number of groups, default is NULL
+	 * @return array group_ids		Array of all the group ids
+	 * @return boolean				FALSE if fail or no groups
+	 */
 	public function get_group_ids_that_student_is_part_of($max = null)
 	{
 		global $dbCon;
@@ -161,6 +221,14 @@ class Student
 		return false;
 	}
 
+	/*
+	 * Function to get all public groups that the student did not create
+	 * Used in prior stage, could possibly be used later on
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @return array group_ids		Array of all the group ids
+	 * @return boolean				FALSE if fail or no groups
+	 */
 	public function get_public_groups_where_student_has_not_created()
 	{
 		global $dbCon;
@@ -187,7 +255,16 @@ class Student
 		$stmt->close();
 		return false;
 	}
-
+	
+	/*
+	 * Function used to get all public group ids that student is not part of
+	 * Used for suggesting new groups, on multiple pages
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @param int limit				Limit of group ids to get, default is NULL
+	 * @return array group_ids		Array of all the group ids
+	 * @return boolean				FALSE if fail or no groups
+	 */
 	public function get_public_groups_where_student_is_not_member($limit = NULL)
 	{
 		global $dbCon;
@@ -227,6 +304,16 @@ class Student
 		return false;
 	}
 	
+	/*
+	 * Function to get a specific number of suggestions
+	 * Used in feed to suggest groups for the student
+	 * The function get all public groups where the student is not a member
+	 * and randomly selects the limit (if there's more or the same amount), or 
+	 * returns all the possible groups
+	 * 
+	 * @param int limit				maximum number of group suggestions
+	 * @return array suggestions	an array of suggested group ids
+	 */
 	public function get_group_suggestions_for_feed($limit)
 	{
 		$all_suggested_groups = $this->get_public_groups_where_student_is_not_member();
@@ -247,11 +334,26 @@ class Student
 		return $suggestions;
 	}
 
+	/*
+	 * Function to get the path of the students avatar
+	 * (for displaying purposes)
+	 * 
+	 * @return string		location of the students current avatar on the server
+	 */
 	public function get_avatar()
 	{
 		return AVATAR_LOCATION . $this->get_avatar_number() . '.png';
 	}
 
+	/*
+	 * Function to apply a user to become buddies
+	 * This function is performed on the object of the target student
+	 * 
+	 * @global type dbCon				mysqli connection
+	 * @param int applier_student_id	id of the student applying to become buddies
+	 * @return boolean					TRUE if success
+	 * @return string error				error from mysql
+	 */
 	public function apply_for_buddies($applier_student_id)
 	{
 		global $dbCon;
@@ -275,6 +377,14 @@ class Student
 		return $error;
 	}
 
+	/*
+	 * Function to check whether or not two students are buddies
+	 * Can be done from either of the accounts.
+	 * 
+	 * @global type dbCon				mysqli connection
+	 * @param int other_student_id		Id of the student that is not the object
+	 * @return boolean					TRUE if they are buddies, FALSE if not
+	 */
 	public function check_if_buddies($other_student_id)
 	{
 		global $dbCon;
@@ -298,6 +408,15 @@ class Student
 		return FALSE;
 	}
 
+	/*
+	 * Function to check whether or not two students have a pending buddy invite
+	 * Used to see if a "Apply for buddies" should be clickable or not.
+	 * Can be done from either of the accounts.
+	 * 
+	 * @global type dbCon				mysqli connection
+	 * @param int other_student_id		Id of the student that is not the object
+	 * @return boolean					TRUE if buddies is pending, FALSE if not
+	 */
 	public function check_if_buddies_pending($other_student_id)
 	{
 		global $dbCon;
@@ -321,6 +440,12 @@ class Student
 		return FALSE;
 	}
 
+	/*
+	 * Function to get the number of current pending buddy invites for the student
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @return int pending		Number of pending buddy invites
+	 */
 	public function get_number_of_buddies_pending()
 	{
 		global $dbCon;
@@ -344,6 +469,12 @@ class Student
 		return 0;
 	}
 
+	/*
+	 * Function to get the number of current buddies for the student
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @return int buddies		Number of current buddies
+	 */
 	public function get_number_of_buddies()
 	{
 		global $dbCon;
@@ -367,6 +498,12 @@ class Student
 		return 0;
 	}
 
+	/*
+	 * Function to get all the current students buddys' ids
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @return array buddies		An array filled with the buddy ids
+	 */
 	public function get_all_buddy_ids()
 	{
 		global $dbCon;
@@ -397,6 +534,12 @@ class Student
 		return $buddies;
 	}
 
+	/*
+	 * Function to get all the ids of buddies currently pending
+	 * 
+	 * @global type dbCon			mysqli connection
+	 * @return array pending		array of buddy ids currently pending
+	 */
 	public function get_all_pending_buddy_ids()
 	{
 		global $dbCon;
@@ -420,6 +563,14 @@ class Student
 		return $pending;
 	}
 
+	/*
+	 * Function to accept a buddy invite
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int buddy_id		ID of the buddy to accept an invite from
+	 * @return boolean			true if success
+	 * @return string error		error from mysql
+	 */
 	public function accept_buddy_pending($buddy_id)
 	{
 		global $dbCon;
@@ -437,13 +588,19 @@ class Student
 			$stmt->close();
 			return true;
 		}
-		echo $stmt->error;
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
 
+	/*
+	 * Function to decline a buddy invite
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int buddy_id		ID of the buddy to decline an invite from
+	 * @return boolean			true if success
+	 * @return string error		error from mysql
+	 */
 	public function decline_buddy_pending($buddy_id)
 	{
 		global $dbCon;
@@ -461,13 +618,19 @@ class Student
 			$stmt->close();
 			return true;
 		}
-		echo $stmt->error;
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
 
+	/*
+	 * Function to save a new selected avartar
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int avatar_id		number of the new avatar from the form
+	 * @return boolean			TRUE if success, FALSE if validation error
+	 * @return string error		error from mysql
+	 */
 	public function save_new_avatar($avatar_id)
 	{
 		global $dbCon;
@@ -493,21 +656,33 @@ class Student
 			$this->set_values_with_id($this->id);
 			return true;
 		}
-		echo $stmt->error;
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
 
+	/*
+	 * Function to get all ids of buddies, which can be invited to a group
+	 * Used in invite modal on a specific group
+	 * 
+	 * @param int group_id					Id of the group student want to invite to
+	 * @return array possible_invites		Array of all ids of buddies that is able to be invited
+	 */
 	public function get_buddies_for_possible_invite_for_group($group_id)
 	{
-		global $dbCon;
-
 		$possible_invites = $this->get_buddy_ids_for_group_that_can_be_invited($group_id);
 		return $possible_invites;
 	}
 
+	/*
+	 * Function to check whether or not a student can invite others to a specific group
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int group_id		ID of the group to check if student can invite to
+	 * @return boolean			TRUE if student can invite others, FALSE on validation error, 
+	 *							if student is not part of group or the student does not have
+	 *							the correct permission level in the group
+	 */
 	public function get_if_student_can_invite_in_group($group_id)
 	{
 		global $dbCon;
@@ -540,6 +715,13 @@ class Student
 		return FALSE;
 	}
 
+	/*
+	 * Function to check if a student is part of a group or not
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int group_id		Id of the group, where the user might be member
+	 * $return boolean			TRUE if the student is member, FALSE if not
+	 */
 	public function get_if_student_is_part_of_group($group_id)
 	{
 		$all_groups_of_student = $this->get_group_ids_that_student_is_part_of();
@@ -553,6 +735,14 @@ class Student
 		return FALSE;
 	}
 
+	/*
+	 * Private function to select all the student buddies, which are possible to invite to a specific group
+	 * Used by get_buddies_for_possible_invite_for_group() function
+	 * 
+	 * @global type dbCon					mysqli connection
+	 * @param int group_id					ID of the group within the database
+	 * @return array possible_buddy_ids		Array of all the ids of buddies that can be invited to the group
+	 */
 	private function get_buddy_ids_for_group_that_can_be_invited($group_id)
 	{
 		$possible_buddy_ids = array();
@@ -567,6 +757,16 @@ class Student
 		return $possible_buddy_ids;
 	}
 
+	/*
+	 * Function to check whether or not a buddy is part of a group
+	 * Used to see if the buddy can be invited or not
+	 * Created as SELECT COUNT for performance
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int buddy_id		ID of the buddy to check on
+	 * @param int group_id		ID of the group to check on
+	 * @return boolean			TRUE if buddy is member, FALSE if not
+	 */
 	private function check_if_buddy_is_part_of_group($buddy_id, $group_id)
 	{
 		global $dbCon;
@@ -586,6 +786,7 @@ class Student
 			if ($buddies != 1)
 			{
 				//There's something wrong here!
+				//We're not doing anything about it at the moment though!
 			}
 			$stmt->close();
 			return TRUE;
@@ -594,6 +795,13 @@ class Student
 		return FALSE;
 	}
 
+	/*
+	 * Check if the current user has an invite pending for a specific group
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int group_id		ID of the group checked on
+	 * @return boolean			TRUE if invite is pending, FALSE if not
+	 */
 	public function check_if_invite_for_group_is_pending($group_id)
 	{
 		global $dbCon;
@@ -617,6 +825,12 @@ class Student
 		return FALSE;
 	}
 	
+	/*
+	 * Function to get the current number of pending group invites for the student
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @return int pending		number of pending invites
+	 */
 	public function get_number_of_pending_invites()
 	{
 		global $dbCon;
@@ -640,6 +854,12 @@ class Student
 		return 0;
 	}
 
+	/*
+	 * Function to get all pending group invites
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @return array invites	Array of invites with invite_id = array('group_id', 'invitor_id', 'message', 'time')
+	 */
 	public function get_all_pending_invites()
 	{
 		global $dbCon;
@@ -670,8 +890,12 @@ class Student
 
 	/*
 	 * Function changes invite in db to accepted
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param type invite_id	id of invite in database
+	 * @return boolean			True if success
+	 * @return string error		error from mysql
 	 */
-
 	public function accept_pending_invite($invite_id)
 	{
 		global $dbCon;
@@ -690,13 +914,17 @@ class Student
 			return true;
 		}
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
 
 	/*
-	 * Function changes invite in db to accepted
+	 * Function changes invite in db to declined
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param type invite_id	id of invite in database
+	 * @return boolean			True if success
+	 * @return string error		error from mysql
 	 */
 	public function decline_pending_invite($invite_id)
 	{
@@ -716,11 +944,19 @@ class Student
 			return true;
 		}
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
 
+	/*
+	 * Function to get the current student's permission level in a specific group
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int group_id		ID of the specific group
+	 * @return boolean			FALSE on validation error, student is not part of group
+	 *							or student level is incorrect filled in db
+	 * @return int level		permission level of student in group
+	 */
 	public function get_student_level_in_group($group_id)
 	{
 		global $dbCon;
@@ -754,6 +990,14 @@ class Student
 		return FALSE;
 	}
 	
+	/*
+	 * Function to get all posts that should be displayed in the member feed
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int limit			Limit of posts to select, default is NULL
+	 * @return array posts		Array of posts to show as post_id, post_time, post_type, img_path, post_public, post_content, student_id, group_id, group_name
+	 * @return boolean			FALSE if no posts to return
+	 */
 	public function get_posts_for_member_feed($limit = NULL)
 	{
 		global $dbCon;
@@ -803,6 +1047,17 @@ class Student
 		return FALSE;
 	}
 	
+	/*
+	 * Function to get all ids for posts to show in member feed
+	 * Should be used together with the post object for each post
+	 * Old version, which isn't friendly with performance.
+	 * Nostalgia for the win, though!
+	 * 
+	 * @global type dbCon		mysqli connection
+	 * @param int limit			Limit of posts to select, default is NULL
+	 * @return array post_ids	Array of post_ids that should be shown in feed
+	 * @return boolean			FALSE if no posts to return
+	 */
 	public function get_post_ids_for_member_feed($limit = NULL)
 	{
 		global $dbCon;
@@ -951,5 +1206,4 @@ class Student
 	{
 		$this->avatar = $avatar;
 	}
-
 }
