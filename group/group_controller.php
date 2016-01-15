@@ -35,7 +35,7 @@ class Group_controller
 		$new_group_data['category'] = sanitize_int($category_id);
 		$new_group_data['max'] = sanitize_int($max_members);
 		$new_group_data['creator'] = sanitize_int($user_id);
-		$new_group_data['desc'] = sanitize_text($description); //Already sanitized from WYSIWYG
+		$new_group_data['desc'] = $this->make_description_safe($description);
 		$result = $this->save_new_group($new_group_data);
 		return $result;
 	}
@@ -141,5 +141,15 @@ class Group_controller
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	private function make_description_safe($description)
+	{
+		//Change all newlines to <br> (HTML breaks)
+		$br_desc = nl2br($description);
+		//Remove all html tags, except <br>
+		$safe_desc = strip_tags($br_desc, '<br>');
+		
+		return $safe_desc;
 	}
 }

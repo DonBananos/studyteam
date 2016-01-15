@@ -32,14 +32,14 @@ $student = new Student($_SESSION['user_id']);
 						<div class="content-box" id="news_1">
 							<div class="row">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-									<h4>Message for all users</h4>
+									<h3>Message for all users</h3>
 									<hr>
 									<p>
-										Due to new features, we have been forced to remove all posts from the database.<br/>
-										We appologies for the inconvinience.<br/>
+										We've implemented the Thumbs Up feature.<br/>
+										Thumb it up, you know thumb it up, you got to thumb it up!
 										<br/>
 										Regards,<br/>
-										The StudyTeam Developers
+										StudyTeam
 									</p>
 								</div>
 							</div>
@@ -70,7 +70,7 @@ $student = new Student($_SESSION['user_id']);
 													<div class="row">
 														<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 															<a href="<?php echo BASE ?>group/<?php echo $suggested_group->get_id() ?>/" title="<?php echo $suggested_group->get_name() ?> &#013; &#013;<?php echo $suggested_group->get_description() ?>">
-																<div class="group" id="group-<?php echo $suggested_group->get_id() ?>" style="background-image: url(<?php echo $suggested_group->get_category_image() ?>);">
+																<div class="group" id="group-<?php echo $suggested_group->get_id() ?>" style="background-image: url(<?php echo $suggested_group->get_url_for_header_image_to_show() ?>);">
 																	<div class="group-header">
 																		<h3><?php echo $suggested_group->get_name() ?></h3>
 																	</div>
@@ -177,7 +177,7 @@ $student = new Student($_SESSION['user_id']);
 									<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 										<div class="row">
 											<a href="<?php echo BASE ?>group/<?php echo $group->get_id() ?>/">
-												<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_category_image() ?>); background-size: cover; background-position: center">
+												<div class="group" id="group-1" style="background-image: url(<?php echo $group->get_url_for_header_image_to_show() ?>); background-size: cover; background-position: center">
 													<div class="small-group-header">
 													</div>
 												</div>

@@ -767,7 +767,7 @@ class Student_controller
 	public function please_reset_my_password_because_im_stupid($user)
 	{
 		$failed_message = "Ooops... Get a grip boy!"; //Wait, wuuut? ^^
-		if ($this->check_if_email($user))
+		if ($this->validate_email($user))
 		{
 			//And so it is! We get the member details with the email address.
 			$user_array = $this->get_member_with_email($user);

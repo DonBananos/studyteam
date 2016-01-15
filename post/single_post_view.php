@@ -15,9 +15,16 @@ if (isset($_POST['give_tu']) && isset($_POST['post_id']))
 	if ($post_id == $post->get_id())
 	{
 		$post->give_thumbs_up($student->get_id());
+		?>
+		<script>
+			$('html, body').animate({
+				scrollTop: $("#post_<?php echo $post_id ?>").offset().top
+			}, 2000);
+		</script>
+		<?php
 	}
 }
-elseif(isset ($_POST['rem_tu']) && isset($_POST['post_id']))
+elseif (isset($_POST['rem_tu']) && isset($_POST['post_id']))
 {
 	$post_id = sanitize_int($_POST['post_id']);
 	if ($post_id == $post->get_id())

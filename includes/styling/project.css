@@ -764,6 +764,8 @@ h4.student-name>a:hover
 {
 	margin-left: 25px;
 	margin-right: 25px;
+	display: inline;
+	float: left;
 }
 
 .feed-post-options > .feed-option > a,
@@ -959,4 +961,29 @@ h4.student-name>a:hover
 	background-color: inherit;
 	border: none;
 	outline:none;
+}
+
+.down-right
+{
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 15px;
+	margin-bottom: 20px;
+	text-decoration: none;
+	border-bottom: none !important;
+	cursor: pointer;
+	color: white !important;
+	display: none;
+	background: rgba(51,67,70, 0.8) !important;
+}
+
+.down-right > .fa
+{
+	color: white;
+}
+
+.group-cover:hover > .down-right
+{
+	display: block;
 }

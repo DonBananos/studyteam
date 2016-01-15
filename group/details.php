@@ -196,6 +196,21 @@ elseif (isset($_POST['post-image-message']))
 		}
 	}
 }
+if ($student->get_student_level_in_group($group->get_id()) === 3)
+{
+	if (isset($_POST['uploadHeader']))
+	{
+		$new_header = upload_image(1200);
+		if($new_header !== FALSE)
+		{
+			$group->save_header_image($new_header);
+		}
+		else
+		{
+			echo "Something went wrong!";
+		}
+	}
+}
 ?>
 <html>
     <head>
@@ -214,8 +229,18 @@ elseif (isset($_POST['post-image-message']))
 						<div class="row">
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<div class="page-header">
-									<div class="group-cover" style="background-image: url(<?php echo $group->get_category_image() ?>); background-size: cover; background-position: center">
+									<div class="group-cover" style="background-image: url(<?php echo $group->get_url_for_header_image_to_show() ?>); background-size: cover; background-position: center">
 										<h1 class="group-cover-header"><?php echo $group->get_name() ?></h1>
+										<?php
+										if ($student->get_student_level_in_group($group->get_id()) === 3)
+										{
+											?>
+											<a class="down-right" data-toggle="modal" data-target="#headerModal">
+												<span class="fa fa-image fa-2x"></span>
+											</a>
+											<?php
+										}
+										?>
 									</div>
 								</div>
 							</div>
@@ -641,6 +666,33 @@ elseif (isset($_POST['post-image-message']))
 			</div>
 			<?php
 		}
+		if ($student->get_student_level_in_group($group->get_id()) === 3)
+		{
+			?>
+			<!-- Header Image Upload Modal -->
+			<div class="modal fade modal-inverse" id="headerModal" tabindex="-1" role="dialog" aria-labelledby="headerModalLabel">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+							<h4 class="modal-title" id="headerModalLabel">Upload new header image</h4>
+						</div>
+						<form action="" method="POST" enctype="multipart/form-data">
+							<div class="modal-body">
+								<span class="btn btn-default btn-file btn-primary">
+									Browse <input type="file" name="imageFile" required="required">
+								</span>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="submit" class="btn btn-primary" name="uploadHeader">Upload</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<?php
+		}
 		?>
 		<!-- All Members Modal -->
 		<div class="modal fade modal-inverse" id="membersModal" tabindex="-1" role="dialog" aria-labelledby="membersModalLabel">
@@ -828,27 +880,5 @@ elseif (isset($_POST['post-image-message']))
 			<?php
 		}
 		?>
-		<script>
-					$(document).ready(function () {
-			.replace('post-textarea', {
-			toolbar: [
-			{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-			{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
-			{name: 'links', items: ['Link', 'Unlink']},
-			{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
-			{name: 'colors', items: ['TextColor', 'BGColor']}
-			]
-			});
-					.replace('post-image-textarea', {
-					toolbar: [
-					{name: 'basicstyles', groups: ['basicstyles', 'cleanup'], items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat']},
-					{name: 'paragraph', groups: ['list', 'indent', 'blocks', 'align', 'bidi'], items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language']},
-					{name: 'links', items: ['Link', 'Unlink']},
-					{name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize']},
-					{name: 'colors', items: ['TextColor', 'BGColor']}
-					]
-					});
-			});
-		</script>
     </body>
 </html>

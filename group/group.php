@@ -15,6 +15,7 @@ class Group
 	private $category_name;
 	private $category_image;
 	private $public;
+	private $header_image;
 
 	function __construct($group_id)
 	{
@@ -25,7 +26,7 @@ class Group
 	{
 		global $dbCon;
 
-		$sql = "SELECT id, name, public, school_id, education_id, max_members, creator_student_id, created_time, description, category_id FROM `group` WHERE id = ?;";
+		$sql = "SELECT id, name, public, school_id, education_id, max_members, creator_student_id, created_time, description, category_id, header_image_upload FROM `group` WHERE id = ?;";
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
@@ -33,7 +34,7 @@ class Group
 		}
 		$stmt->bind_param('i', $id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($id, $name, $public, $school_id, $education_id, $max_members, $creator_id, $created_time, $desc, $category_id);
+		$stmt->bind_result($id, $name, $public, $school_id, $education_id, $max_members, $creator_id, $created_time, $desc, $category_id, $header_image);
 		$stmt->fetch();
 		$this->set_id($id);
 		$this->set_name($name);
@@ -45,6 +46,7 @@ class Group
 		$this->set_description($desc);
 		$this->set_category_id($category_id);
 		$this->set_public($public);
+		$this->set_header_image($header_image);
 		$stmt->close();
 		if ($this->get_category_id() > 0)
 		{
@@ -851,6 +853,48 @@ class Group
 		}
 		return FALSE;
 	}
+	
+	public function save_header_image($path)
+	{
+		if(!validate_url($path))
+		{
+			return FALSE;
+		}
+		global $dbCon;
+		
+		$sql = "UPDATE `group` SET header_image_upload = ? WHERE id = ?;";
+		$stmt = $dbCon->prepare($sql);
+		if ($stmt === false)
+		{
+			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
+		}
+		$stmt->bind_param('si', $path, $this->id); //Bind parameters.
+		$stmt->execute();
+		$rows = $stmt->affected_rows;
+		if ($rows == 1)
+		{
+			$stmt->close();
+			$this->set_header_image($path);
+			return TRUE;
+		}
+		$error = $stmt->error;
+		$stmt->close();
+		return $error;
+	}
+	
+	/**
+	 * Function to get the image to show in the header
+	 * 
+	 * @return string 
+	 */
+	public function get_url_for_header_image_to_show()
+	{
+		if($this->get_header_image() === NULL || !validate_url($this->get_header_image()))
+		{
+			return $this->get_category_image();
+		}
+		return $this->get_header_image();
+	}
 
 	public function get_id()
 	{
@@ -910,6 +954,11 @@ class Group
 	public function get_public()
 	{
 		return $this->public;
+	}
+	
+	private function get_header_image()
+	{
+		return $this->header_image;
 	}
 
 	private function set_id($id)
@@ -972,4 +1021,8 @@ class Group
 		$this->public = $public;
 	}
 
+	private function set_header_image($header_image)
+	{
+		$this->header_image = $header_image;
+	}
 }

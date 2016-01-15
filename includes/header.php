@@ -13,6 +13,3 @@
 
 <!-- Font Awesome Plugin -->
 <link rel="stylesheet" href="<?php echo BASE ?>includes/plugins/font-awesome-4.5.0/css/font-awesome.min.css">
-
-<!-- CKEditor -->
-<script type="text/javascript" charset="UTF-8" src="<?php echo BASE ?>includes/plugins/ckeditor/ckeditor/ckeditor.js"></script>

@@ -17,7 +17,7 @@ define("IMAGE_LOCATION", "_uploads/_images/");
 //This is now pointing to the vps..
 //The user only has access to a dev database, and only INSERT, SELECT, UPDATE
 //from that one schema
-define("HOST", "85.119.155.19"); //85.119.155.19
+define("HOST", "localhost"); //85.119.155.19
 define("USER", "studyteam");
 define("PASS", "MangeLange3lastikker42");
 define("DATABASE", "studyteam");
