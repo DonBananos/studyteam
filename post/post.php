@@ -11,11 +11,23 @@ class Post
 	private $type;
 	private $img_path;
 	
+	/*
+	 * The class constructor
+	 * 
+	 * @param int $id		The id of the post to construct
+	 */
 	function __construct($id)
 	{
 		$this->set_values_with_id($id);
 	}
 	
+	/*
+	 * Function to set all object variables for the specific post
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param int $id			ID of the post
+	 * @return boolean			TRUE if success, FALSE if not or validation error
+	 */
 	private function set_values_with_id($id)
 	{
 		global $dbCon;
