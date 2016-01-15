@@ -1,13 +1,32 @@
 <?php
-
+/*
+ * Author: Mike Jensen <mikejensen2@gmail.com>
+ * Purpose: StudyTeam (Web Security Exam Project)
+ * 
+ * This class takes care of Group related stuff, that is not bound to a specific
+ * or already excisting group
+ */
 class Group_controller
 {
-	
+	/*
+	 * Class constructor
+	 */
 	function __construct()
 	{
 		
 	}
 	
+	/*
+	 * Function to create a new group
+	 * 
+	 * @param string $name			Name of the group to create
+	 * @param int $public			If the group should be public (1) or private (0)
+	 * @param int $category_id		Id of the group category (Points to table in DB)
+	 * @param int $max_members		Maximum amount of members in a group
+	 * @param int $user_id			Id of the user creating the group
+	 * @param string $description	Description of the group
+	 * @return type					Response from the save_new_group function
+	 */
 	public function create_new_group($name, $public, $category_id, $max_members, $user_id, $description)
 	{
 		$new_group_data = array();
@@ -21,6 +40,13 @@ class Group_controller
 		return $result;
 	}
 	
+	/*
+	 * Function to save a new group in the database
+	 * 
+	 * @global type $dbCon				mysqli connection
+	 * @param array $new_group_data		array of data from create_new_group function
+	 * @return int id|boolean			id of new group, FALSE if failed
+	 */
 	private function save_new_group($new_group_data)
 	{
 		global $dbCon;
@@ -52,12 +78,17 @@ class Group_controller
 		//Well, since we reached this far, the if statement wasn't executed.
 		//Save the error
 		$error = $stmt->error;
-		echo $error;
 		//Close down the statement (good practice)
 		$stmt->close();
 		return FALSE;
 	}
 	
+	/*
+	 * Function to get all group_category ids and names from the database
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @return array $categories	array of (group_category_id => group_category_name)
+	 */
 	public function get_category_names_and_ids()
 	{
 		$categories = array();
@@ -80,6 +111,14 @@ class Group_controller
 		return $categories;
 	}
 	
+	/*
+	 * Function to validate a seleceted category id
+	 * Checks in database if category ID exists
+	 *		
+	 * @global type $dbCon			mysqli connection
+	 * @param int $category_id		ID of the category to search for
+	 * @return boolean				TRUE if exists, FALSE if not
+	 */
 	public function validate_if_category($category_id)
 	{
 		global $dbCon;

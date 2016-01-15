@@ -1,5 +1,10 @@
 <?php
-
+/*
+ * Author: Mike Jensen <mikejensen2@gmail.com>
+ * Purpose: StudyTeam (Web Security Exam Project)
+ * 
+ * This class takes care of all specific posts
+ */
 class Post
 {
 	private $id;
