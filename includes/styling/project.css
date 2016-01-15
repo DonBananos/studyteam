@@ -736,9 +736,13 @@ h4.student-name>a:hover
     display: block;
 }
 
-.post-image > img
+.post-image
 {
 	border-top: 1px solid #cecece;
+}
+
+.post-image > img
+{
 	padding-top: 5px;
 	margin-top: 5px;
 	max-width: 100%;
@@ -755,17 +759,20 @@ h4.student-name>a:hover
 	padding-top: 5px;
 }
 
-.feed-post-options > .feed-option
+.feed-post-options > .feed-option,
+.feed-post-options > .feed-option > form > button
 {
 	margin-left: 25px;
 	margin-right: 25px;
 }
 
-.feed-post-options > .feed-option > a
+.feed-post-options > .feed-option > a,
+.feed-post-options > .feed-option > form > button
 {
 	cursor: pointer;
 	color: #989898 !important;
 	border: none;
+	display: inline;
 }
 
 .feed-post-options > .feed-option > a:hover
@@ -942,4 +949,14 @@ h4.student-name>a:hover
 .bs-callout-info h4 
 {
     color: #5bc0de;
+}
+
+.btn-post-interaction,
+.btn-post-interaction:focus,
+.btn-post-interaction:active
+{
+	display: inline-block;
+	background-color: inherit;
+	border: none;
+	outline:none;
 }

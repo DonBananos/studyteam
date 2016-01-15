@@ -13,3 +13,11 @@ $(function () {
 		}
 	});
 });
+function tuPost(postId)
+{
+	alert("Let's pretend you just gave thumbs up to post no. " + postId);
+}
+function openComment(postId)
+{
+	$("#feedPost" + postId + "Comment").toggle(0);
+}

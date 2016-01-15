@@ -1,9 +1,9 @@
 <?php
-require_once './includes/configuration.php';
+require './includes/configuration.php';
 $signed_in = FALSE;
 if (isset($_SESSION['logged_in']))
 {
-	if (isset($_SESSION['user_id']))
+	if($_SESSION['logged_in'] == 1)
 	{
 		$signed_in = TRUE;
 	}
@@ -38,7 +38,7 @@ else
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a class="navbar-brand" href="#" id="navbar-brand">StudyTeam</a>
+						<a class="navbar-brand" href="<?php echo BASE ?>" id="navbar-brand">StudyTeam</a>
 					</div>
 					<div class="collapse navbar-collapse" id="studyteam-front-navbar">
 						<ul class="nav navbar-nav navbar-right">
@@ -57,6 +57,8 @@ else
 			</div>
 			<div id="info" class="index-section">
 				<div class="container">
+					<pre><?php print_r($_SESSION) ?></pre>
+					<?php echo session_name() ?>
 					<h2>What is StudyTeam?</h2>
 					<p class="lead">
 						StudyTeam is the place you want to be, when studying in Denmark!<br/>

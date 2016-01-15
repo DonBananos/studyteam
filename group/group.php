@@ -806,43 +806,50 @@ class Group
 	{
 		global $dbCon;
 		
-		$post_ids = array();
+		$posts = array();
 		
-		if($limit === NULL)
+		if(!validate_int($limit))
 		{
-			$sql = "SELECT id FROM group_post WHERE group_id = ? ORDER BY time DESC;";
+			$limit = NULL;
+		}
+		
+		if(!empty($limit))
+		{
+			$sql = "SELECT group_post.id, group_post.`time`, group_post.post_type, group_post.img_path, group_post.public, group_post.post, student.id, `group`.id, `group`.`name`, `group`.public FROM group_post INNER JOIN `group` ON group_post.group_id = `group`.id INNER JOIN student ON student_id = student.id WHERE group_id = ? ORDER BY time DESC LIMIT $limit;";
 		}
 		else
 		{
-			$sql = "SELECT id FROM group_post WHERE group_id = ? LIMIT ? ORDER BY time DESC;";
+			$sql = "SELECT group_post.id, group_post.`time`, group_post.post_type, group_post.img_path, group_post.public, group_post.post, student.id, `group`.id, `group`.`name`, `group`.public FROM group_post INNER JOIN `group` ON group_post.group_id = `group`.id INNER JOIN student ON student_id = student.id WHERE group_id = ? ORDER BY time DESC;";
 		}
 		$stmt = $dbCon->prepare($sql); //Prepare Statement
 		if ($stmt === false)
 		{
 			trigger_error('SQL Error: ' . $dbCon->error, E_USER_ERROR);
 		}
-		if($limit === NULL)
-		{
-			$stmt->bind_param('i', $this->id); //Bind parameters.
-		}
-		else
-		{
-			$stmt->bind_param('ii', $this->id, $limit); //Bind parameters.
-		}
+		$stmt->bind_param('i', $this->id); //Bind parameters.
 		$stmt->execute(); //Execute
-		$stmt->bind_result($post_id);
+		$stmt->bind_result($post_id, $post_time, $post_type, $img_path, $post_public, $post_content, $student_id, $group_id, $group_name, $group_public);
 		while($stmt->fetch())
 		{
-			$post_ids[] = $post_id;
+			$post = array();
+			$post['post_id'] = $post_id;
+			$post['post_time'] = $post_time;
+			$post['post_type'] = $post_type;
+			$post['img_path'] = $img_path;
+			$post['post_public'] = $post_public;
+			$post['post_content'] = $post_content;
+			$post['student_id'] = $student_id;
+			$post['group_id'] = $group_id;
+			$post['group_name'] = $group_name;
+			$post['group_public'] = $group_public;
+			$posts[] = $post;
 		}
-		if (count($post_ids) > 0)
-		{
-			$stmt->close();
-			return $post_ids;
-		}
-		$error = $stmt->error;
 		$stmt->close();
-		return $error;
+		if (count($posts) > 0)
+		{
+			return $posts;
+		}
+		return FALSE;
 	}
 
 	public function get_id()

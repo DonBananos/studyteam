@@ -1,6 +1,6 @@
 <?php
 
-$session_name = "security_course_session_id";
+$session_name = "studyteam_session_id";
 session_name($session_name);
 session_start();
 session_regenerate_id();

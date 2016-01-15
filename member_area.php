@@ -13,6 +13,7 @@ if (!isset($_SESSION['logged_in']))
 	die();
 }
 $student = new Student($_SESSION['user_id']);
+
 ?>
 <html>
     <head>
@@ -44,8 +45,8 @@ $student = new Student($_SESSION['user_id']);
 							</div>
 						</div>
 						<?php
-						$feed_post_ids = $student->get_post_ids_for_member_feed();
 						$feed_posts = $student->get_posts_for_member_feed();
+						$view = "student feed";
 						if (is_array($feed_posts) && count($feed_posts) > 0)
 						{
 							$feed_populater_count = 0;
@@ -85,7 +86,6 @@ $student = new Student($_SESSION['user_id']);
 									</div>
 									<?php
 								}
-								$poster = new Student($feed_post['student_id']);
 								if ($feed_post['post_type'] === 1)
 								{
 									$header = " created a new ";
@@ -112,88 +112,7 @@ $student = new Student($_SESSION['user_id']);
 									}
 									$header .= " image in ";
 								}
-								?>
-								<div class="content-box" id="post_<?php echo $feed_post['post_id'] ?>">
-									<div class="row">
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
-											<div class="post-header">
-												<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
-												<?php echo $header ?>
-												<a href="<?php echo BASE ?>group/<?php echo $feed_post['group_id'] ?>/"><?php echo $feed_post['group_name'] ?></a>
-												<span class="feed-post-user-option">
-													<div class="dropdown pull-right">
-														<button class="btn btn-default dropdown-toggle" type="button" id="feed-post-dropdownMenu<?php echo $feed_post['post_id'] ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-															<span class="caret"></span>
-														</button>
-														<ul class="dropdown-menu feed-post-dropdownMenu" aria-labelledby="feed-post-dropdownMenu<?php echo $feed_post['post_id'] ?>">
-															<li>
-																<a href="<?php echo BASE ?>group/<?php echo $feed_post['group_id'] ?>/#post_<?php echo $feed_post['post_id'] ?>"><span class="fa fa-external-link-square"></span> Go to post</a>
-															</li>
-														</ul>
-													</div>
-												</span>
-											</div>
-											<div class="post-meta">
-												<?php
-												echo date("Y-m-d H:i", strtotime($feed_post['post_time']));
-												?>
-											</div>
-											<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-												<div class="post-content">
-													<?php echo $feed_post['post_content'] ?>
-												</div>
-												<?php
-												if ($feed_post['post_type'] === 2 && $feed_post['img_path'] !== NULL)
-												{
-													?>
-													<div class="post-image">
-														<img src="<?php echo $feed_post['img_path'] ?>" alt="Uploaded user image" data-toggle="modal" data-target="#imageModal<?php echo $feed_post['post_id'] ?>">
-													</div>
-													<div class="modal fade bs-example-modal-lg modal-inverse" tabindex="-1" role="dialog" id="imageModal<?php echo $feed_post['post_id'] ?>">
-														<div class="modal-dialog modal-lg">
-															<div class="modal-header">
-																<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-																<h4 class="modal-title" style="padding: 0 auto;">
-																	Image upload from <a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
-																</h4>
-															</div>
-															<div class="modal-content">
-																<img src="<?php echo $feed_post['img_path'] ?>" width="100%;">
-															</div>
-														</div>
-													</div>
-													<?php
-												}
-												?>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<div class="feed-post-options">
-												<span class="feed-option">
-													<a onclick="tuPost(<?php echo $feed_post['post_id'] ?>);"><span class="fa fa-thumbs-up"></span> Thumbs Up</a>
-												</span>
-												<span class="feed-option">
-													<a onclick="openComment(<?php echo $feed_post['post_id'] ?>);"><span class="fa fa-comment"></span> Comment</a>
-												</span>
-											</div>
-										</div>
-									</div>
-									<div class="row" id="feedPost<?php echo $feed_post['post_id'] ?>Comment" style="display: none">
-										<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-											<div class="feed-comments">
-												<form action="" method="POST">
-													<textarea name="post-comment-textarea" placeholder="Write a comment" readonly="readonly"></textarea>
-													<input type="hidden" name="postId" value="<?php echo $feed_post['post_id'] ?>">
-													<input type="submit" class="btn btn-primary pull-right btn-sm" value="Comment" name="create-comment">
-												</form>
-											</div>
-										</div>
-									</div>
-								</div>
-								<?php
+								require './post/single_post_view.php';
 								$feed_populater_count++;
 							}
 						}
@@ -287,15 +206,5 @@ $student = new Student($_SESSION['user_id']);
 		<?php
 		require './includes/footer.php';
 		?>
-		<script>
-			function tuPost(postId)
-			{
-				alert("Let's pretend you just gave thumbs up to post no. " + postId);
-			}
-			function openComment(postId)
-			{
-				$("#feedPost" + postId + "Comment").toggle(0);
-			}
-		</script>
     </body>
 </html>

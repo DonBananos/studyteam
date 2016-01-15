@@ -301,111 +301,24 @@ elseif (isset($_POST['post-image-message']))
 									</div>
 									<?php
 								}
-								$all_post_ids = $group->get_posts();
-								if (is_array($all_post_ids) && count($all_post_ids) > 0)
+								$all_posts = $group->get_posts();
+								$view = "group";
+								if (is_array($all_posts) && count($all_posts) > 0)
 								{
-									foreach ($all_post_ids as $post_id)
+									foreach ($all_posts as $feed_post)
 									{
-										$post = new Post($post_id);
-										$poster = new Student($post->get_student_id());
-										if ($membership === FALSE && $post->get_public() === 0)
+										if ($membership === FALSE && $feed_post['post_public'] === 0)
 										{
 											//Dont show
 										}
 										else
 										{
 											$header = "";
-											if ($post->get_type() === 2)
+											if ($feed_post['post_type'] === 2)
 											{
 												$header = " posted an image";
 											}
-											?>
-											<div class="content-box" id="post_<?php echo $post_id ?>" post-type="<?php echo $post->get_type() ?>">
-												<div class="row">
-													<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-														<img src="<?php echo $poster->get_avatar() ?>" class="student-avatar-thumb">
-														<div class="post-header">
-															<a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a><?php echo $header ?>
-															<span class="feed-post-user-option">
-																<div class="dropdown pull-right">
-																	<button class="btn btn-default dropdown-toggle" type="button" id="feed-post-dropdownMenu<?php echo $post_id ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-																		<span class="caret"></span>
-																	</button>
-																	<ul class="dropdown-menu feed-post-dropdownMenu" aria-labelledby="feed-post-dropdownMenu<?php echo $post_id ?>">
-																		<?php
-																		if ($poster->get_id() === $student->get_id())
-																		{
-																			?>
-																			<li>
-																				<form action="" method="POST">
-																					<input type="hidden" name="delposid" value="<?php echo $post_id ?>">
-																					<button type="submit" class="btn btn-default btn-feed-post-dropdownMenu" name="delpos" disabled="disabled"><span class="fa fa-trash"></span> Delete Post</button>
-																				</form>
-																			</li>
-																			<li>
-																				<form>
-																					<button type="button" class="btn btn-default btn-feed-post-dropdownMenu" disabled="disabled"><span class="fa fa-edit"></span> Edit Post</button>
-																				</form>
-																			</li>
-																			<?php
-																		}
-																		?>
-																	</ul>
-																</div>
-															</span>
-														</div>
-														<div class="post-meta">
-															<?php
-															if ($group->get_public() === 1)
-															{
-																if ($post->get_public() === 1)
-																{
-																	?>
-																	<span class="fa fa-unlock"></span>
-																	<?php
-																}
-																else
-																{
-																	?>
-																	<span class="fa fa-lock"></span>
-																	<?php
-																}
-															}
-															echo date("Y-m-d H:i", strtotime($post->get_time()));
-															?>
-														</div>
-														<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-															<div class="post-content">
-																<?php echo $post->get_post() ?>
-															</div>
-															<?php
-															if ($post->get_type() === 2 && $post->get_img_path() !== NULL)
-															{
-																?>
-																<div class="post-image">
-																	<img src="<?php echo $post->get_img_path() ?>" alt="Uploaded user image" data-toggle="modal" data-target="#imageModal<?php echo $post_id ?>">
-																</div>
-																<div class="modal fade bs-example-modal-lg modal-inverse" tabindex="-1" role="dialog" id="imageModal<?php echo $post_id ?>">
-																	<div class="modal-dialog modal-lg">
-																		<div class="modal-header">
-																			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-																			<h4 class="modal-title" style="padding: 0 auto;">
-																				Image upload from <a href="<?php echo BASE ?>student/<?php echo strtolower($poster->get_username()) ?>/"><?php echo $poster->get_username() ?></a>
-																			</h4>
-																		</div>
-																		<div class="modal-content">
-																			<img src="<?php echo $post->get_img_path() ?>" width="100%;">
-																		</div>
-																	</div>
-																</div>
-																<?php
-															}
-															?>
-														</div>
-													</div>
-												</div>
-											</div>
-											<?php
+											require '../post/single_post_view.php';
 										}
 									}
 								}
