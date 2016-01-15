@@ -1,5 +1,11 @@
 <?php
-
+/*
+ * Author: Mike Jensen <mikejensen2@gmail.com>
+ * Purpose: StudyTeam (Web Security Exam Project)
+ * 
+ * This class is the student object. 
+ * Used throughout to gather information on students (users)
+ */
 class Student
 {
 

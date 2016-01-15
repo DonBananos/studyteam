@@ -1,12 +1,32 @@
 <?php
-
+/*
+ * Author: Mike Jensen <mikejensen2@gmail.com>
+ * Purpose: StudyTeam (Web Security Exam Project)
+ * 
+ * This class takes care of Posts in groups, that is not a specific post.
+ * So creating new and such is done here!
+ */
 class Post_controller
 {
+	/*
+	 * The class constructor
+	 */
 	function __construct()
 	{
 		
 	}
 	
+	/*
+	 * Function to create a new post in the database
+	 * 
+	 * @param int $student_id		Id of the student creating the new post
+	 * @param int $group_id			Id of the group in which the post is posted
+	 * @param int $public			1 for public, 0 for private (actually anything but 1 is false)
+	 * @param string $post			The message to be posted
+	 * @param int $type				1 for regular post, 2 for image post (Username posted a new image in groupname). Default is 1
+	 * @param string $img_path		Image Path if type is 2. Default is NULL.
+	 * @return string				Error message if validation failed, response from save_post if not
+	 */
 	public function create_post($student_id, $group_id, $public, $post, $type = 1, $img_path = NULL)
 	{
 		if($this->validate_post($post) === FALSE)
@@ -54,6 +74,18 @@ class Post_controller
 		return $this->save_post($student_id, $group_id, $public, $safe_post, $type, $safe_image_path);
 	}
 	
+	/*
+	 * Function to check if a student is allowed to post in a group, and if that post
+	 * is allowed to be the public/private status it has. If not, the status is changed
+	 * to the allowed.
+	 * 
+	 * @param int $student_id		The id of the student trying to post
+	 * @param int $group_id			The id of the group in which the post is intended
+	 * @param int $public			1 for public, anything else for private
+	 * @return boolean|int			return false if student is not allowed to post, 
+	 *								true if everything is ok, and 0 (for private) 
+	 *								if student is trying to post public in a private group
+	 */
 	private function validate_variables($student_id, $group_id, $public)
 	{
 		if($this->check_if_student_has_access_to_group($student_id, $group_id) === FALSE)
@@ -72,6 +104,14 @@ class Post_controller
 		return TRUE;
 	}
 	
+	/*
+	 * Function to check if a specific student has access to post in a specific group
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param int $student_id		Id of the student
+	 * @param int $group_id			Id of the group
+	 * @return boolean				TRUE if allowed, FALSE if not - or if validation error
+	 */
 	private function check_if_student_has_access_to_group($student_id, $group_id)
 	{
 		global $dbCon;
@@ -106,6 +146,15 @@ class Post_controller
 		return FALSE;
 	}
 	
+	/*
+	 * Function to check whether or not a post is allowed to be public
+	 * Used for all public posts, and check whether or not the group is private
+	 * (You're not allowed to make public posts in a private group)
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param int $group_id		Id of the group
+	 * @return boolean			TRUE if allowed, FALSE if not or if validation error
+	 */
 	private function check_if_post_can_is_allowed_to_be_public($group_id)
 	{
 		global $dbCon;
@@ -135,6 +184,12 @@ class Post_controller
 		return FALSE;
 	}
 	
+	/*
+	 * Function to validate a post's length
+	 * 
+	 * @param string $post		post to validate
+	 * @return boolean			TRUE if ok, FALSE if not
+	 */
 	private function validate_post($post)
 	{
 		if(strlen(trim($post)) > 0)
@@ -144,6 +199,14 @@ class Post_controller
 		return FALSE;
 	}
 	
+	/*
+	 * Function to make a post safe for posting
+	 * Changes all \n (from textarea) to <br/> and then strips all other html
+	 * tags than <br/> (and <br>)
+	 * 
+	 * @param string $post			The post to make safe
+	 * @return string $safe_post	The processed post
+	 */
 	private function make_post_safe($post)
 	{
 		//Change all newlines to <br> (HTML breaks)
@@ -154,6 +217,17 @@ class Post_controller
 		return $safe_post;
 	}
 	
+	/**
+	 * 
+	 * @global type $dbCon				mysqli connection
+	 * @param int $student_id			Id of student posting
+	 * @param int $group_id				Id of group in which the post is intended
+	 * @param int $public				1 if public, 0 (anything else) if private
+	 * @param string $post				the post message
+	 * @param int $type					1 if regular post, 2 if image post
+	 * @param string $image_path		Image path (used for type 2)
+	 * @return string error|int id		Error message if failed, Id of post if succeded
+	 */
 	private function save_post($student_id, $group_id, $public, $post, $type, $image_path)
 	{
 		//Validate and Sanitize
@@ -192,7 +266,6 @@ class Post_controller
 			return $id;
 		}
 		$error = $stmt->error;
-		echo $error;
 		$stmt->close();
 		return $error;
 	}
