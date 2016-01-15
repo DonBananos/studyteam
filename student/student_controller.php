@@ -11,18 +11,25 @@
 class Student_controller
 {
 	/*
-	 * A Constructor is needed to use the object
+	 * The class constructor
 	 */
-
 	function __construct()
 	{
 		
 	}
 
-	/*
+	/**
 	 * Function to create a new student. Takes the neccesary variables.
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param string $username		the chosen username
+	 * @param string $firstname		the student's firsstname
+	 * @param string $lastname		the student's lastname
+	 * @param string $email			the student's email address
+	 * @param string $pass1			the student's password, first instance
+	 * @param string $pass2			the student's password, second instance
+	 * @return boolean				TRUE on success, error message on fail
 	 */
-
 	public function create_student($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
 
@@ -107,10 +114,19 @@ class Student_controller
 	}
 
 	/*
-		Function var validating text input from registration form.
-		If a parameter contains non-valid value an error message
-		will be added
-	*/
+	 *	Function var validating text input from registration form.
+	 *	If a parameter contains non-valid value an error message
+	 *	will be added
+	 * 
+	 * @param type $username		the username to validate
+	 * @param type $firstname		the firstname to validate
+	 * @param type $lastname		the lastname to validate
+	 * @param type $email			the email to validate
+	 * @param type $pass1			the first instance of password to validate
+	 * @param type $pass2			the second instance of password to validate
+	 * @return array error_array	Array with error messages from validation
+	 *								If empty, then there's no errors				
+	 */
 	private function validate_input($username, $firstname, $lastname, $email, $pass1, $pass2)
 	{
 		$error_array = array();
@@ -150,6 +166,10 @@ class Student_controller
 
 	/*
 	 * Function used to hash a password
+	 * 
+	 * @param type $password			The password to hash
+	 * @param type $salt				The salt to use with hashing
+	 * @return string $hashed_pass		The hashed password
 	 */
 	private function hash_password($password, $salt)
 	{
@@ -163,6 +183,10 @@ class Student_controller
 
 	/*
 	 * Function that checks if two passwords match, returns error message if not
+	 * 
+	 * @param type $pass1			first instance of password
+	 * @param type $pass2			second instance of password
+	 * @return boolean|string		TRUE if match, error message if not
 	 */
 	public function compare_passwords($pass1, $pass2)
 	{
@@ -177,8 +201,12 @@ class Student_controller
 
 	/*
 	 * Function that checks the database for a specific email address
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param type $email			email to check for in database
+	 * @return boolean|string		TRUE if not in database, error message if the 
+	 *								email is in the database
 	 */
-
 	private function check_for_email($email)
 	{
 		//We make use of the global dbCon that we've created in the config file
@@ -207,8 +235,11 @@ class Student_controller
 	/*
 	 * Function that checks the database for a specific username
 	 * See check_for_email and create_student for explanations on the code
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param type $username		The username to look for in the database
+	 * @return boolean|string		TRUE if not found, error message if found
 	 */
-
 	private function check_for_username($username)
 	{
 		global $dbCon;
@@ -235,7 +266,10 @@ class Student_controller
 	/*
 		Function that checks if username is valid.
 		See defined constant "REGEX_USERNAME" in configuration.php around line 34.
-	*/
+	 * 
+	 * @param type $username		The username to validate
+	 * @return int|boolean			1 or 0 for true or false, FALSE if error					
+	 */
 	function validate_username($username)
 	{
 		//return preg_match(REGEX_USERNAME, $username);
@@ -243,9 +277,13 @@ class Student_controller
 	}
 
 	/*
-		Function that checks if the username does not
-		contain 3 of the same chars in a row
-	*/
+	 *	Function that checks if the password does not
+	 *	contain 3 of the same chars in a row
+	 * 
+	 * @param string $text		the text to check, typically a password
+	 * @return boolean			FALSE if there's 3 of the same characters in a row
+	 *							TRUE if there's not
+	 */
 	function dont_allow_3_in_a_row($text)
 	{
 		$arr = str_split($text);
@@ -264,10 +302,13 @@ class Student_controller
 	}
 
 	/*
-		Function that checks if password is valid.
-		See defined constant "REGEX_PASSWORD" in configuration.php around line 35,
-		and dont_allow_3_in_a_row()
-	*/
+	 *	Function that checks if password is valid.
+	 *	See defined constant "REGEX_PASSWORD" in configuration.php around line 35,
+	 *	and dont_allow_3_in_a_row()
+	 * 
+	 * @param type $password		The password to validate
+	 * @return int|boolean			1 if true, 0 if false. FALSE on error
+	 */
 	function validate_password($password)
 	{
 		if($this->dont_allow_3_in_a_row($password) === FALSE)
@@ -281,8 +322,11 @@ class Student_controller
 	}
 
 	/*
-		Function that checks if email is valid.
-	*/
+	 *	Function that checks if email is valid.
+	 * 
+	 * @param type $string		The email to validate
+	 * @return string|boolean	The filtered data or FALSE on fail
+	 */
 	function validate_email($string)
 	{
 		//We use the built in filter_var function to validate the email.
@@ -292,10 +336,13 @@ class Student_controller
 	}
 
 	/*
-		Function that checks if firstname is valid.
-		1) Trim input
-		2) check if string length > 1
-	*/
+	 *	Function that checks if firstname is valid.
+	 *	1) Trim input
+	 *	2) check if string length > 1
+	 * 
+	 * @param string $name		String to validate, typically a name
+	 * @return boolean			TRUE if validation is okay, FALSE if not
+	 */
 	function validate_name($name)
 	{
 		$trim = trim($name);
@@ -309,32 +356,29 @@ class Student_controller
 	/*
 	 * Function used to log a student in. We can't use the Student object though
 	 * Since we do not have the ID of the student trying to log in - yet!
+	 * 
+	 * @param string $user			the user's credentials, either email or username
+	 * @param string $password		the user's password typed in the login form
+	 * @return boolean|string		TRUE if user is logged in, error message if not.
 	 */
-
 	function log_member_in($user, $password)
 	{
 		//Security 101 - Never tell the user which part is incorrect!
 		$failed_message = "Wrong Username/Email or Password";
 		//We check if the value given from the user is an email
-		
 		if ($this->validate_email($user))
 		{
-			//die("It's an email!");
 			//And so it is! We get the member details with the email address.
 			$user_array = $this->get_member_with_email($user);
 		}
 		else
 		{
-			//die("It's a username!");
 			//Oh, it's not an email, maybe a username then?
 			$user_array = $this->get_member_with_username($user);
 		}
 
-		//die("TEST");
-
 		//If the id is not set in the user array, or ID is less than one, we
 		//can't log the login attempt for a specific user
-		//die(var_dump($user_array));
 		if (!isset($user_array['id']) && !validate_int($user_array['id']))
 		{
 			//We save the login attempt, without passing a user id, and passing
@@ -394,12 +438,7 @@ class Student_controller
 				}
 				return "This account has been locked due to too many failed "
 						. "logins. You are now being redirected because you've tried "
-						. "to log in much more than allowed! "
-						. "<script>"
-						. "setTimeout(function()"
-						. "{window.location = 'http://www.heibosoft.com'}"
-						. ", 2000);"
-						. "</script>";
+						. "to log in much more than allowed!";
 			}
 			return $failed_message;
 		}
@@ -408,8 +447,12 @@ class Student_controller
 
 	/*
 	 * Function to log a log in attempt
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param int $response		1 if success, 0 if not
+	 * @param int $id			ID of the user, 0 if unknown. Default is 0
+	 * @return boolean|string	TRUE if logging went ok, mysql error if not
 	 */
-
 	function save_login_attempt($response, $id = 0)
 	{
 		//We get the user's ip address from the function in the config file
@@ -440,8 +483,11 @@ class Student_controller
 	/*
 	 * Function to get an array of user details with an email address
 	 * This function is pretty basic, and most is covered prior to this.
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $email		email of the user to select the member values with
+	 * @return array|boolean	array with the user data or TRUE if failed (Shouldn't it be false? - no time to go through code for changing)
 	 */
-
 	function get_member_with_email($email)
 	{
 		global $dbCon;
@@ -470,8 +516,11 @@ class Student_controller
 	/*
 	 * Function to get an array of user details with a username.
 	 * See above for explanations.
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param string $username		username of the student trying to log in
+	 * @return array|boolean		array with user data, TRUE if failed (Shouldn't it be FALSE ?)
 	 */
-
 	function get_member_with_username($username)
 	{
 		global $dbCon;
@@ -496,7 +545,11 @@ class Student_controller
 		return TRUE;
 	}
 
-	//Should probably be moved to student object.
+	/**
+	 * Function to destroy a user's session.
+	 * Should probably be moved to student object.
+	 * 
+	 */
 	function log_member_out()
 	{
 		session_destroy();
@@ -507,9 +560,13 @@ class Student_controller
 	 * unsuccesful. If this is more than the max allowed, it returns true which
 	 * means the user should be banned..
 	 * This function only checks back for the last 5 minutes, and this should
-	 * probably be a variable as well.. But not now, to tired!
+	 * probably be a variable as well.. But not now, too tired!
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param int $id			ID of the user to give a possible ban
+	 * @param int $max			number of maximum failed login attempts. Default is 3. Should probably be global variable in config
+	 * @return boolean			TRUE if should be banned, FALSE if not
 	 */
-
 	function check_if_ban_is_in_order($id, $max = 3)
 	{
 		global $dbCon;
@@ -533,6 +590,13 @@ class Student_controller
 		return FALSE;
 	}
 
+	/*
+	 * Function to search for a user from the search field in navbar and on search
+	 * page
+	 * 
+	 * @param string $search_string		The types search string
+	 * @return array $results			An array of all the search results
+	 */
 	public function search_for_student($search_string)
 	{
 		$results = array();
@@ -567,6 +631,13 @@ class Student_controller
 		return $results;
 	}
 
+	/*
+	 * Function to search for a user by username
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $string	The string to use for the search
+	 * @return array $results	An array of the results
+	 */
 	private function search_for_username($string)
 	{
 		$search_string = '%' . $string . '%';
@@ -591,6 +662,13 @@ class Student_controller
 		return $results;
 	}
 
+	/*
+	 * Function to search for a user by name
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $string	The string to use for the search
+	 * @return array $results	An array of the results
+	 */
 	private function search_for_name($string)
 	{
 		$search_string = '%' . $string . '%';
@@ -615,6 +693,13 @@ class Student_controller
 		return $results;
 	}
 
+	/*
+	 * Function to search for a user by email
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $string	The string to use for the search
+	 * @return array $results	An array of the results
+	 */
 	private function search_for_email($string)
 	{
 		$search_string = '%' . $string . '%';
@@ -638,6 +723,14 @@ class Student_controller
 		return $results;
 	}
 
+	/*
+	 * Function to search for a user by email
+	 * Only part before @ is used (so searching for gmail doesn't give all students with a gmail account)
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $string	The string to use for the search
+	 * @return array $results	An array of the results
+	 */
 	private function search_for_first_part_of_email($string)
 	{
 		$search_string = '%' . $string . '%';
@@ -661,9 +754,19 @@ class Student_controller
 		return $results;
 	}
 
+	/*
+	 * Function to ask for a password reset. Generates the three very long
+	 * and impossible to crack - keys that is used in the URL.
+	 * Each key is between 80 and 120 characters, and holds everything in
+	 * a-Z0-9.
+	 * The name of the function is just.... so right..!
+	 * 
+	 * @param string $user		email or username of the user that want to reset
+	 * @return string			Returns the string response from send_reset_email function
+	 */
 	public function please_reset_my_password_because_im_stupid($user)
 	{
-		$failed_message = "Ooops... Get a grip boy!";
+		$failed_message = "Ooops... Get a grip boy!"; //Wait, wuuut? ^^
 		if ($this->check_if_email($user))
 		{
 			//And so it is! We get the member details with the email address.
@@ -693,6 +796,16 @@ class Student_controller
 		}
 	}
 
+	/*
+	 * Function to save a password reset request in the database
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param int $user_id		The ID of the user wanting a password reset
+	 * @param string $u			U code which will be in URL (u is for User)
+	 * @param string $e			E code which will be in URL (e is for email)
+	 * @param string $c			C dode which will be in URL (c is for code)
+	 * @return boolean			TRUE if INSERT succeded, FALSE if not
+	 */
 	private function reset_password_request($user_id, $u, $e, $c)
 	{
 		$time = date("Y-m-d H:i:s", time());
@@ -712,11 +825,19 @@ class Student_controller
 			$stmt->close();
 			return TRUE;
 		}
-		$error = $stmt->error;
 		$stmt->close();
-		return $error;
+		return FALSE;
 	}
 
+	/*
+	 * Function to send an email to the user, where there's a link to allow a password reset
+	 * 
+	 * @param string $email		email of the user - Where to send
+	 * @param string $u			U code to be inserted in the URL
+	 * @param string $e			E code to be inserted in the URL
+	 * @param string $c			C code to be inserted in the URL
+	 * @return string			String with response. Send or not
+	 */
 	private function send_reset_email($email, $u, $e, $c)
 	{
 		// multiple recipients
@@ -759,6 +880,15 @@ class Student_controller
 		return "Ooooops. Something went wrong!<br/>Please try again!";
 	}
 	
+	/*
+	 * Function to select the user, by having the U, E and C code from password reset
+	 * 
+	 * @global type $dbCon			mysqli connection
+	 * @param string $u				The U code from the URL
+	 * @param string $e				The E code from the URL
+	 * @param string $c				The C code from the URL
+	 * @return int|boolean|string	Student id if accepted, Error message if requirements wasn't met, False if no user was found
+	 */
 	public function get_student_from_u_e_and_c_codes($u, $e, $c)
 	{
 		global $dbCon;
@@ -797,6 +927,15 @@ class Student_controller
 		return false;
 	}
 
+	/*
+	 * Function to update a reset request to have been used in the database
+	 * 
+	 * @global type $dbCon		mysqli connection
+	 * @param string $u			The U code from the URL
+	 * @param string $e			The E code from the URL
+	 * @param string $c			The C code from the URL
+	 * @return boolean|string	True if update succeded, Error message from mysql if not
+	 */
 	public function set_reset_request_to_used($u, $e, $c)
 	{
 		global $dbCon;
@@ -815,7 +954,6 @@ class Student_controller
 			return true;
 		}
 		$stmt->close();
-		echo $stmt->error;
 		return $stmt->error;
 	}
 }
